@@ -1,0 +1,74 @@
+\documentclass[11pt, letterpaper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amsfonts, amssymb}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{xcolor}
+
+\title{\textbf{Quantitative Methodology for Assessing Theoretical Conjectures Against Large Language Model Capabilities}}
+\author{Analytical Division}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document outlines the formal methodology and heuristic formulas utilized to score and rank theoretical conjectures and unsolved problems. The framework evaluates problems based on their potential societal and theoretical impact ($S_{\text{impact}}$) versus the probability of a Large Language Model (LLM) independently driving a significant breakthrough ($S_{\text{llm}}$). The resulting quotient ($R$) isolates domains where human-driven structural innovation remains critically bottlenecked by technological limitations.
+\end{abstract}
+
+\section{Introduction}
+The intersection of profound scientific conjectures and the architectural capabilities of sequence-based artificial intelligence requires a strict analytical framework. Standard heuristic evaluations fail to capture the nuances between combinatorial search spaces and continuous topological manifolds. This methodology formalizes the distinction between a problem's inherent utility and its structural compatibility with modern machine learning paradigms.
+
+\section{Impact Score ($S_{\text{impact}}$)}
+The Impact Score ($S_{\text{impact}}$) quantifies the direct benefit to society and the scientific community if the conjecture is formally proven or resolved. It is calculated on a normalized scale of 0 to 100 using a weighted linear combination of three sub-variables.
+
+\begin{equation}
+S_{\text{impact}} = \min \left( 100, \left( w_1 \cdot I_{\text{soc}} + w_2 \cdot I_{\text{theo}} + w_3 \cdot F_{\text{app}} \right) \right)
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item $I_{\text{soc}} \in [0, 100]$: Societal Impact. Measures the immediate material benefit to humanity (e.g., energy grid optimization via room-temperature superconductivity).
+    \item $I_{\text{theo}} \in [0, 100]$: Theoretical Impact. Measures the foundational shift in mathematical or physical understanding (e.g., unifying quantum mechanics and general relativity).
+    \item $F_{\text{app}} \in [0, 100]$: Application Feasibility. The proximity of the theoretical solution to a physical engineering implementation.
+    \item $w_1, w_2, w_3$: Contextual weights, typically set to $0.4, 0.4,$ and $0.2$ respectively, assuming equal prioritization of theory and societal utility.
+\end{itemize}
+
+\section{LLM Likelihood Score ($S_{\text{llm}}$)}
+The LLM Likelihood Score ($S_{\text{llm}}$) models the probability that current or near-future autoregressive transformer architectures will independently solve the problem. Because LLMs are inherently discrete machines reliant on tokenized probability distributions, their capability is strictly bounded by the mathematical nature of the problem space.
+
+The score is derived using a penalty-based framework:
+\begin{equation}
+S_{\text{llm}} = \max \left( 1, 100 - \left( \alpha \cdot P_{\text{cont}} + \beta \cdot P_{\text{nov}} + \gamma \cdot P_{\text{gap}} \right) + \delta \cdot B_{\text{disc}} \right)
+\end{equation}
+
+Where the variables denote specific structural attributes of the conjecture:
+\begin{itemize}
+    \item $P_{\text{cont}}$: Continuous Manifold Penalty. Problems requiring unbroken, continuous reasoning (e.g., Navier-Stokes, smooth topology) heavily penalize LLM viability.
+    \item $P_{\text{nov}}$: Zero-Contamination Novelty Penalty. The degree to which the solution requires generating completely original mathematical frameworks absent from the pre-training data.
+    \item $P_{\text{gap}}$: Generator-Verifier Gap Penalty. High when a proposed solution cannot be easily verified by deterministic polynomial-time algorithms or external computer algebra systems.
+    \item $B_{\text{disc}}$: Discrete Combinatorial Bonus. Problems that can be reduced to discrete graph theory, combinatorial optimization, or lattice structures receive a positive modifier, as LLMs excel at exploring vast discrete state spaces.
+\end{itemize}
+Constants $\alpha, \beta, \gamma,$ and $\delta$ are scaling factors calibrated empirically against known AI mathematical benchmarks (e.g., IMO geometry proofs).
+
+\section{The Capability Ratio ($R$)}
+The Capability Ratio isolates the most critical bottlenecks for human advancement. It highlights problems that would fundamentally alter human capability but are structurally shielded from AI assistance.
+
+\begin{equation}
+R = \frac{S_{\text{impact}}}{S_{\text{llm}}}
+\end{equation}
+
+\subsection{Interpretation of the Bounds}
+\begin{itemize}
+    \item \textbf{High Ratio ($R > 15$):} Denotes an extreme Generator-Verifier gap or a reliance on continuous topology (e.g., P vs NP, Yang-Mills Mass Gap). These are the domains requiring sheer human conceptual leaps.
+    \item \textbf{Low Ratio ($R < 1$):} Denotes problems where the impact is moderate to high, but the problem space is highly discretized. These are the immediate frontiers for AI-driven discovery (e.g., Erd\H{o}s Unit Distance Problem).
+\end{itemize}
+
+\section{Conclusion}
+This quantitative approach ensures that algorithmic research, particularly in fields like computational complexity and advanced cryptography, is directed toward theoretical vectors where parallel processing and stochastic pattern matching are most structurally sound, while explicitly mapping the boundaries where human conceptualization remains paramount.
+
+\end{document}
