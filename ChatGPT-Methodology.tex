@@ -1,0 +1,177 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{AI Opportunity Atlas v1\\Methodology}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Core Idea}
+
+Each scientific problem is treated as an ``opportunity node'' characterized by:
+
+\begin{itemize}
+    \item Impact (human and economic value)
+    \item Difficulty (scientific or engineering resistance)
+    \item AI solvability (likelihood that frontier AI systems make progress)
+    \item Leverage (how much solving the problem accelerates other science)
+\end{itemize}
+
+The goal is to rank problems by expected value of AI-enabled scientific acceleration.
+
+\section{Primary Variables}
+
+\subsection{Humanity Impact (H)}
+\textbf{Scale:} 0--100
+
+Represents:
+\begin{itemize}
+    \item Lives saved or improved
+    \item Scientific acceleration potential
+    \item Societal transformation potential
+\end{itemize}
+
+Examples:
+AGI alignment $\approx 100$, protein design $\approx 99$
+
+\subsection{Economic Impact (E)}
+\textbf{Scale:} 0--100
+
+Represents:
+\begin{itemize}
+    \item GDP-level economic impact
+    \item Industrial transformation
+    \item Cost reduction potential
+\end{itemize}
+
+\subsection{Scientific Difficulty (D)}
+\textbf{Scale:} 0--100
+
+Represents:
+\begin{itemize}
+    \item Theoretical hardness
+    \item Experimental cost
+    \item Computational irreducibility
+    \item Time-to-breakthrough complexity
+\end{itemize}
+
+Examples:
+P vs NP $\approx 100$, protein design $\approx 70$--85
+
+\subsection{LLM Progress Likelihood (L)}
+\textbf{Scale:} 0--100
+
+Represents probability that frontier LLMs or multimodal AI systems can make meaningful progress within 5--10 years.
+
+\begin{itemize}
+    \item High: protein design, interpretability
+    \item Low: pure math conjectures, deep physics proofs
+\end{itemize}
+
+\section{Primary Scoring Function}
+
+The main ranking metric is:
+
+\begin{equation}
+\text{AILeverageScore} = \frac{H \times L}{D}
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item $H$ = Humanity Impact
+    \item $L$ = LLM Progress Likelihood
+    \item $D$ = Scientific Difficulty
+\end{itemize}
+
+\section{Interpretation}
+
+This score measures:
+
+\begin{quote}
+How much societal value can plausibly be unlocked per unit of scientific difficulty using AI systems.
+\end{quote}
+
+\section{Secondary Derived Metrics}
+
+\subsection{Expected Societal Return (ESR)}
+
+\begin{equation}
+ESR = H \times E
+\end{equation}
+
+Captures total potential societal and economic value.
+
+\subsection{AI Replaceability Index (ARI)}
+
+A heuristic measure of how much a problem is:
+
+\begin{itemize}
+    \item search-based
+    \item pattern-based
+    \item simulation-based
+\end{itemize}
+
+Higher values indicate better suitability for AI-driven solutions.
+
+\subsection{Recursive AI Benefit (RAB)}
+
+Measures whether solving the problem improves AI systems themselves.
+
+Examples:
+\begin{itemize}
+    \item Interpretability: high
+    \item Alignment: high
+    \item Theorem proving: high
+    \item Climate modeling: low-medium
+\end{itemize}
+
+\section{Problem Taxonomy}
+
+Each entry is classified as:
+
+\begin{itemize}
+    \item OP: Explicit open problem or conjecture
+    \item TECH: Foundational technical paper revealing bottleneck
+    \item REV: Survey of unresolved challenges
+    \item ROAD: Research roadmap or agenda
+\end{itemize}
+
+\section{Final Ranking Rule}
+
+Final ranking is determined by a multi-objective heuristic:
+
+\begin{equation}
+Rank \approx f(\text{AILeverageScore}, ESR, RAB, \text{confidence})
+\end{equation}
+
+Where:
+\begin{itemize}
+    \item AILeverageScore dominates primary ordering
+    \item ESR biases toward high economic impact
+    \item RAB increases priority for AI-self-improving problems
+    \item Confidence adjusts for epistemic uncertainty
+\end{itemize}
+
+\section{Key Limitation}
+
+This framework is a heuristic model, not a learned or calibrated predictive system.
+
+Limitations include:
+\begin{itemize}
+    \item Subjective scoring estimates
+    \item No uncertainty distributions
+    \item No empirical calibration to historical breakthroughs
+    \item Correlated variable bias
+\end{itemize}
+
+\section{Summary}
+
+The AI Opportunity Atlas ranks scientific problems by expected value of AI-enabled search acceleration, normalized by intrinsic difficulty, with additional emphasis on recursive AI improvement potential.
+
+\end{document}
