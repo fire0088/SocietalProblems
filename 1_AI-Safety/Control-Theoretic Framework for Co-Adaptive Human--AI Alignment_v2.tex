@@ -1,0 +1,187 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{hyperref}
+\usepackage{pgfplots}
+
+\pgfplotsset{compat=1.18}
+\geometry{margin=1in}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{assumption}{Assumption}
+
+\title{
+A Control-Theoretic Framework for Co-Adaptive Human--AI Alignment:
+Stability Functionals, Measurement of Stability Operators,
+and Feedback Regulation
+}
+\author{Anonymous Author}
+\date{Version 10.1 --- Unified Alignment Theory Draft}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Current approaches to artificial intelligence alignment primarily frame alignment as an objective specification problem: infer, encode, or constrain a target human objective. However, advanced AI systems operate within environments where both human preferences and AI behavior evolve over time. This creates a co-adaptive dynamical system rather than a static optimization problem. This paper introduces Unified Alignment Theory (UAT), a control-theoretic framework that models alignment as a stability problem within a coupled human--AI system. 
+
+The framework defines a positive alignment instability functional $V(x)$ over AI states, human preference states, and environmental interactions. A vector-valued Measurement of Stability (MOS) operator is introduced to estimate multiple sources of instability, including human preference drift, model behavioral drift, feedback amplification, aggregation instability, and epistemic uncertainty. 
+
+Critically, this updated formulation accounts for epistemic boundaries in measuring human cognition, operationalizes interventions via neural steering, and models psychological evolution as a jump-diffusion process to account for sudden schema restructuring. A feedback controller is derived that regulates instability while preserving human influence over system evolution. The central claim of this work is that alignment is not a static property of an AI model, but a dynamic stability property of the human--AI system in which that model operates.
+\end{abstract}
+
+\textbf{Keywords:} Artificial Intelligence Alignment; Control Theory; Human-AI Interaction; Lyapunov Stability; Adaptive Systems; Jump-Diffusion Models; AI Safety; Dynamical Systems.
+
+\section{Introduction}
+The alignment problem is commonly described as ensuring that artificial intelligence systems pursue objectives compatible with human interests. Most existing approaches attempt to solve this problem by improving objective specification. Examples include learning human preferences through reinforcement learning from human feedback, inferring latent values through inverse reinforcement learning, imposing constitutional constraints, and developing mechanisms for correction and oversight.
+
+These methods have produced significant progress. However, they share a common assumption: that alignment can be represented as a sufficiently accurate objective function. This assumption becomes increasingly problematic as AI systems become more capable. Humans change. Cultures change. Institutions change. AI systems adapt. The result is not a static optimization problem, but a coupled adaptive system.
+
+Therefore, this work proposes a different framing:
+\begin{quote}
+The alignment problem is the problem of maintaining stability in a dynamic human--AI system under uncertainty and adaptation.
+\end{quote}
+
+The central mathematical question becomes:
+\[
+\text{Does the human--AI system remain near an alignment manifold over time?}
+\]
+rather than:
+\[
+\text{Does the AI maximize a fixed human objective?}
+\]
+
+\section{System Model}
+\subsection{Single Human--AI Alignment System}
+We first consider the fundamental case of one AI system interacting with one human preference state.
+
+\begin{definition}[Coupled Human--AI State]
+The state of the alignment system is $x_t=(\theta_t,H_t)$ where:
+\begin{itemize}
+\item $\theta_t$ represents the AI model parameters and behavioral state,
+\item $H_t$ represents the latent human preference distribution.
+\end{itemize}
+\end{definition}
+
+The system evolves according to:
+\[
+H_{t+1} = f_H(H_t,\pi_{\theta_t},E_t)
+\]
+\[
+\theta_{t+1} = f_\theta(\theta_t,H_t)
+\]
+where $E_t$ represents environmental conditions. Unlike conventional optimization problems, both components evolve.
+
+\section{Alignment Manifold and Stability Functional}
+\begin{definition}[Alignment Manifold]
+The alignment manifold is the set of system states where AI behavior, human preferences, and environmental outcomes remain mutually compatible:
+\[
+\mathcal{M}_A = \{x:V(x)=0\}
+\]
+\end{definition}
+
+We define alignment instability as:
+\[
+V(\theta,H) = \alpha D_H + \beta D_\theta + \gamma F + \delta A
+\]
+where $D_H$ represents human preference drift, $D_\theta$ represents AI behavioral drift, $F$ represents human--AI feedback amplification, and $A$ represents preference aggregation instability. The system is considered stable when $\dot V(x)<0$ outside the equilibrium region.
+
+\section{Measurement of Stability (MOS) Framework}
+The alignment instability functional provides a scalar measure of system stability. However, practical alignment systems require decomposition of instability into measurable components. We therefore define the Measurement of Stability (MOS) operator.
+
+\begin{definition}[MOS Vector]
+The MOS vector is:
+\[
+\mathbf{MOS}(x) =
+\begin{bmatrix}
+MOS_H\\
+MOS_\theta\\
+MOS_F\\
+MOS_A
+\end{bmatrix}
+\]
+\end{definition}
+The relationship between the measured instability and the stability functional is $\nabla V(x) \approx W\mathbf{MOS}(x)$ where $W$ maps measurable signals into the gradient space.
+
+\subsection{Human Preference Drift and Behavioral Proxies}
+Directly measuring the Kullback-Leibler divergence of internal human preferences ($P_H$) is epistemically impossible due to latent, unobservable variables. We instead define $MOS_H$ over observable behavioral proxies. Let $\phi(b_t)$ represent a high-dimensional embedding of human behavioral interactions (e.g., text, choices, observed reactions).
+\[
+MOS_H = \mathbb{E}[D_{KL}(\phi(b_t)||\phi(b_{t-1}))] + \epsilon_{proxy}
+\]
+where $\epsilon_{proxy}$ represents the irreducible epistemic gap between observable behavior and latent psychological values.
+
+\subsection{AI Behavioral Drift}
+Behavioral drift is measured as:
+\[
+MOS_\theta = \| \pi_{\theta_t} - \pi_{\theta_{t-1}} \|
+\]
+where $\pi_\theta$ represents the AI policy.
+
+\subsection{Feedback Amplification}
+The human--AI relationship creates a feedback loop. Uncontrolled amplification may produce instability. We define:
+\[
+MOS_F = \left\| \frac{\partial H}{\partial\theta} \frac{\partial\theta}{\partial H} \right\|
+\]
+A value greater than one indicates potential positive feedback growth.
+
+\subsection{Aggregation Instability}
+In the single-human model, aggregation instability may represent internal cognitive dissonance or conflicting contextual preferences:
+\[
+MOS_A = Var(\mathcal{F})
+\]
+where $\mathcal{F}$ represents observed preference clusters.
+
+\section{Feedback Control Architecture}
+The alignment controller modifies system evolution through $x_{t+1} = f(x_t)+Bu_t$ where $u_t$ represents corrective intervention. The proposed controller is $u_t = -K\mathbf{MOS}(x_t)$ where $K$ is a positive semi-definite feedback gain matrix. 
+
+\subsection{Operationalizing the Control Input ($u_t$)}
+In applied neural systems, the abstract control input $u_t$ must map to specific interventions. For large-scale models, $u_t$ operates at two timescales:
+\begin{itemize}
+\item \textbf{Inference-time Steering:} $u_t$ manifests as activation steering vectors applied to hidden states during generation to dynamically counter measured behavioral drift or acute feedback amplification.
+\item \textbf{Continuous Learning:} $u_t$ operates as a dynamic gradient penalty during online fine-tuning, restricting parameter updates that push the system away from the established alignment manifold.
+\end{itemize}
+
+\section{Stability Analysis}
+
+\begin{assumption}[Piecewise Smooth Dynamics and Schema Restructuring]
+Human psychological evolution is frequently non-continuous. Individuals may undergo sudden cognitive shifts (schema restructuring) or rapid affective polarization due to environmental triggers. Therefore, $f(x)$ cannot be modeled as purely differentiable. We model the system as a jump-diffusion process:
+\[
+dx_t = f(x_t)dt + g(x_t)dW_t + \int J(x_{t^-}, z) N(dt, dz)
+\]
+where the Poisson random measure $N$ captures sudden, discontinuous jumps in the human preference state.
+\end{assumption}
+
+\begin{assumption}[Bounded Feedback Coupling]
+The continuous portion of the human--AI feedback relationship satisfies:
+\[
+\left\| \frac{\partial H}{\partial\theta} \frac{\partial\theta}{\partial H} \right\| < 1
+\]
+\end{assumption}
+
+\begin{theorem}[Single-Agent Alignment Stability under Jump-Diffusion]
+Consider the controlled system with controller $u=-K\mathbf{MOS}(x)$. If $W^TBKW>0$ and the jump magnitude $\int J dz$ is bounded by a finite threshold $M$, then the system converges in expectation toward a bounded neighborhood of the alignment manifold $\mathcal{M}_A$ with $\mathbb{E}[V(x)] \leq C(\epsilon + M)$.
+\end{theorem}
+
+\section{Bayesian Extension: Alignment Under Uncertainty}
+AI systems do not directly observe human values. They observe evidence $D_t = \{d_1,d_2,...,d_t\}$ and maintain beliefs. The state becomes $x_t = (\theta_t,P(H_t|D_t))$ where $P(H_t|D_t)$ is the belief distribution over human preferences. The stability functional is extended to $V_B(x) = V(x)+\lambda \mathcal{H}(P(H|D))$ capturing epistemic uncertainty.
+
+\section{Multi-Agent and Societal Alignment Extension}
+The multi-agent human state becomes $\mathbf H_t = (H_1,H_2,...,H_n)$. The societal state is $x_t = (\theta_t,\mathbf H_t,I_t)$ where $I_t$ represents institutional state.
+
+\subsection{Social Preference Aggregation under Arrow's Impossibility}
+A societal alignment system requires a mechanism $A(\mathbf H)$ for combining individual preferences. By Arrow's Impossibility Theorem, no deterministic aggregation operator can simultaneously satisfy all fair voting criteria without risking cyclical preferences or dictatorship. 
+
+Therefore, rather than seeking a singular "true" societal preference, UAT frames aggregation as bounded conflict resolution. The aggregation operator seeks Pareto-stable local alignments and minimizes the social value conflict term $MOS_C$:
+\[
+MOS_C = \sum_{i \neq j} d_{\mathcal{H}}(H_i, H_j) \cdot C_{i,j}
+\]
+where $C_{i,j}$ represents the coupling or interaction frequency between groups. The control objective is to constrain the maximum voting paradox cycles and limit value divergence, rather than forcing artificial mathematical consensus.
+
+\section{Conclusion}
+Unified Alignment Theory presents alignment as a dynamic control problem involving evolving AI systems, human psychology, jump-discontinuous adaptations, and structural societal bounds. Across all scales, the theory reframes alignment from finding the correct objective to maintaining stable, value-compatible evolution over time.
+
+\end{document}
