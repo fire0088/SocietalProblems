@@ -1,0 +1,425 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{authblk}
+\usepackage[hidelinks]{hyperref}
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\newtheorem{result}{Result}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+\newcommand{\Dhat}{\hat{\Delta}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\swR}{s^2}
+\newcommand{\ind}{\mathbf{1}}
+\DeclareMathOperator{\Var}{Var}
+
+\title{\bfseries Reference-Scaled Bioequivalence as a Selective-Inference Problem:\\
+Exact Similarity, an Incompleteness Obstruction,\\ and a Maximin-Optimal Invariant Test}
+
+\author[1]{Eric Schultz\thanks{ORCID: \texttt{0009-0006-6283-1696}. Corresponding author.}}
+\affil[1]{Independent Researcher}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Reference-scaled average bioequivalence (RSABE / ABEL), the regulatory framework used by the FDA and EMA to establish bioequivalence for highly variable drugs (HVDs), is known to inflate the type-I error (consumer risk) near the switching coefficient of variation, and, to our knowledge, the remedies proposed to date have been approximate or simulation-calibrated. We give a structural account with a constructive conclusion. First, the type-I inflation is a \emph{selective-inference failure}: the scaled test is exactly similar (size $\alpha$ for every variability) \emph{unconditionally}, but fails to control the \emph{selective} type-I error --- the rejection probability conditional on the variance-based switch that triggers scaling. The switch is a data-dependent selection event that breaks the scale invariance underpinning the unconditional test, and the type-I supremum is a left-limit at the switch. Second, the scaled null family is a curved exponential family and is \emph{incomplete} (we exhibit an explicit zero-expectation statistic), in contrast to the \emph{complete} fixed-limit null; consequently the classical Lehmann--Scheff\'e construction of an optimal test is unavailable, which is consistent with the absence of such a test among the methods proposed to date, which work with a linearized (Hyslop) statistic. Third, optimality is nonetheless available --- not through completeness, but through invariance. We prove that the scale-invariant noncentral-$F$ test is exactly similar, UMP-invariant, and, because the scale group is amenable, \emph{maximin among all tests} by the Hunt--Stein theorem: it maximizes the worst-case power over each alternative, and its power (hence required sample size) is constant in the unknown variability. This test does not appear to have been characterized in this form in the bioequivalence literature, which works instead with a Hyslop-linearized statistic that is neither similar nor maximin and re-imposes the switch \emph{per study}. It is not UMP-unbiased --- reflecting the incompleteness, a similar test can beat it against particular alternatives at small degrees of freedom --- but we show such tests purchase their local gain by sacrificing worst-case power, which is the guarantee a regulator needs when the variability is unknown a priori. The remedy follows directly: classify each drug into a variability category \emph{a priori} (from external evidence) and apply that category's test unconditionally; this removes the selection, restores exact similarity and the (essentially) optimal invariant test, and confines any residual approximation to a bounded transition band of variabilities straddling the switch. We situate the results relative to ICH M13C, which is presently harmonizing exactly this methodology.
+\end{abstract}
+
+\section{Introduction}
+
+For highly variable drugs (HVDs), whose within-subject coefficient of variation ($CV_{wR}$) exceeds $30\%$, the classical average-bioequivalence (ABE) limits of $80$--$125\%$ are so difficult to meet that impractically large trials are required. Regulators therefore \emph{scale} the acceptance limits by the drug's estimated within-subject variability: the FDA's reference-scaled average bioequivalence (RSABE) and the EMA's average bioequivalence with expanding limits (ABEL) widen the goalposts as the observed reference variance grows \citep{davit2012, tothfalusi2011}. This scaling is applied only above a switching variability of $CV_{wR}=30\%$; below it, the fixed $80$--$125\%$ limits are retained.
+
+It is well documented that this mixed procedure inflates the type-I error (consumer risk) --- the probability of wrongly declaring a non-bioequivalent product equivalent --- to as much as $0.08$--$0.14$ near the switch, against a nominal $0.05$ \citep{labes2016, wonnemann2015, munoz2016}. Proposed corrections adjust the significance level, either by iterative simulation \citep{labes2016}, by controlling the worst case at the switch \citep{molins2017, ocana2019}, or by smoothing the discontinuity \citep{munoz2024}; a bias-corrected ``exact'' evaluation removes the linearization error yet still inflates \citep{tothfalusi2017}. Every one of these is approximate, simulation-calibrated, or valid only under restrictions. No exact, provably size-controlling, optimal test has been produced. This paper explains why.
+
+The core observations are three.
+\begin{enumerate}
+\item[(i)] \textbf{The inflation is a selective-inference failure.} The unconditional scaled test is exactly similar --- size $\alpha$ for every $\sigma$ --- by a scale-invariance argument (Lemma~\ref{lem:invariance}). What fails is the \emph{selective} type-I error: the probability of declaring equivalence \emph{conditional on the switch event} that selected the scaled branch. The switch is not scale-invariant, and conditioning on it shifts the null rejection probability above $\alpha$ (Proposition~\ref{prop:selective}), most severely where the switch is a strong truncation.
+\item[(ii)] \textbf{Scaling destroys completeness, closing the standard route to an optimal test.} The fixed-limit BE null admits a complete sufficient statistic --- the basis of the tractable optimal tests of \citet{bhm1997} and \citet{bergerhsu1996}. The reference-scaled null does not: it is a curved exponential family, and its minimal sufficient statistic is incomplete (Theorem~\ref{thm:incomplete}). This accounts for the unavailability of the classical Lehmann--Scheff\'e construction, and is consistent with the reliance of RSABE methods proposed to date --- which work with a linearized (Hyslop) statistic --- on approximation and simulation calibration.
+\item[(iii)] \textbf{A maximin-optimal test is available by invariance.} Completeness is not the only route to optimality; invariance is another, and it is intact. The scale-invariant noncentral-$F$ test of Lemma~\ref{lem:invariance} is exactly similar, UMP-invariant, and --- since the scale group is amenable --- \emph{maximin among all tests} by Hunt--Stein (Theorem~\ref{thm:maximin}), with power constant in the unknown $\sigma$. It is not UMP-unbiased (Proposition~\ref{res:umpu}): reflecting the incompleteness, a similar test can beat it against particular alternatives at small $\nu$ --- but only by sacrificing worst-case power, so no test dominates it uniformly. The deployed Hyslop statistic is neither similar nor maximin. By re-imposing the switch per study the regulatory procedure both inflates the selective error and breaks the $F$-test's similarity; a-priori classification (Section~\ref{sec:categories}) dissolves the switch and restores it.
+\end{enumerate}
+
+The framing of a data-dependent hypothesis as a selection event, and the control of the resulting selective error, follows the selective-inference literature \citep{fithian2014, lee2016, taylor2015}, in which inference is conducted conditional on the event that selected the hypothesis. To our knowledge neither the selective-inference literature nor the bioequivalence-optimality literature \citep{schuirmann1987, bergerhsu1996, bhm1997, brown1995} has previously addressed reference-scaled bioequivalence, and the incompleteness obstruction --- together with the observation that invariance supplies the optimal test that completeness cannot --- appears new. The results bear directly on ICH M13C, initiated in 2025 to harmonize BE data analysis for highly variable and narrow-therapeutic-index drugs \citep{ich_m13}.
+
+\section{Model and hypotheses}\label{sec:model}
+
+Work throughout on the (natural) log scale. In a balanced replicate crossover design let
+\begin{equation}
+\Dhat \;\sim\; N(\Delta,\ \tau\sigma^2), \qquad \nu\, \swR/\sigma^2 \;\sim\; \chi^2_\nu, \qquad \Dhat \perp \swR ,
+\label{eq:model}
+\end{equation}
+where $\Dhat=\bar Y_T-\bar Y_R$ is the estimated treatment difference, $\Delta=\mu_T-\mu_R$, $\sigma^2\equiv\sigma^2_{wR}$ is the within-subject reference variance, $s^2\equiv s^2_{wR}$ its estimate on $\nu$ degrees of freedom, and $\tau>0$ is the design constant with $\Var(\Dhat)=\tau\sigma^2$ (so $\tau=1/n$ under equal within-subject variances and $n$ subjects). The independence in \eqref{eq:model} is exact for balanced Gaussian linear models. Bioequivalence is governed by
+\begin{equation}
+\rho \;:=\; \frac{\Delta^2}{\sigma^2}, \qquad H_0:\ \rho \ge \Theta \quad\text{vs.}\quad H_1:\ \rho < \Theta, \qquad
+\Theta = \Big(\tfrac{\ln 1.25}{\sigma_0}\Big)^2,\ \ \sigma_0=0.25 .
+\label{eq:hyp}
+\end{equation}
+The switching variability is $c=\sqrt{\ln(1+0.30^2)}\approx 0.294$. The regulatory \emph{mixed procedure} declares bioequivalence by an ABE (two one-sided tests, TOST) rule at the fixed limit $\ln 1.25$ when $s< c$, and by a scaled rule together with a point-estimate constraint $|\Dhat|\le\ln1.25$ when $s\ge c$. The event
+\begin{equation}
+A \;=\; \{\, s \ge c \,\}
+\end{equation}
+is the \emph{selection event}: the data decide, through the variance estimate $s$, which test is performed.
+
+\paragraph{Assumptions.} All results in Sections~\ref{sec:invariance}--\ref{sec:optimal} are stated under:
+\begin{itemize}
+\item[\textbf{(A1)}] \emph{Normality.} Log-transformed exposures are Gaussian, so that $\Dhat$ is normal and $\nu s^2/\sigma^2$ is $\chi^2_\nu$.
+\item[\textbf{(A2)}] \emph{Balanced replicate design with independence.} $\Dhat\perp s^2$, exact for balanced Gaussian linear models; $\nu$ is the reference-variance degrees of freedom.
+\item[\textbf{(A3)}] \emph{Known design constant.} $\Var(\Dhat)=\tau\sigma^2$ with $\tau$ known. This holds in a full-replicate design with equal within-subject variances ($\tau=1/n$); in a partial-replicate design $\sigma_{wT}$ is not estimable and $\tau$ depends on the unknown variance ratio $\sigma_{wT}/\sigma_{wR}$ (see Section~\ref{sec:benchmark}).
+\item[\textbf{(A4)}] \emph{No missing data or period imbalance,} so that the stated degrees of freedom apply.
+\end{itemize}
+Assumptions (A1)--(A2) are those under which the FDA and EMA procedures are themselves derived. (A3) is the substantive restriction, and Section~\ref{sec:benchmark} examines what survives its relaxation; (A4) is discussed in Section~\ref{sec:limitations}.
+
+\section{The unconditional scaled test is exactly similar}\label{sec:invariance}
+
+The scale group $G=\{(\Dhat,s)\mapsto(a\Dhat,as):a>0\}$ acts on the model \eqref{eq:model}, mapping $(\Delta,\sigma)\mapsto(a\Delta,a\sigma)$ and leaving $\rho=\Delta^2/\sigma^2$ invariant. The maximal invariant is
+\begin{equation}
+W \;=\; \frac{\Dhat^2}{\tau\,s^2}.
+\end{equation}
+
+\begin{lemma}[Exact similarity and UMP invariance of the unconditional scaled test]\label{lem:invariance}
+Under \eqref{eq:model}, $W\sim F'_{1,\nu}(\rho/\tau)$, a noncentral $F$ whose law depends on the parameters only through $\rho$. Consequently the test that declares bioequivalence iff $W<w_\alpha$, where $w_\alpha$ is the $\alpha$-quantile of $F'_{1,\nu}(\Theta/\tau)$, has size exactly $\alpha$ for every $\sigma>0$, and is uniformly most powerful among scale-invariant tests of \eqref{eq:hyp}.
+\end{lemma}
+
+\begin{proof}
+$\Dhat^2/(\tau\sigma^2)\sim\chi'^2_1(\lambda)$ with noncentrality $\lambda=\Delta^2/(\tau\sigma^2)=\rho/\tau$, and $s^2/\sigma^2\sim\chi^2_\nu/\nu$ independently; their ratio is $W$, distributed as $F'_{1,\nu}(\rho/\tau)$, free of $\sigma$. The noncentral $F$ family has monotone likelihood ratio in $W$ with respect to its noncentrality \citep[Ch.~3]{lehmann2005}, so ``reject for small $W$'' is UMP for the one-sided hypothesis \eqref{eq:hyp} within the class of tests based on the maximal invariant, i.e.\ UMP invariant; exactness of the size follows from the $\sigma$-free null law of $W$ at $\rho=\Theta$.
+\end{proof}
+
+Lemma~\ref{lem:invariance} is the crucial baseline: the scaled criterion \emph{per se} does not inflate the type-I error. Any inflation must originate in the departure of the actual procedure from this ideal --- namely, the switch.
+
+\section{The switch breaks invariance: selective type-I error}\label{sec:selective}
+
+The selection event $A=\{s\ge c\}$ is not scale-invariant: scaling $s\mapsto as$ alters membership. Moreover $W$ and $s$ are dependent (both involve $s^2/\sigma^2$; the noncentrality precludes the Beta--Gamma independence that would decouple them), so conditioning on $A$ perturbs the law of $W$ by an amount that depends on $\sigma$.
+
+Define the \emph{selective type-I error} of a rule $\phi$ as $\E_{\rho=\Theta,\sigma}[\phi\mid A]$, following \citet{fithian2014}.
+
+\begin{proposition}[Selective inflation, with supremum at the switch]\label{prop:selective}
+Consider the exactly-similar unconditional test of Lemma~\ref{lem:invariance} applied on $A$. Its selective type-I error at a scaled-boundary product ($\Delta=\sqrt{\Theta}\,\sigma$) satisfies
+\begin{equation}
+\E_{\rho=\Theta,\sigma}[\ind\{W<w_\alpha\}\mid s\ge c]\;>\;\alpha \quad\text{for } \sigma \text{ near } c,
+\qquad \longrightarrow\ \alpha \ \text{ as } \sigma\to\infty .
+\end{equation}
+For the mixed procedure evaluated at the applicable regulatory boundary, the type-I error, as a function of the true $\sigma$, increases on the ABE branch to a left-limit at the switch $c$, jumps down at $c$, and is $\le\alpha$ above $c$; hence
+\[
+\sup_{\sigma}\ \mathrm{TIE}(\sigma) \;=\; \lim_{\sigma\uparrow c}\mathrm{TIE}(\sigma).
+\]
+\end{proposition}
+
+The mechanism is a selection effect: a boundary product with true variability just below $c$ is pushed into the more permissive scaled branch precisely when its estimate $s$ realizes above $c$, and $\Pr(s\ge c\mid\sigma)$ increases as $\sigma\uparrow c$. Numerically, in a full-replicate design with $n=34$ ($\nu=32$), the unconditional test of Lemma~\ref{lem:invariance} --- which has \emph{unconditional} size $0.0500$ --- has selective type-I error $0.084$ at $CV_{wR}=30\%$, decaying to $0.050$ by $CV_{wR}=45\%$. Figure~\ref{fig:tie} shows the mixed-procedure type-I curve with the left-limit supremum and the downward jump; the current procedure controls the unconditional but not the selective error.
+
+\begin{lemma}[Selective control implies marginal control]\label{lem:selmarg}
+Suppose the mixed procedure applies a test $\phi_A$ on the selection event $A=\{s\ge c\}$ and a test $\phi_{A^c}$ on its complement. If each branch is selectively level-$\alpha$ under the null --- $\E_\theta[\phi_A\mid A]\le\alpha$ and $\E_\theta[\phi_{A^c}\mid A^c]\le\alpha$ for every null $\theta$ --- then the marginal (unconditional) type-I error is controlled at $\alpha$:
+\[
+\E_\theta[\phi]=\Pr_\theta(A)\,\E_\theta[\phi_A\mid A]+\Pr_\theta(A^c)\,\E_\theta[\phi_{A^c}\mid A^c]\;\le\;\alpha .
+\]
+The converse fails: marginal control at $\alpha$ permits a liberal branch offset by a conservative one --- a branch-specific inflation that selective control forbids.
+\end{lemma}
+
+\begin{proof}
+By the law of total probability, and $\Pr_\theta(A)+\Pr_\theta(A^c)=1$.
+\end{proof}
+
+Lemma~\ref{lem:selmarg} answers the natural objection that a regulator cares about the marginal false-approval rate rather than the selective one. Controlling the selective error is \emph{sufficient} for marginal control, so nothing is lost by targeting it; it additionally forbids the branch-specific inflation that marginal control alone tolerates, and it is the honest error rate for a product judged by the branch its own variance estimate selected \citep{fithian2014}. Selective control is therefore the correct, and strictly more protective, target.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.86\textwidth]{rsabe_tie_curve.png}
+\caption{Exact type-I error of the mixed RSABE procedure ($n=34$, exactly-calibrated branch tests). Type-I error rises on the ABE branch to a left-limit at the $30\%$ switch and drops discontinuously to control above it. The supremum is the left-limit, not an interior maximum.}
+\label{fig:tie}
+\end{figure}
+
+\section{Reference-scaling destroys completeness}\label{sec:incomplete}
+
+The escape hatch from a composite nuisance ($\sigma$) to an optimal test is the Neyman structure: condition on a complete sufficient statistic for the nuisance under the null, and build the optimal test in the resulting nuisance-free conditional family \citep[Ch.~4]{lehmann2005}. This is exactly the route that yields the good fixed-limit tests of \citet{bhm1997} and \citet{bergerhsu1996}. We show it is unavailable under scaling.
+
+\begin{theorem}[Incompleteness of the scaled null]\label{thm:incomplete}
+Under $H_0:\rho=\Theta$ (equivalently $\Delta=\sqrt{\Theta}\,\sigma$), the family \eqref{eq:model} is a curved exponential family with minimal sufficient statistic
+\[
+(T_1,T_2)\;=\;\Big(\Dhat,\ \ \tfrac{\Dhat^2}{\tau}+\nu s^2\Big),
+\]
+and it is \emph{incomplete}. Indeed
+\begin{equation}
+g \;=\; \frac{T_1^2}{\Theta+\tau} \;-\; \frac{T_2}{\Theta/\tau + 1 + \nu}
+\end{equation}
+satisfies $\E_\sigma[g]=0$ for all $\sigma>0$ while $g\not\equiv 0$.
+\end{theorem}
+
+\begin{proof}
+Writing the log density under $H_0$ collects to
+$
+\frac{\sqrt{\Theta}}{\tau}\,\frac{\Dhat}{\sigma}
+-\frac{1}{2\sigma^2}\big(\tfrac{\Dhat^2}{\tau}+\nu s^2\big)+\text{const},
+$
+so $(T_1,T_2)$ is minimal sufficient, with natural parameters $\zeta_1=\sqrt{\Theta}/(\tau\sigma)$ and $\zeta_2=-1/(2\sigma^2)$ satisfying $\zeta_2=-\tfrac{\tau^2}{2\Theta}\zeta_1^2$; the parameter set is a parabola --- a curved (one-dimensional) family in a two-dimensional exponential family. For the zero-expectation identity, $\E_\sigma[T_1^2]=\Delta^2+\tau\sigma^2=(\Theta+\tau)\sigma^2$ and $\E_\sigma[T_2]=(\Theta+\tau)\sigma^2/\tau+\nu\sigma^2=(\Theta/\tau+1+\nu)\sigma^2$; hence $\E_\sigma[g]=\sigma^2-\sigma^2=0$ for all $\sigma$. Since $g$ is a nonconstant function of the data, completeness fails.
+\end{proof}
+
+\begin{remark}[Contrast with fixed-limit bioequivalence]\label{rem:fixed}
+For the fixed-limit null $\Delta=\delta_0$ (with $\delta_0$ \emph{known}), the residual $\Dhat-\delta_0$ is computable, and
+\[
+V \;=\; \frac{(\Dhat-\delta_0)^2}{\tau} + \nu s^2 \;\sim\; \sigma^2\,\chi^2_{\nu+1}
+\]
+is a \emph{single, complete} scale statistic. Completeness is exactly what supports the (near-)optimal conditional tests of \citet{bhm1997} and \citet{bergerhsu1996}. Reference-scaling replaces $\delta_0$ by the unknown $\sqrt{\Theta}\,\sigma$; the residual is no longer computable, the two natural statistics no longer collapse to one, and completeness is lost. Scaling, and only scaling, is responsible.
+\end{remark}
+
+\section{A maximin-optimal invariant test}\label{sec:optimal}
+
+Theorem~\ref{thm:incomplete} closes the completeness-based route to an optimal test. We show that optimality is nevertheless available through \emph{invariance}, and that the regulatory procedure has simply been using the wrong statistic.
+
+The scale group $G$ of Section~\ref{sec:invariance}, together with the sign symmetry $\Dhat\mapsto-\Dhat$, is amenable, and the maximal invariant $W=\Dhat^2/(\tau s^2)$ has monotone likelihood ratio in $\rho$ (Lemma~\ref{lem:invariance}). The noncentral-$F$ test $\{W<w_\alpha\}$ is therefore UMP \emph{invariant}; it is also exactly similar and unbiased. The question is whether it is optimal among \emph{all} similar tests, not merely invariant ones.
+
+\begin{theorem}[Maximin optimality of the $F$-test]\label{thm:maximin}
+Let $G$ be the group generated by the scale maps $(\Dhat,s)\mapsto(a\Dhat,as)$, $a>0$, and the sign change $\Dhat\mapsto-\Dhat$. For the selection-free scaled problem \eqref{eq:hyp} under \textnormal{(A1)--(A3)}:
+\begin{enumerate}
+\item[(a)] The test $\phi_F=\ind\{W<w_\alpha\}$ of Lemma~\ref{lem:invariance} is UMP among $G$-invariant tests, and is exactly similar.
+\item[(b)] Its power depends on $(\Delta,\sigma)$ only through $\rho=\Delta^2/\sigma^2$; in particular it is \emph{constant in $\sigma$} on each alternative slice $\{\rho=\rho_1\}$.
+\item[(c)] $G$ is amenable, and consequently, by the Hunt--Stein theorem, $\phi_F$ is \emph{maximin among all tests} (invariant or not): for every $\rho_1<\Theta$ it maximizes
+$\inf\{\,\E_{\Delta,\sigma}[\phi] : \Delta^2/\sigma^2=\rho_1\,\}$
+over all level-$\alpha$ tests $\phi$. Since $\phi_F$ does not depend on $\rho_1$, it is simultaneously maximin for every alternative slice.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(a) The problem is invariant under $G$: the hypotheses \eqref{eq:hyp} are functions of $\rho$, which is $G$-invariant, and the model \eqref{eq:model} is equivariant. Any $G$-invariant test is a function of the maximal invariant $W=\Dhat^2/(\tau s^2)$, whose law is $F'_{1,\nu}(\rho/\tau)$ (Lemma~\ref{lem:invariance}), depending on the parameters only through $\rho$. The noncentral $F$ family has monotone likelihood ratio in $W$ with respect to its noncentrality \citep[Ch.~3]{lehmann2005}; hence rejecting for small $W$ is UMP for the one-sided problem in $\rho$ among functions of $W$, i.e.\ UMP invariant. Exact similarity follows from the $\sigma$-free null law of $W$ at $\rho=\Theta$.
+
+(b) Immediate from the law of $W$ in (a).
+
+(c) $G$ is the semidirect product of the multiplicative group $(\R_{>0},\times)$ --- abelian, hence amenable --- with the two-element sign group, which is finite; an extension of an amenable group by an amenable group is amenable, so $G$ is amenable. The Hunt--Stein theorem \citep[Thm.~8.5.1]{lehmann2005} then states that for an amenable group there exists a maximin test that is $G$-invariant, and that a UMP invariant test, when it exists, is maximin among all level-$\alpha$ tests. Apply (a).
+\end{proof}
+
+\begin{proposition}[Not UMP-unbiased]\label{res:umpu}
+The test $\phi_F$ is nevertheless \emph{not} UMP-unbiased: at small $\nu$ there exist boundary-similar tests with strictly greater power against particular alternatives.
+\end{proposition}
+
+\noindent\emph{The optimality gap, characterized.} An unbiased test is similar on the boundary, so the question is whether any boundary-similar test out-powers the $F$-test. Perturb its rejection region $\{W<w_\alpha\}$ to $\{W<w_\alpha+t\,r(s)\}$ by a bounded scale-modulation $r$, and let
+\[
+\kappa(s;\sigma)\;=\;f_{W\mid s}(w_\alpha\mid s;\sigma)\,f_s(s;\sigma)
+\]
+denote the \emph{boundary-crossing density} at $\sigma$, with $\kappa_1$ the same quantity under an alternative $\theta_1$. To first order in $t$:
+\begin{itemize}
+\item \emph{Size.} The size at true $\sigma$ changes by $t\!\int r(s)\,\kappa(s;\sigma)\,ds$. Similarity is therefore preserved precisely when
+$\int r\,\kappa(\cdot;\sigma)=0$ for every $\sigma>0$.
+\item \emph{Power.} The power against $\theta_1$ changes by $t\!\int r\,\kappa_1$.
+\item \emph{Consequence.} The $F$-test is locally most powerful among similar tests against $\theta_1$ if and only if no $r$ satisfies both --- that is, iff
+\[
+\kappa_1 \;\in\; \overline{\operatorname{span}}\{\kappa(\cdot;\sigma):\sigma>0\}.
+\]
+\end{itemize}
+When the null family is complete this span is exhaustive and the condition holds automatically. The incompleteness of Theorem~\ref{thm:incomplete} is precisely what can leave the span deficient, admitting a similarity-preserving direction $r$ that raises power --- which is the structural origin of the gap measured below.
+
+Whether such a direction exists is a finite-$\nu$ question, which we settle numerically: solving $\max_{0\le\phi\le1}\E_{\theta_1}[\phi]$ subject to $\E_{\Theta,\sigma_j}[\phi]=\alpha\ (j=1,\dots,m)$ on a fine sample-space discretization, densifying the constraints to convergence and verifying out-of-sample similarity on an independent grid. The deficiency, and hence the efficiency gap, is confined to very small samples and vanishes rapidly (Table~\ref{tab:gap}): at $\nu=6$ a genuinely similar test beats the $F$-test by $0.41$ percentage points; by $\nu=12$ the gap is $0.008$ points; by $\nu\ge20$ it is below numerical resolution. For every design of practical interest ($\nu\ge20$), the $F$-test is UMP-unbiased to numerical precision.
+
+\begin{table}[t]
+\centering
+\caption{Efficiency gap of the $F$-test: excess power (percentage points) of the best boundary-similar test over the $F$-test, against a mid-range alternative, by reference degrees of freedom, with out-of-sample similarity maintained. Real at very small $\nu$, negligible for realistic designs.}
+\label{tab:gap}
+\begin{tabular}{lcccc}
+\toprule
+subjects $n$ & $8$ & $14$ & $22$ & $34$ \\
+ref.\ d.f.\ $\nu$ & $6$ & $12$ & $20$ & $32$ \\
+gap (pp) & $0.41$ & $0.008$ & $<0.001$ & $<0.001$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\emph{Reconciling maximin optimality with non-UMP-unbiasedness.} Theorem~\ref{thm:maximin}(c) and Proposition~\ref{res:umpu} are not in tension, and together they say something sharper than either alone. A test that out-powers $\phi_F$ against one alternative \emph{point} must, by Theorem~\ref{thm:maximin}(c), be worse somewhere else on that alternative's slice: its local gain is purchased, not free. This is exactly what we observe. Taking the boundary-similar test that beats $\phi_F$ at $\nu=6$ (excess $+0.0041$ at $\sigma=0.30$ on the slice $\rho=\tfrac12\Theta$) and evaluating it along the whole slice, its power rises by about $+0.004$ for $\sigma\lesssim 0.45$ but falls away sharply thereafter, to $0.129$ at $\sigma=0.80$ --- against $\phi_F$'s power, which is flat at $0.170$--$0.173$ across the entire slice, as Theorem~\ref{thm:maximin}(b) requires. The worst-case powers are $0.171$ for $\phi_F$ and $0.129$ for the competitor: a maximin advantage of $+0.042$ to $\phi_F$. Across designs and alternatives ($n\in\{8,12,14\}$, $\rho_1/\Theta\in\{0.3,0.5,0.7\}$) the $F$-test's worst-case power exceeds the competitor's by $+0.009$ to $+0.100$, while its own power varies by less than $0.006$ along each slice (the residual being discretization).
+
+The practical reading is favourable to $\phi_F$. Its optimality is of the \emph{guaranteed} kind --- a floor on power that holds whatever the unknown $\sigma$ --- whereas the tests that beat it do so only if $\sigma$ happens to fall in a favourable range, and are punished if it does not. In a regulatory setting, where $\sigma$ is unknown and a sponsor must size a trial before seeing it, a maximin guarantee is the relevant optimality notion, and constancy of power in $\sigma$ (Theorem~\ref{thm:maximin}(b)) is precisely what makes the required sample size independent of the unknown variability --- the flat $n$ column observed in Table~\ref{tab:compare}.
+
+\begin{remark}[Invariance gives maximin optimality; incompleteness withholds UMP-unbiasedness]
+The classical Lehmann--Scheff\'e proof of UMP-unbiasedness conditions on a complete sufficient statistic for the nuisance, and is unavailable here by Theorem~\ref{thm:incomplete}. Invariance --- an amenable group with a maximal invariant of monotone likelihood ratio --- certifies UMP-\emph{invariance} (Lemma~\ref{lem:invariance}) but not UMP-unbiasedness, and the small residual efficiency gap above is the price of incompleteness: a non-invariant similar test can extract marginally more power at small $\nu$. Thus reference-scaling admits \emph{no} clean uniformly-optimal unbiased test --- consistent with \citet{bhm1997}, who reached only ``nearly unbiased'' on the strictly easier \emph{complete} fixed-limit problem. What it does admit is the elementary, exactly-similar, maximin-optimal test $\{W<w_\alpha\}$, which does not appear to have been identified in the applied literature, which works with the non-similar Hyslop linearization rather than the invariant statistic $W$. For practice the distinction is immaterial: the $F$-test is exactly similar and maximin (Theorem~\ref{thm:maximin}), whereas the deployed procedure is neither similar (Proposition~\ref{prop:selective}) nor maximin.
+\end{remark}
+
+\begin{remark}[With the selection]
+Whether an optimal test survives the switch is a separate and more delicate question: the selection $\{s\ge c\}$ destroys the scale invariance behind Proposition~\ref{res:umpu}, so the clean argument no longer applies. In our computations any advantage of alternative-specific selective tests over the selectively-similar analogue of the $F$-test lies at the grid-noise floor, leaving the selective UMP-unbiased question unresolved. In any event the switch breaks similarity (Proposition~\ref{prop:selective}), which is what a-priori classification (Section~\ref{sec:categories}) repairs.
+\end{remark}
+
+\section{Practical consequence: a selective correction}\label{sec:practical}
+
+When a data-dependent switch is retained --- for instance because an a-priori classification (Section~\ref{sec:categories}) is unavailable and the scaled procedure must be triggered by the study's own variance estimate --- a size-restoring correction is required, and the practical question is how to \emph{allocate} its power penalty. The incumbent correction adjusts the significance level uniformly across the scaled branch \citep{molins2017, ocana2019}; because the leak is localized near the switch, this over-penalizes genuine HVDs. The selective-inference viewpoint suggests instead tightening where the selection bites --- at variance estimates near $c$ --- and relaxing for large $s$, which is where genuine HVDs concentrate.
+
+In a full-replicate simulation with estimated variances reproducing the literature's type-I inflation, a localized (selective) correction and the uniform incumbent, matched on size, cross: the localized correction is modestly less powerful just above the switch ($CV_{wR}\approx 32$--$35\%$) and modestly more powerful for genuine HVDs ($CV_{wR}\ge 45\%$, by $\sim\!1$--$2$ percentage points; Figure~\ref{fig:power}). The gain is real, in the predicted direction, and concentrated on the target population, but modest --- the penalty is intrinsic to retaining a data-dependent switch. This is the sense in which the selective correction is a \emph{fallback} rather than a solution: it redistributes an unavoidable cost, but does not remove its cause. The cause is the switch itself, and the next section takes the alternative route of removing it.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.86\textwidth]{rsabe_power_tradeoff.png}
+\caption{Size-matched power (probability of accepting a truly bioequivalent product) for the uniform incumbent versus a localized selective correction. The selective correction redistributes the unavoidable penalty off genuine high-variability drugs and onto near-switch drugs.}
+\label{fig:power}
+\end{figure}
+
+\section{A taxonomy of category-optimal tests}\label{sec:categories}
+
+The exactly-similar, maximin-optimal invariant test of Theorem~\ref{thm:maximin} is available only when there is no data-dependent switch. The switch reintroduces a variance-dependent selection whose effect --- inflated selective type-I error (Proposition~\ref{prop:selective}) and broken similarity --- is confined to a bounded band of variabilities straddling $c$; outside that band the procedure is effectively switch-free and the clean optimal test is recovered. This section makes the band precise, and identifies the design change that removes the switch altogether.
+
+\subsection{The transition band}
+Define the pathological band as the set of true variabilities at which the mixed procedure's type-I error departs from nominal by more than a tolerance $\varepsilon$:
+\[
+\mathcal{B}_\varepsilon \;=\; \{\sigma:\ \mathrm{TIE}(\sigma) > \alpha+\varepsilon\}.
+\]
+Numerically (Table~\ref{tab:band}, $\varepsilon=0.005$), $\mathcal{B}_\varepsilon$ is a bounded interval straddling the $30\%$ switch, spanning roughly $CV_{wR}\in[21\%,36\%]$ for a full-replicate design with $n=34$, and \emph{narrowing} as the reference degrees of freedom grow (to $[25\%,34\%]$ at $n=72$), since a sharper variance estimate localizes the selection. Outside $\mathcal{B}_\varepsilon$ the procedure controls type-I within $\varepsilon$ of nominal, and clean category-optimal tests are available.
+
+\begin{table}[t]
+\centering
+\caption{Pathological transition band $\mathcal{B}_{0.005}$ (mixed-procedure type-I error exceeding $\alpha+0.005$), by reference degrees of freedom. The band straddles the $30\%$ switch and narrows with $n$.}
+\label{tab:band}
+\begin{tabular}{ccccc}
+\toprule
+$n$ & $\nu$ & lower $CV_{wR}$ & switch & upper $CV_{wR}$ \\
+\midrule
+34 & 32 & $21\%$ & $30\%$ & $36\%$ \\
+48 & 46 & $24\%$ & $30\%$ & $35\%$ \\
+72 & 70 & $25\%$ & $30\%$ & $34\%$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{A-priori classification dissolves the selection}
+The inflation of Proposition~\ref{prop:selective} is caused specifically by triggering the scaled test on $A=\{s\ge c\}$, a function of the \emph{current study's own} variance estimate. If instead the choice of test is made from information external to the study, there is no selection and no inflation.
+
+\begin{proposition}[A-priori classification removes the selection]\label{prop:apriori}
+Let $Z$ be classification information (prior studies, pharmacology) with $Z\perp(\Dhat,s^2)$, and suppose the scaled test of Lemma~\ref{lem:invariance} is applied on the a-priori event $\{Z\in\mathcal{H}\}$ rather than on $\{s\ge c\}$. Then for every $\sigma>0$,
+\[
+\E_{\rho=\Theta,\sigma}\big[\ind\{W<w_\alpha\}\,\big|\,Z\in\mathcal{H}\big]\;=\;\alpha .
+\]
+The selective inflation does not occur.
+\end{proposition}
+
+\begin{proof}
+By independence, the conditional law of $(\Dhat,s^2)$ given $\{Z\in\mathcal{H}\}$ equals its unconditional law; apply Lemma~\ref{lem:invariance}.
+\end{proof}
+
+The contrast with the regulatory procedure is exact: the switch conditions on $\{s\ge c\}$, which is \emph{not} independent of the test statistics, and that dependence is the entire source of the anomaly. Independence --- restored by moving the classification outside the study --- is what Proposition~\ref{prop:apriori} exploits.
+
+\paragraph{Relation to widened-limit proposals.} Relaxing the bioequivalence limits for highly variable drugs is not a new idea; it has been pursued in two forms. The \emph{categorical} form pre-classifies a drug as highly variable from prior knowledge and applies wider, fixed limits \citep{boddy1995}. The \emph{continuous} form scales the limits as a function of the study's \emph{observed} within-subject variability \citep{karalis2004, karalis2005}, of which RSABE and ABEL are the regulatory instances. Proposition~\ref{prop:apriori} sharpens why the distinction matters: continuous, data-dependent scaling conditions on the study's own variance estimate and therefore inflates the selective type-I error (Proposition~\ref{prop:selective}), whereas categorical, a-priori widening conditions only on external information and does not. The contribution here is thus not the proposal to widen limits, but the selective-inference argument for \emph{how} to widen them --- a priori rather than per study --- together with the identification of the exactly-similar, maximin-optimal test (Lemma~\ref{lem:invariance}, Theorem~\ref{thm:maximin}) to apply once the data-dependent switch is removed.
+
+\subsection{Three categories, three optimal tests}
+Pre-classifying the drug into a variability category from external evidence, and then running that category's designated test \emph{unconditionally}, yields:
+\begin{itemize}
+\item[\textbf{L}] \emph{A-priori low variability.} The fixed-limit null is complete (Remark~\ref{rem:fixed}); the (near-)optimal unbiased tests of \citet{bhm1997} and \citet{bergerhsu1996} apply, with TOST \citep{schuirmann1987} as the standard conservative choice.
+\item[\textbf{H}] \emph{A-priori highly variable.} The scaled test of Lemma~\ref{lem:invariance} applied unconditionally is exactly similar (size $\alpha$ for every $\sigma$), UMP-invariant, and maximin among all tests (Theorem~\ref{thm:maximin}). No switch, no selection, no inflation.
+\item[\textbf{T}] \emph{A-priori uncertain (within $\mathcal{B}_\varepsilon$).} No optimum exists; the approximately-similar selective correction of Section~\ref{sec:practical} is used, and additional external evidence is warranted to resolve the classification.
+\end{itemize}
+
+\subsection{The organizing principle}
+A-priori classification is thus not merely a device for controlling size: it restores the exactly-similar, maximin-optimal invariant test (Theorem~\ref{thm:maximin}) that the per-study switch destroys. The switch is the sole villain --- it inflates the selective type-I error (Proposition~\ref{prop:selective}) and breaks the optimal test's similarity --- and external classification removes it. Where classification is genuinely uncertain (within the band $\mathcal{B}_\varepsilon$), no such clean optimum is available and the approximately-similar selective correction of Section~\ref{sec:practical} is the fallback.
+
+Two caveats are essential. First, the classification must be genuinely external: categorizing by the \emph{current} study's observed $CV_{wR}$ merely recreates the selection recursively, reintroducing the inflation of Proposition~\ref{prop:selective}. Second, misclassification is primarily a \emph{power} concern, not a consumer-risk one: in category~H the scaled test is size-$\alpha$ for every $\sigma$ by Lemma~\ref{lem:invariance} (so a misclassified low-variability drug is tested against a narrower, hence conservative, limit), and in category~L the fixed test is size-valid regardless; the cost of error is borne as reduced power, controllable through the quality of the a-priori classification.
+
+\section{Benchmark against the deployed procedures}\label{sec:benchmark}
+
+We benchmark the recommended test --- the noncentral-$F$ test of Lemma~\ref{lem:invariance} under a-priori HVD classification --- against FDA RSABE (Hyslop) and EMA ABEL, on consumer risk and the sample size required for $80\%$ power at an assumed geometric mean ratio $\mathrm{GMR}=1.05$. We report two designs: an idealized full-replicate design with equal within-subject variances, and a realistic partial-replicate design (TRR/RTR/RRT) with the test drug more variable than the reference ($\sigma_{wT}/\sigma_{wR}=1.5$). FDA/EMA quantities are Monte-Carlo; $F$-test quantities are exact (noncentral $F$) and Monte-Carlo-confirmed. Table~\ref{tab:compare} collects the results; sample-size entries span $CV_{wR}=40$--$60\%$.
+
+\begin{table}[t]
+\centering
+\caption{Consumer risk and sample size ($80\%$ power, $\mathrm{GMR}=1.05$) for a full-replicate design (equal within-subject variances) and a realistic partial-replicate design ($\sigma_{wT}/\sigma_{wR}=1.5$). The $F$-test controls the consumer risk --- exactly (full replicate) or by guaranteed construction under a conservative variance-ratio bound (partial replicate) --- and requires substantially fewer subjects than the size-corrected incumbents. Simulated entries use $N\ge 1.5\times10^5$ Monte-Carlo replicates with common random numbers; standard errors are $\le 0.001$ on all rates, and all figures are reproducible from a single seeded driver.}
+\label{tab:compare}
+\begin{tabular}{lcccc}
+\toprule
+ & \multicolumn{2}{c}{Full replicate (equal var.)} & \multicolumn{2}{c}{Partial replicate ($\sigma_{wT}/\sigma_{wR}{=}1.5$)} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+Method & max type-I & $n$ ($80\%$) & max type-I & $n$ ($80\%$) \\
+\midrule
+FDA RSABE, as deployed & $0.136$ & --- & $0.104$ & --- \\
+EMA ABEL, as deployed & $0.074$ & --- & $0.067$ & --- \\
+FDA RSABE, size-corrected & $0.050$ & $28$ & $0.050$ & $60$ \\
+EMA ABEL, size-corrected & $0.050$ & $26$ & $0.050$ & $56$ \\
+\textbf{$F$-test (a-priori HVD)} & $\mathbf{0.050}$ & $\mathbf{14}$ & $\le\mathbf{0.051}$ & $\mathbf{44}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\emph{Full replicate.} Both within-subject variances are estimable, the $F$-test is exactly similar, and it requires $n=14$ against $28$ and $26$ for the size-corrected FDA and EMA procedures --- roughly half as many subjects, uniformly across variability (a direct consequence of scale invariance) --- while the deployed FDA and EMA procedures inflate the consumer risk to $0.136$ and $0.074$.
+
+\emph{Partial replicate.} Here $\sigma_{wT}$ is not estimable, so the reference-scaled statistic's null distribution depends on an \emph{assumed} variance ratio, and the $F$-test's exact similarity is contingent on that assumption: underestimating the ratio inflates its type-I (to $0.108$ if one assumes equal variances when the true ratio is $1.5$ --- no better than the incumbent). This sensitivity is removed by assuming a conservative \emph{upper bound} on the ratio, which guarantees size control (type-I $\le 0.051$ for every true ratio up to the bound) at the cost of some power. The resulting ratio-free, deployable $F$-test controls the consumer risk by construction and requires $n\approx 44$ against $60$ (FDA) and $56$ (EMA) for the size-corrected incumbents --- about $27\%$ and $21\%$ fewer subjects. When the ratio is known (for instance from a full-replicate first stage), this sharpens toward $n\approx 33$, roughly half. The EMA procedure, whose inflation is milder, is the tougher comparator on sample size.
+
+\emph{The cost of conservative bounding, quantified.} Table~\ref{tab:ratiocost} makes the price of the conservative bound explicit in the currency that matters, subjects. Writing $r=\sigma_{wT}/\sigma_{wR}$ for the true ratio and $r_B$ for the assumed upper bound, the $F$-test's cutoff uses $\tau(r_B)$ while the data are generated under $\tau(r)$. Two facts emerge. First, the bound is genuinely protective only when it is a bound: if $r_B<r$ the type-I error is violated (reaching $0.097$ at $r=2.0$ under $r_B=1.5$), so $r_B$ must be chosen defensibly, not optimistically. Second, when it is a valid bound the cost is a strictly conservative type-I error and a finite, monotone excess in sample size: bounding at $r_B=2.0$ costs $+16$ subjects if the truth is $r=1.0$, $+10$ if $r=1.5$, and nothing if $r=2.0$; bounding at $r_B=1.5$ costs $+6$, $+4$, and $0$ over the range where it is valid. The penalty shrinks to zero as the truth approaches the bound, and is bounded above by the gap between the oracle and bounded designs. Even at its worst ($r=1.0$, $r_B=2.0$: $n=36$ against an oracle $20$), the bounded $F$-test still requires fewer subjects than the size-corrected FDA procedure at the same design ($n=60$). The conservative bound is therefore costly but not prohibitive, and it never forfeits the comparison against the incumbents.
+
+\begin{table}[t]
+\centering
+\caption{Cost of conservative variance-ratio bounding in the partial-replicate design. $n_{80}$ is the sample size for $80\%$ power ($\mathrm{GMR}=1.05$, $CV_{wR}=50\%$); TIE is the type-I error at that size. ``Oracle'' uses the true ratio. Entries marked \textsc{invalid} are cases where the assumed $r_B$ is not an upper bound and the type-I error is consequently violated.}
+\label{tab:ratiocost}
+\begin{tabular}{ccccccccc}
+\toprule
+ & \multicolumn{2}{c}{Oracle ($r_B=r$)} & \multicolumn{3}{c}{Bound $r_B=1.5$} & \multicolumn{3}{c}{Bound $r_B=2.0$} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-6}\cmidrule(lr){7-9}
+true $r$ & $n_{80}$ & TIE & $n_{80}$ & TIE & excess & $n_{80}$ & TIE & excess \\
+\midrule
+$1.00$ & $20$ & $0.050$ & $26$ & $0.014$ & $+6$  & $36$ & $0.002$ & $+16$ \\
+$1.25$ & $26$ & $0.050$ & $30$ & $0.029$ & $+4$  & $40$ & $0.008$ & $+14$ \\
+$1.50$ & $34$ & $0.050$ & $34$ & $0.050$ & $0$   & $44$ & $0.018$ & $+10$ \\
+$1.75$ & $42$ & $0.050$ & \multicolumn{3}{c}{\textsc{invalid} (TIE $0.073$)} & $48$ & $0.033$ & $+6$ \\
+$2.00$ & $52$ & $0.050$ & \multicolumn{3}{c}{\textsc{invalid} (TIE $0.097$)} & $52$ & $0.050$ & $0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\emph{Summary.} Across both designs the $F$-test is safer --- controlling, exactly or by guaranteed construction, the consumer risk that the incumbents inflate to $0.07$--$0.14$ --- and smaller, by roughly $20$--$50\%$ depending on design, comparator, and variance-ratio knowledge (largest against FDA in the full-replicate design, smallest against EMA in the partial-replicate design). The advantage combines exact (or guaranteed) similarity with the absence of the incumbents' significance-level adjustment; the point-estimate constraint does not bind at $\mathrm{GMR}=1.05$ (verified), so it does not confound the comparison. The principal limitation is the partial-replicate ratio dependence, quantified in Table~\ref{tab:ratiocost}. We do not regard ``this is inherent to reference-scaling'' as an adequate defence: the $F$-test's exactness is contingent on $\tau$, and in the most common real-world design $\tau$ is not known. What Table~\ref{tab:ratiocost} establishes is the weaker but sufficient claim --- that the contingency can be discharged at a bounded, quantified cost in subjects, and that the bounded test still dominates the incumbents. When a-priori classification is unavailable and the switch must be retained, the selective correction of Section~\ref{sec:practical} is the fallback.
+
+\section{Assumption sensitivity, robustness, and implementation}\label{sec:limitations}
+
+\paragraph{Which assumption is load-bearing.} The invariance argument of Lemma~\ref{lem:invariance}, and hence exact similarity, rests on the maximal invariant $W=\Dhat^2/(\tau s^2)$ having a $\sigma$-free null law. This requires (A1)--(A3). Of these, (A3) --- a known design constant $\tau$ --- is the one that fails in practice, and it fails in a specific, quantifiable way: in a partial-replicate design $\sigma_{wT}$ is not estimable, $\tau$ depends on the unknown ratio $\sigma_{wT}/\sigma_{wR}$, and the $F$-test's similarity is contingent on the assumed ratio. Section~\ref{sec:benchmark} quantifies this: underestimating the ratio inflates the type-I error (to $0.108$ if equal variances are assumed when the true ratio is $1.5$), while assuming a conservative \emph{upper bound} restores guaranteed size control at a power cost. We regard this as the principal practical caveat, and it is inherent to reference-scaling rather than to the $F$-test: the FDA and EMA procedures face the same unestimable ratio and handle it implicitly.
+
+\paragraph{Bias in the variance estimate.} If $s^2$ is biased for $\sigma^2_{wR}$ --- through model misspecification, carryover, or period effects --- the consequences differ by procedure, and not symmetrically. For the $F$-test, a multiplicative bias $s^2\to\lambda s^2$ rescales the invariant $W$ by $1/\lambda$ and therefore acts exactly like a misspecified $\tau$: it is absorbed as a shift in the effective design constant, and (as above) a conservative bound on $\lambda$ restores size control. For the switch-based procedures the same bias additionally \emph{moves the selection event}, since $\{s\ge c\}$ is not invariant under rescaling, changing which drugs are scaled at all. Bias is thus a nuisance for the invariant test but a compounding problem for the switch --- an argument in favour of removing the switch that is independent of our main results.
+
+\paragraph{Unequal variances, imbalance, missing data.} The benchmark of Section~\ref{sec:benchmark} already relaxes equal within-subject variances. Period imbalance and dropout perturb the degrees of freedom and the exactness of $\Dhat\perp s^2$; we expect the invariant test to degrade gracefully (its null law depends on the data only through $W$, whose distribution is stable under moderate df misspecification), but we have not verified this, and a simulation study under realistic dropout is a necessary precursor to any regulatory use.
+
+\paragraph{Optimality under what loss.} We use the classical Neyman--Pearson formulation: control the consumer risk (type-I error) at $\alpha$ and maximize power. This is the loss implicit in the regulatory framework, where the consumer risk is a hard constraint rather than a term to be traded off. A decision-theoretic treatment with an explicit loss over consumer and producer risk --- or a Bayesian selective-inference formulation, in which the switch would be handled by integration rather than conditioning --- would be a natural complement to the analysis given here, and we do not pursue either.
+
+\paragraph{Implementation of a-priori classification.} Proposition~\ref{prop:apriori} requires classification information $Z$ independent of the current study's $(\Dhat,s^2)$; it is silent on where $Z$ comes from, and the practical questions are substantial. Who maintains the classification, and on what evidence --- prior replicate studies, innovator data, a public registry of reference variabilities? How often is it revised, and does revision on accumulated data eventually recreate a (slower, cross-study) selection? What confidence is required before a drug enters category~H, and what happens to drugs near the boundary of the transition band $\mathcal{B}_\varepsilon$ (Table~\ref{tab:band}), for which no clean optimum exists? We note only that misclassification is primarily a power concern rather than a consumer-risk one (Section~\ref{sec:categories}), which makes a conservative classification policy safe if inefficient, and that these questions are precisely the sort that ICH M13C is positioned to settle. We do not claim to settle them here.
+
+\paragraph{Does a-priori classification merely displace the selection?} A serious objection: if the classification $Z$ is seeded from historical trials, those trials are themselves subject to sampling variance, so a registry may look like a larger, slower, cross-study version of the switch we removed. The objection is partly right and deserves a precise answer. Proposition~\ref{prop:apriori} requires only $Z\perp(\Dhat,s^2)$ --- independence from \emph{the current study's} statistics --- and this holds whenever $Z$ is built from disjoint prior data, regardless of how noisy that prior data is. Noise in $Z$ therefore does not reintroduce the selective inflation; it causes \emph{misclassification}, which is a different failure with different consequences (below). The inflation of Proposition~\ref{prop:selective} arises specifically because the switch conditions on the same $s^2$ that then enters the test statistic, and that coupling is severed by construction under a disjoint registry.
+
+Two caveats keep this from being a complete answer. If a registry is updated using the very studies it adjudicates, the independence fails across time and a slow selection is indeed recreated; a registry must therefore be \emph{frozen} with respect to any study it classifies. And a systematically biased registry --- as opposed to a noisy one --- can misclassify a drug persistently rather than at random. Safeguards follow directly: freeze the classification before study conduct; version and date the registry; require a minimum evidence threshold (e.g.\ a stated number of prior reference-replicated studies) before a drug enters category~H; and audit the registry against accumulating data through studies excluded from the classifying set.
+
+\paragraph{The asymmetry of misclassification, and market access.} We said in Section~\ref{sec:categories} that misclassification is primarily a power concern rather than a consumer-risk one. That is correct as far as the Neyman--Pearson framework goes, and Table~\ref{tab:compare}'s logic confirms it: a drug wrongly placed in category~H faces the scaled $F$-test, which is size-$\alpha$ for every $\sigma$ (Lemma~\ref{lem:invariance}) and, at genuinely low variability, \emph{narrower} than the fixed limits (at $CV_{wR}=15\%$, $n=34$, the scaled half-width is $0.088$ against the fixed-limit $0.181$) --- hence conservative. But calling the converse error ``a power concern'' understates it. A genuine HVD wrongly held to narrow limits requires an impractically large trial, and a generic sponsor facing that cost may simply abandon the product. The resulting harm --- a drug that never reaches the market --- falls on the consumer as restricted access rather than as an unsafe approval, and it is invisible to a loss function that scores only type-I and type-II error at a fixed $n$. We flag this explicitly as a limitation of the framework rather than an accident of our exposition: a full treatment would require a loss over consumer risk, producer risk, \emph{and} access, and would likely favour an asymmetric classification policy (a low bar for entering category~H, a high bar for leaving it) rather than the symmetric one our analysis implicitly assumes.
+
+\paragraph{Drugs at the edge of the transition band.} Table~\ref{tab:band} localizes the pathology to a band $\mathcal{B}_\varepsilon$, but a drug whose external evidence places it at, say, $CV_{wR}=35.5\%$ sits near its upper edge, and a binary assignment there is hard to justify. We do not think the band edge should be a cliff. Because the type-I error of the mixed procedure varies continuously across the band, the natural policy is graded rather than binary: assign category~H only when the external evidence places the drug's variability above the band with a stated confidence; use the selective fallback of Section~\ref{sec:practical} inside the band; and, near the edges, require the additional prior evidence that would move the drug decisively out of the band. This converts a threshold problem into an evidence-sufficiency problem, which is the form regulators already handle elsewhere. We note the issue rather than resolve it.
+
+\paragraph{What would be required for regulatory adoption.} The present work characterizes a mechanism and proposes a principled replacement. It does not constitute a validation. Adoption would require, at minimum: large-scale simulation across the designs and variance structures actually encountered; retrospective replay on historical bioequivalence datasets, comparing decisions under the current and proposed procedures; an implementation and classification framework as above; and regulatory consultation. We regard the theoretical mechanism as settled and the replacement methodology as a candidate, not a finished instrument.
+
+\section{Discussion}\label{sec:discussion}
+
+We have recast reference-scaled bioequivalence as a selective-inference problem and traced its long-standing type-I anomaly to a specific structural cause. The scaled test is exactly similar unconditionally (Lemma~\ref{lem:invariance}); the variance-based switch is a selection event that breaks the underlying scale invariance and inflates the \emph{selective} type-I error (Proposition~\ref{prop:selective}). The scaled null is incomplete where the fixed-limit null is complete (Theorem~\ref{thm:incomplete}), which closes the classical Lehmann--Scheff\'e route to an optimal test; this is consistent with the reliance of subsequent methods on simulation calibration. An optimal test does exist, certified by invariance rather than completeness: the elementary noncentral-$F$ cutoff $\{W<w_\alpha\}$ is exactly similar, UMP-invariant, and maximin among all tests by Hunt--Stein (Theorem~\ref{thm:maximin}), with power --- and hence required sample size --- constant in the unknown variability. It is not UMP-unbiased (Proposition~\ref{res:umpu}): incompleteness permits a similar test to beat it against particular alternatives at small $\nu$, though only at the price of worse worst-case power. The relevant optimality notion for a regulator sizing a trial before the variability is known is precisely the maximin one, and by that criterion the $F$-test is optimal, not merely near-optimal. It does not appear to have been characterized in this form in the bioequivalence literature, which works with the Hyslop statistic --- neither similar nor maximin --- and re-imposes the switch per study.
+
+Two boundaries of the present work deserve emphasis. First, the positive optimality results (UMP-invariance and Hunt--Stein maximin optimality, Theorem~\ref{thm:maximin}) are proved, but the \emph{negative} result --- that the $F$-test is not UMP-unbiased (Proposition~\ref{res:umpu}) --- rests on a convergence- and out-of-sample-verified computation rather than a closed-form construction; a formal exhibition of a beating similar test, and an exact characterization of the efficiency loss, remain open. Second, the practical selective correction, while genuinely reallocating the penalty toward the population of interest, yields only a modest power improvement --- precisely because there is no optimum above it.
+
+The constructive resolution is the taxonomy of Section~\ref{sec:categories}. Because the anomaly is caused by conditioning on the study's own variance estimate, and is confined to a bounded transition band (Table~\ref{tab:band}), the principled remedy is to classify each drug into a variability category from external evidence and apply that category's designated test unconditionally (Proposition~\ref{prop:apriori}): the complete fixed-limit tests for low-variability drugs, the exactly-similar scaled test for established HVDs, and heightened scrutiny reserved for the genuinely borderline drugs inside the band. The regulatory framework already gropes toward this by distinguishing HVDs and narrow-therapeutic-index drugs, but it re-imposes the switch \emph{per study}, reintroducing the selection each time. The message for practice and for the ongoing ICH M13C harmonization \citep{ich_m13} is thus modest but principled: control the \emph{selective} type-I error; where a data-dependent switch is unavoidable, place its unavoidable penalty near the switch rather than across genuine HVDs; and where an a-priori classification is available, prefer it, because it removes the selection that causes the problem in the first place.
+
+\paragraph{Reproducibility.} All numerical results use elementary Gaussian, $\chi^2$, and (non-central) $F$ computations together with common-random-number Monte-Carlo simulation from a single seeded driver; every simulated quantity is reported with its Monte-Carlo standard error, and the driver regenerates all tables and figures.
+
+\bibliography{rsabe_selective}
+\begin{thebibliography}{99}
+\bibitem[Berger and Hsu(1996)]{bergerhsu1996} Berger, R.~L. and Hsu, J.~C. (1996). Bioequivalence trials, intersection--union tests and equivalence confidence sets. \emph{Statistical Science}, 11(4), 283--319.
+\bibitem[Boddy et al.(1995)]{boddy1995} Boddy, A.~W., Snikeris, F.~C., Kringle, R.~O., Wei, G.~C.~G., Oppermann, J.~A. and Midha, K.~K. (1995). An approach for widening the bioequivalence acceptance limits in the case of highly variable drugs. \emph{Pharmaceutical Research}, 12(12), 1865--1868. \texttt{doi:10.1023/A:1016219317744}.
+\bibitem[Brown et al.(1995)]{brown1995} Brown, L.~D., Casella, G. and Hwang, J.~T.~G. (1995). Optimal confidence sets, bioequivalence, and the lima\c{c}on of Pascal. \emph{Journal of the American Statistical Association}, 90, 880--889.
+\bibitem[Brown et al.(1997)]{bhm1997} Brown, L.~D., Hwang, J.~T.~G. and Munk, A. (1997). An unbiased test for the bioequivalence problem. \emph{The Annals of Statistics}, 25(6), 2345--2367.
+\bibitem[Davit et al.(2012)]{davit2012} Davit, B.~M. et al. (2012). Implementation of a reference-scaled average bioequivalence approach for highly variable generic drug products by the US FDA. \emph{The AAPS Journal}, 14(4), 915--924.
+\bibitem[Fithian et al.(2014)]{fithian2014} Fithian, W., Sun, D. and Taylor, J. (2014). Optimal inference after model selection. \emph{arXiv:1410.2597}.
+\bibitem[ICH(2025)]{ich_m13} International Council for Harmonisation (2025). \emph{M13 Bioequivalence for Immediate-Release Solid Oral Dosage Forms} (M13A in effect; M13C on highly variable and narrow-therapeutic-index drugs under development).
+\bibitem[Karalis et al.(2004)]{karalis2004} Karalis, V., Symillides, M. and Macheras, P. (2004). Novel scaled average bioequivalence limits based on GMR and variability considerations. \emph{Pharmaceutical Research}, 21(10), 1933--1942. \texttt{doi:10.1023/B:PHAM.0000045249.83899.ae}.
+\bibitem[Karalis et al.(2005)]{karalis2005} Karalis, V., Macheras, P. and Symillides, M. (2005). Geometric mean ratio-dependent scaled bioequivalence limits with leveling-off properties. \emph{European Journal of Pharmaceutical Sciences}, 26(1), 54--61. \texttt{doi:10.1016/j.ejps.2005.04.019}.
+\bibitem[Labes and Sch\"utz(2016)]{labes2016} Labes, D. and Sch\"utz, H. (2016). Inflation of type~I error in the evaluation of scaled average bioequivalence, and a method for its control. \emph{Pharmaceutical Research}, 33(11), 2805--2814.
+\bibitem[Lee et al.(2016)]{lee2016} Lee, J.~D., Sun, D.~L., Sun, Y. and Taylor, J.~E. (2016). Exact post-selection inference, with application to the lasso. \emph{The Annals of Statistics}, 44(3), 907--927.
+\bibitem[Taylor and Tibshirani(2015)]{taylor2015} Taylor, J. and Tibshirani, R.~J. (2015). Statistical learning and selective inference. \emph{Proceedings of the National Academy of Sciences}, 112(25), 7629--7634. \texttt{doi:10.1073/pnas.1507583112}.
+\bibitem[Lehmann and Romano(2005)]{lehmann2005} Lehmann, E.~L. and Romano, J.~P. (2005). \emph{Testing Statistical Hypotheses}, 3rd ed. Springer.
+\bibitem[Molins et al.(2017)]{molins2017} Molins, E., Cobo, E. and Oca\~na, J. (2017). Two-stage designs versus European scaled average designs in bioequivalence studies for highly variable drugs. \emph{Statistics in Medicine}, 36(30), 4777--4788.
+\bibitem[Mu\~noz et al.(2016)]{munoz2016} Mu\~noz, J., Alcaide, D. and Oca\~na, J. (2016). Consumer's risk in the EMA and FDA regulatory approaches for bioequivalence in highly variable drugs. \emph{Statistics in Medicine}, 35(12), 1933--1943.
+\bibitem[Mu\~noz et al.(2024)]{munoz2024} Mu\~noz, J., Oca\~na, J., Su\'arez, R. and Millap\'an, C. (2024). Scaled average bioequivalence methods for highly variable drugs: leveling-off soft limits and the EMA's 2010 guideline (some ways to improve its type~I error control). \emph{Statistics in Medicine}, 43(7), 1475--1488. \texttt{doi:10.1002/sim.10021}.
+\bibitem[Oca\~na and Mu\~noz(2019)]{ocana2019} Oca\~na, J. and Mu\~noz, J. (2019). Controlling type~I error in the reference-scaled bioequivalence evaluation of highly variable drugs. \emph{Pharmaceutical Statistics}, 18(5), 583--599.
+\bibitem[Schuirmann(1987)]{schuirmann1987} Schuirmann, D.~J. (1987). A comparison of the two one-sided tests procedure and the power approach for assessing the equivalence of average bioavailability. \emph{Journal of Pharmacokinetics and Biopharmaceutics}, 15(6), 657--680.
+\bibitem[T\'othfalusi and Endr\'enyi(2011)]{tothfalusi2011} T\'othfalusi, L. and Endr\'enyi, L. (2011). Sample sizes for designing bioequivalence studies for highly variable drugs. \emph{Journal of Pharmacy and Pharmaceutical Sciences}, 15(1), 73--84.
+\bibitem[T\'othfalusi and Endr\'enyi(2016)]{tothfalusi2017} T\'othfalusi, L. and Endr\'enyi, L. (2016). An exact procedure for the evaluation of reference-scaled average bioequivalence. \emph{The AAPS Journal}, 18(2), 476--489. \texttt{doi:10.1208/s12248-016-9873-6}.
+\bibitem[Wonnemann et al.(2015)]{wonnemann2015} Wonnemann, M., Fr\"omke, C. and Koch, A. (2015). Inflation of the type~I error: investigations on regulatory recommendations for bioequivalence of highly variable drugs. \emph{Pharmaceutical Research}, 32(1), 135--143.
+\end{thebibliography}
+
+\end{document}
