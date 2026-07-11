@@ -1,0 +1,232 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{authblk}
+\usepackage[hidelinks]{hyperref}
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+
+\newtheorem{protocol}{Protocol}
+\theoremstyle{remark}
+\newtheorem{lesson}{Lesson}
+
+\title{\bfseries Disconfirmation as Method:\\
+A Case Study in Human--AI Collaborative Mathematical Research\\
+\large (Four Failed Theorems and One That Survived)}
+
+\author[1]{Eric Schultz\thanks{ORCID: \texttt{0009-0006-6283-1696}}}
+\affil[1]{Independent Researcher}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We document the methodology of a human--AI collaboration that produced a novel result in regulatory statistics: the recasting of reference-scaled average bioequivalence (RSABE) as a selective-inference problem, an incompleteness obstruction explaining the field's reliance on approximation, and a maximin-optimal invariant test. The scientific output is reported elsewhere; this paper reports the \emph{process}, and does so with a specific emphasis that we believe is the whole of its value: the process was dominated by \emph{failure}. Four candidate theorems were formed and destroyed --- two by discovering prior work, two by adversarial numerical attack on our own claims. Both of the latter had been stated confidently, in writing, before being tested. The surviving result was reached not by successful ideation but by a protocol that made confident wrong claims cheap to kill. We argue that the transferable contribution of AI-assisted research is not idea generation, in which the AI was frequently and fluently wrong, but the collapse in the cost of disconfirmation: hypotheses that a human would provisionally accept for weeks can be attacked within minutes, which makes it rational to attack them first. We formalize this as an \emph{attack-before-proving} protocol, compare it against standard human research practice, subject it to adversarial threat modeling (confirmation-bias feedback loops, sycophantic agreement, hallucinated citations, idealization-induced blindness), and report the failure modes we actually observed --- including two that our own external reviewers missed.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction and Scope}
+
+This is a methodology paper, not a results paper. The mathematical output --- a selective-inference account of RSABE type-I error inflation, a proof that reference-scaling renders the null family incomplete, and a Hunt--Stein maximin optimality theorem for the noncentral-$F$ invariant test --- is documented separately. What follows is an audit of \emph{how} that output was produced over a single extended session of human--AI collaboration, with particular attention to the many things that went wrong.
+
+We write for three audiences. For AI enthusiasts and the broader scientific community, we offer a concrete, unflattering account of what AI-assisted research actually looked like, as against the frictionless version implied by demonstrations. For AI safety researchers, we offer a case study in which the primary risks --- sycophancy, confirmation-bias amplification, confabulated novelty, and premature confidence --- were not hypothetical but \emph{observed}, and in which the mitigations were procedural rather than technical.
+
+\begin{quote}
+\emph{Central claim.} The value of the AI collaborator in this project was not that it had good ideas. It had many ideas, of which most were wrong and several were confidently wrong. Its value was that it could be made to attack its own ideas at a cost low enough that attacking them \emph{first} became the rational default. This inverts the usual economics of research and is, we argue, the transferable lesson.
+\end{quote}
+
+\section{Chronological Methodology: The Raw Scientific Journey}
+\label{sec:history}
+
+We record the sequence honestly, including the dead ends, because the dead ends are the data.
+
+\subsection{Phase 0: An ill-posed starting request}
+The project began with a request to combine pharmaceutical papers into a novel theorem. This framing is, in retrospect, structurally biased toward failure: if two papers are close enough that a bridge between them is easy to see, the bridge has usually been built by someone who knew both. The first four phases are essentially a demonstration of this.
+
+\subsection{Phase 1: The $\ell^h$ null-geometry theorem (collapsed --- prior work)}
+Working from the multi-drug additivity literature \citep{russ2018}, we derived that under Bliss independence with common-slope Hill curves, the iso-effect surface in normalized-dose coordinates is an $\ell^h$ sphere, $\sum_i u_i^h = \text{const}$, with the aggregation exponent equal to the Hill coefficient. Loewe, dose-orthogonality, and Highest Single Agent appeared as the $h=1,2,\infty$ members of one family, with a total-dose scaling law $D_{\text{tot}}(n)=n^{1-1/h}$. The derivation was verified numerically and held to under $0.1\%$.
+
+It was also already published. The MuSyC consensus framework \citep{wooten2021} derives the identical mass-action null, $A/U=\sum_j (d_j/C_j)^{h_j}$, precisely to correct the Chou--Talalay combination index. \textbf{Cost of the error: one derivation cycle. Cause: we derived before we searched.}
+
+\subsection{Phase 2: The scaling law (collapsed --- occupied territory)}
+The surviving fragment --- the drug-number scaling exponent $1-1/h$ --- was traced to the Wood--Cluzel and Zimmer--Alon lineage of multidrug scaling laws, which occupies exactly that ground.
+
+\subsection{Phase 3: Higher-order emergence (collapsed --- definitional triviality)}
+We proposed that a separable mass-action null generates zero spurious higher-order interaction. On inspection this is not a theorem but a restatement of the definition of emergence as deviation from additivity; and the maximum-entropy formulation we intended to build was already the Wood et al.\ construction.
+
+\subsection{Phase 4: Pharmacovigilance masking (collapsed --- occupied \emph{and} unsound)}
+We proposed treating disproportionality masking as a compositional-data (Aitchison) closure artifact, to be dissolved by log-ratio coordinates. Two independent failures: the field had already moved to individual-level regression for exactly this problem; and, more seriously, the idea was \emph{wrong}. Masking is a contaminated-comparator effect operating through the shared column background, which log-ratio coordinates on a drug's own profile do not touch. This one was killed before any work was invested, by asking whether the mechanism was actually right rather than whether the idea was novel.
+
+\begin{lesson}[Novelty is the cheap check; soundness is the expensive one]
+Three of the four collapses were detected by literature search. The fourth --- and the only one that would have wasted substantial effort --- was detected by mechanism-checking. A protocol that only checks novelty is insufficient.
+\end{lesson}
+
+\subsection{Phase 5: Reframing the search}
+Four failures in a saturated subfield prompted an explicit change of strategy: rather than seeking an unbuilt bridge in a mature area, seek a young or under-theorized area where the collaborator's toolkit conferred an advantage. This led to regulatory statistics, and specifically to reference-scaled average bioequivalence (RSABE), where the type-I error inflation near the $30\%$ switching variability had been documented for two decades \citep{labes2016, wonnemann2015} and every remedy remained approximate or simulation-calibrated \citep{tothfalusi2016, molins2017, ocana2019, munoz2024}.
+
+\subsection{Phase 6: The selective-inference reframing (survived)}
+Two results emerged and have not been dislodged. First, the scaled test is \emph{exactly similar} unconditionally --- a scale-invariance argument giving size $\alpha$ for every variability --- so the scaled criterion is not the source of the inflation. This independently explained the puzzling published finding that removing the Hyslop linearization does not remove the inflation \citep{tothfalusi2016}. Second, the variance-based switch is a \emph{data-dependent selection event}: the same $s^2_{wR}$ that selects the branch enters the test statistic, so the procedure controls the unconditional but not the \emph{selective} type-I error \citep{fithian2014, lee2016, taylor2015}. The type-I supremum is a left-limit at the switch --- a refinement of the field's folklore that the maximum sits \emph{at} the switch.
+
+\subsection{Phase 7: The incompleteness theorem (survived)}
+We proved that under the scaled null the minimal sufficient statistic is incomplete, exhibiting an explicit zero-expectation statistic, and that the fixed-limit null by contrast admits a \emph{complete} sufficient statistic --- the basis of the tractable optimal tests of \citet{bhm1997} and \citet{bergerhsu1996}. Reference-scaling, and only reference-scaling, destroys completeness. This closes the classical Lehmann--Scheff\'e route and is consistent with the field's uniform reliance on approximation.
+
+\subsection{Phase 8: The impossibility theorem (collapsed --- our own claim, refuted numerically)}
+From incompleteness we inferred, and wrote up, that no UMP or UMP-unbiased test exists. This was a genuine error of reasoning: \emph{incompleteness obstructs the standard construction of a UMPU test; it does not preclude its existence.} A linear-programming attack --- searching for any boundary-similar test out-powering the noncentral-$F$ test --- returned power gains of $+0.0003$, at the numerical noise floor. The impossibility claim was false. \textbf{It had already been written into the manuscript.}
+
+\subsection{Phase 9: The opposite claim (also collapsed)}
+We then claimed the $F$-test \emph{is} UMP-unbiased. Under harder attack --- small $\nu$, dense constraints, adversarial alternatives --- a genuinely similar test beat it by $+0.0041$ at $\nu=6$, stable under constraint densification with out-of-sample similarity deviation below $10^{-4}$. Not an artifact. The second claim was false too.
+
+\subsection{Phase 10: The truth, which was neither}
+The surviving result is the unglamorous middle, and it required abandoning the assumption that UMP-unbiasedness was the relevant criterion. The scale group is abelian, hence amenable; by the Hunt--Stein theorem \citep{lehmann2005} the UMP-invariant test is \emph{maximin among all tests}. The $F$-test's power is constant in $\sigma$ along each alternative slice, and the tests that beat it locally purchase that gain by sacrificing worst-case power (verified: worst-case power $0.171$ versus $0.129$ for the competitor). The correct statement --- exactly similar, UMP-invariant, maximin-optimal, but not UMP-unbiased --- is provable, and is stronger than either failed claim.
+
+\begin{lesson}[The seductive claim is the one to attack first]
+Both false claims were the \emph{clean, dramatic} ones: ``no optimal test can exist'' and ``here is the optimal test.'' The true statement was a layered, qualified compromise. In both cases the aesthetic appeal of the claim was inversely related to its truth.
+\end{lesson}
+
+\subsection{Phase 11: Idealization failure caught late}
+A benchmark in an idealized full-replicate model showed the proposed test requiring $\sim\!45\%$ fewer subjects than the size-corrected incumbent. Rerunning in a realistic partial-replicate design with unequal within-subject variances revealed that the test's exactness is contingent on an \emph{unestimable variance ratio}, and that assuming equal variances when the true ratio is $1.5$ inflates the type-I error to $0.108$ --- no better than the procedure we were criticizing. The honest, deployable figure (using a conservative bound) is $\sim\!20$--$30\%$ fewer subjects. \textbf{The idealized model had concealed the failure mode, not merely the magnitude.}
+
+\begin{lesson}[Idealizations hide failure modes, not just constants]
+The clean model did not merely overstate the benefit; it \emph{switched off the mechanism} by which the method could fail. Any result derived only in an idealization should be treated as untested against its own principal caveat.
+\end{lesson}
+
+\section{Comparative Analysis: The AI-Assisted Method Against Standard Practice}
+\label{sec:comparative}
+
+\subsection{What actually differed}
+It is tempting, and wrong, to attribute the outcome to superior ideation. The AI collaborator generated the $\ell^h$ theorem (published), the compositional masking fix (unsound), the impossibility theorem (false), and the UMPU claim (false). By the standard of idea quality, this was a poor showing.
+
+What differed was the \emph{cost structure of refutation}. In conventional practice, testing ``is the $F$-test UMP among all similar tests?'' means formulating a linear program over a discretized sample space, implementing it, validating the discretization, and interpreting the result --- plausibly a week of work, and therefore something one does \emph{after} committing to a claim, if at all. In this collaboration it took minutes. When refutation is that cheap, the optimal ordering inverts: one attacks the claim \emph{before} investing in the proof.
+
+\begin{protocol}[Attack-before-proving]
+\label{prot:abp}
+Before any derivation is invested in a claim:
+\begin{enumerate}
+\item \textbf{Occupancy check.} Search for prior work on the specific claim, not the general area. Adjacent fields count.
+\item \textbf{Mechanism check.} Ask whether the proposed mechanism is \emph{actually right}, independently of whether it is novel. (Phase 4 was killed here.)
+\item \textbf{Adversarial numerical attack.} Attempt to \emph{falsify} the claim computationally, in the regime where it is most likely to fail --- not the regime where it is most likely to hold. (Phases 8 and 9 were killed here; small $\nu$ was the fatal regime.)
+\item \textbf{Artifact discrimination.} Any apparent refutation must survive a convergence check (densify the discretization) and an out-of-sample check (validate on a grid disjoint from the one optimized over). Both false ``refutations'' and false ``confirmations'' arise from discretization.
+\item \textbf{Only then, prove.}
+\end{enumerate}
+\end{protocol}
+
+\subsection{Actionable adoptions for human researchers}
+These do not require an AI collaborator; the AI merely made them cheap enough to be habitual.
+
+\begin{enumerate}
+\item \textbf{Budget refutation before derivation.} Allocate the first unit of effort on any new claim to killing it. Our two false theorems both survived to manuscript because this ordering was violated.
+\item \textbf{Attack in the adversarial regime.} A claim tested where it is expected to hold is not tested. The UMPU claim survived at $\nu=32$ and died at $\nu=6$; had we only checked realistic designs, we would have published a false theorem that is true in practice --- the most insidious kind.
+\item \textbf{Separate the novelty check from the soundness check.} They fail independently, and the soundness failure is the expensive one.
+\item \textbf{Distrust the elegant claim.} Track, empirically, the base rate at which your clean claims survive. In this project it was zero out of two.
+\item \textbf{Re-derive in the messy model before quoting a number.} Not for accuracy of the constant, but because the idealization may be concealing the mechanism of failure.
+\item \textbf{Log disconfirmations.} The four collapses in \S\ref{sec:history} are the informative part of this project's record and would, under normal publication incentives, be invisible.
+\end{enumerate}
+
+\subsection{Specific relevance to AI safety research}
+The methodology bears on AI safety in two directions.
+
+\emph{As an object lesson in evaluating AI-generated claims.} The AI collaborator produced fluent, internally coherent, well-motivated mathematical claims that were false. They were not obviously false; they were supported by correct sub-derivations and plausible mechanisms, and they survived the scrutiny of two external LLM reviewers (\S\ref{sec:redteam}). Fluency and coherence were, in this project, \emph{uncorrelated with correctness}. Any evaluation regime for AI-assisted science that relies on the plausibility of outputs will not detect this failure mode; only executable adversarial checks did.
+
+\emph{As a template for AI-assisted safety work itself.} Safety research is disproportionately exposed to the failure modes documented here --- it is theory-heavy, empirically underdetermined, and rich in claims that are elegant and unfalsified rather than elegant and tested. Protocol~\ref{prot:abp} is directly transplantable.
+
+\section{Adversarial Stress-Testing and Threat Modeling}
+\label{sec:redteam}
+
+We evaluate the methodology as an attacker would, and report which failure modes we \emph{observed} rather than merely anticipated.
+
+\subsection{Observed failure modes}
+
+\paragraph{T1: Confirmation-bias feedback loop (\textsc{observed}).}
+The AI proposed a hypothesis and was then asked to test it. This is a compromised arrangement: the tester has an interest in the hypothesis. It manifested concretely --- the linearized LP in the ``optimal correction'' attempt produced a degenerate single-bin ``solution'' that was accepted for one cycle because it confirmed the expected shape (localization near the switch), and was only rejected when its type-I error was checked against the nonlinear objective and found to be $0.129$ against a target of $0.05$. \emph{Mitigation:} require that every proposed solution be validated against the true objective, not the surrogate it was optimized against.
+
+\paragraph{T2: Sycophantic reviewer agreement (\textsc{observed}).}
+Two independent external LLM reviews were obtained. Both praised the manuscript (one assigning $10/10$ for originality), both offered useful tone and structure corrections, and \emph{neither identified the manuscript's central weakness} --- that its optimality claim rested on linear programs rather than a proof --- which the authoring model had itself flagged in an earlier self-critique. One reviewer explicitly noted it had read only part of the paper while nonetheless scoring it. \emph{Implication:} LLM peer review, in this instance, was systematically more generous and less penetrating than LLM self-critique, and cannot be relied upon as an independent check. \emph{Mitigation:} treat AI review as a tone-and-completeness pass, never as validation; require executable checks for substantive claims.
+
+\paragraph{T3: Idealization-induced blindness (\textsc{observed}).}
+See Phase 11. The model in which a method is developed selects which failure modes are visible. \emph{Mitigation:} the messy-model rerun is not an optional robustness appendix; it is a test of the claim.
+
+\paragraph{T4: Premature confident assertion (\textsc{observed}, twice).}
+Both false theorems were asserted in prose --- and one written into a compiled manuscript --- before being tested. The cost was low only because refutation was cheap. Under a slower refutation loop, either would have been published. \emph{Mitigation:} Protocol~\ref{prot:abp}, strictly ordered.
+
+\paragraph{T5: Hallucinated or corrupted citations (\textsc{observed}).}
+Bibliographic details were generated that proved incorrect on verification: a paper dated 2017 was actually 2016; page ranges were wrong; a multi-author paper was cited as sole-authored. All were caught only by explicit per-citation verification against independent indexing sources. \emph{Mitigation:} no citation enters the manuscript without verification of authors, year, volume, pages, and DOI against at least two sources; a citation that cannot be verified is omitted rather than guessed.
+
+\subsection{Anticipated but unobserved failure modes}
+
+\paragraph{T6: Novelty confabulation.} The claim ``this does not appear in the literature'' is not a search result but an inference from absence, and absence of evidence in a few queries is weak evidence. Our novelty claims are therefore hedged in the manuscript (``does not appear to have been characterized in this form'') rather than asserted. We regard residual risk here as \emph{unresolved}: a targeted search cannot prove a negative, and we consider undiscovered prior art the single most likely way the substantive paper is wrong.
+
+\paragraph{T7: Prompt injection via retrieved content.} The pipeline ingested web search results and paper abstracts. Instructions embedded in retrieved content could in principle steer the research agenda. Not observed, but structurally possible; retrieved content was used for factual grounding only, and never executed.
+
+\paragraph{T8: Alignment/objective drift over a long session.} Across a session of this length, a collaborator optimizing for user satisfaction rather than truth would drift toward agreeable, impressive-sounding claims. The countervailing evidence here is that the collaborator repeatedly reported disconfirmations of its own claims and argued against the user's framing (including declining to endorse an inflated external review). We note, however, that this is precisely the failure mode that would be hardest to detect from inside the session, and we do not claim to have ruled it out.
+
+\subsection{Red-team protocol}
+\begin{enumerate}
+\item Every substantive claim gets an executable falsification attempt in its \emph{worst-case} regime before it is written down.
+\item Every apparent numerical result gets a convergence check and an out-of-sample check to discriminate real effects from discretization artifacts.
+\item Every claim optimized against a surrogate objective is validated against the true objective.
+\item Every result derived under idealization is re-derived under the realistic model before any number is quoted.
+\item Every citation is verified against independent sources.
+\item AI review is used for tone and completeness only, never for validation.
+\end{enumerate}
+
+\section{Limitations and Broader Impacts}
+\label{sec:limitations}
+
+\subsection{Limitations of the methodology}
+\emph{Single case, no control.} This is $n=1$, with no counterfactual. We cannot say whether an unassisted researcher would have reached the same result more slowly, or a different and better one. Claims of acceleration here are impressions, not measurements.
+
+\emph{Selection for tractability.} The method rewards claims that are cheaply falsifiable by computation. Claims that are important but not computationally attackable receive no such discipline, and may be systematically \emph{under}-scrutinized by a protocol built around executable refutation. This is a real bias and we do not know its magnitude.
+
+\emph{The verifier is the proposer.} The same system generated and attacked the hypotheses. Independence is imperfect by construction, and T2 suggests that adding more AI reviewers does not fix it.
+
+\emph{Unresolved residual risk.} The substantive paper's novelty claim rests on searches, not on a systematic review. The negative result (non-UMP-unbiasedness) remains numerically certified rather than proved.
+
+\subsection{Ethical considerations and broader impacts}
+\emph{Regulatory stakes.} The substantive work proposes changing a test used to approve generic medicines. An error in the direction of permissiveness would translate into unsafe approvals. We have accordingly framed the proposal as a candidate requiring validation --- large-scale simulation, historical replay, and regulatory consultation --- and \emph{not} as a finished instrument. We regard overclaiming in this domain as an ethical, not merely academic, failure.
+
+\emph{Asymmetric harms not captured by the analysis.} The substantive framework scores type-I and type-II error. It does not score \emph{market access}: a drug wrongly held to strict limits may simply be abandoned by its sponsor, harming patients through unavailability rather than through unsafe approval. This blind spot is inherited from the Neyman--Pearson formulation and is disclosed rather than solved.
+
+\emph{Risks of the methodology's diffusion.} A method that makes it cheap to generate and dress up mathematical claims will, in less scrupulous hands, make it cheap to generate \emph{plausible-looking wrong} claims at scale. Our own record --- two confidently-asserted false theorems, five defective citations --- is the evidence. The protocol in \S\ref{sec:redteam} is what separates this from a machine for manufacturing convincing errors, and it is not self-enforcing.
+
+\emph{Epistemic deskilling.} Habitual delegation of refutation may atrophy the human capacity to detect an unsound mechanism unaided. In this project the human's principal contributions were direction, insistence on verification, and refusal to accept convenient results --- and those are exactly the capacities at risk.
+
+\section{Reproducibility Statement}
+\label{sec:repro}
+
+\paragraph{Code.} \texttt{[PLACEHOLDER: repository URL]}. The numerical results comprise: a seeded benchmark driver with common random numbers; the linear-programming attack scripts used to refute both false optimality claims; the maximin verification; the variance-ratio cost analysis; and the transition-band computation. All Monte-Carlo quantities are reported with standard errors.
+
+\paragraph{Data.} No empirical data were used. All results are analytic or simulated from stated parametric models. \texttt{[PLACEHOLDER: DOI for archived simulation outputs]}
+
+\paragraph{Environment.} \texttt{[PLACEHOLDER: Python version, NumPy/SciPy versions, OS, hardware]}. Random seeds are fixed in-script; common random numbers are used across compared methods.
+
+\paragraph{Session record.} The complete human--AI interaction transcript, including all four failed hypotheses and both refutations, is the primary methodological artifact. \texttt{[PLACEHOLDER: archived transcript location]}. We regard release of the \emph{failures} as the substantive reproducibility contribution; a record showing only the surviving result would misrepresent the method.
+
+\paragraph{Model and interface.} \texttt{[PLACEHOLDER: model version, interface, date range of session]}. We note that results of this kind are not reproducible in the strict sense across model versions: a different model would fail differently.
+
+\section{Conclusion}
+
+The honest summary of this project is that an AI collaborator proposed four theorems that were wrong and one framing that was right, and that a protocol of aggressive, early, executable disconfirmation was what separated them. The surviving result is real and, we believe, useful. But it was not found by insight; it was what remained after everything more attractive had been destroyed.
+
+We suspect this generalizes. If AI-assisted research has a durable methodological contribution, it is unlikely to be the automation of discovery, at which the collaborator here was unreliable. It is more likely to be the automation of \emph{refutation}, at which it was excellent --- and which, being unglamorous, has always been the bottleneck.
+
+\begin{thebibliography}{99}
+\bibitem[Berger and Hsu(1996)]{bergerhsu1996} Berger, R.~L. and Hsu, J.~C. (1996). Bioequivalence trials, intersection--union tests and equivalence confidence sets. \emph{Statistical Science}, 11(4), 283--319.
+\bibitem[Brown et al.(1997)]{bhm1997} Brown, L.~D., Hwang, J.~T.~G. and Munk, A. (1997). An unbiased test for the bioequivalence problem. \emph{The Annals of Statistics}, 25(6), 2345--2367.
+\bibitem[Fithian et al.(2014)]{fithian2014} Fithian, W., Sun, D. and Taylor, J. (2014). Optimal inference after model selection. \emph{arXiv:1410.2597}.
+\bibitem[Labes and Sch\"utz(2016)]{labes2016} Labes, D. and Sch\"utz, H. (2016). Inflation of type~I error in the evaluation of scaled average bioequivalence, and a method for its control. \emph{Pharmaceutical Research}, 33(11), 2805--2814.
+\bibitem[Lee et al.(2016)]{lee2016} Lee, J.~D., Sun, D.~L., Sun, Y. and Taylor, J.~E. (2016). Exact post-selection inference, with application to the lasso. \emph{The Annals of Statistics}, 44(3), 907--927.
+\bibitem[Lehmann and Romano(2005)]{lehmann2005} Lehmann, E.~L. and Romano, J.~P. (2005). \emph{Testing Statistical Hypotheses}, 3rd ed. Springer. [Hunt--Stein theorem, Thm.~8.5.1.]
+\bibitem[Molins et al.(2017)]{molins2017} Molins, E., Cobo, E. and Oca\~na, J. (2017). Two-stage designs versus European scaled average designs in bioequivalence studies for highly variable drugs. \emph{Statistics in Medicine}, 36(30), 4777--4788.
+\bibitem[Mu\~noz et al.(2024)]{munoz2024} Mu\~noz, J., Oca\~na, J., Su\'arez, R. and Millap\'an, C. (2024). Scaled average bioequivalence methods for highly variable drugs. \emph{Statistics in Medicine}, 43(7), 1475--1488.
+\bibitem[Oca\~na and Mu\~noz(2019)]{ocana2019} Oca\~na, J. and Mu\~noz, J. (2019). Controlling type~I error in the reference-scaled bioequivalence evaluation of highly variable drugs. \emph{Pharmaceutical Statistics}, 18(5), 583--599.
+\bibitem[Russ and Kishony(2018)]{russ2018} Russ, D. and Kishony, R. (2018). Additivity of inhibitory effects in multidrug combinations. \emph{Nature Microbiology}, 3, 1339--1345.
+\bibitem[Taylor and Tibshirani(2015)]{taylor2015} Taylor, J. and Tibshirani, R.~J. (2015). Statistical learning and selective inference. \emph{PNAS}, 112(25), 7629--7634.
+\bibitem[T\'othfalusi and Endr\'enyi(2016)]{tothfalusi2016} T\'othfalusi, L. and Endr\'enyi, L. (2016). An exact procedure for the evaluation of reference-scaled average bioequivalence. \emph{The AAPS Journal}, 18(2), 476--489.
+\bibitem[Wonnemann et al.(2015)]{wonnemann2015} Wonnemann, M., Fr\"omke, C. and Koch, A. (2015). Inflation of the type~I error: investigations on regulatory recommendations for bioequivalence of highly variable drugs. \emph{Pharmaceutical Research}, 32(1), 135--143.
+\bibitem[Wooten et al.(2021)]{wooten2021} Wooten, D.~J., Meyer, C.~T., Lubbock, A.~L.~R., Quaranta, V. and Lopez, C.~F. (2021). MuSyC is a consensus framework that unifies multi-drug synergy metrics for combinatorial drug discovery. \emph{Nature Communications}, 12, 4607.
+\end{thebibliography}
+
+\end{document}
