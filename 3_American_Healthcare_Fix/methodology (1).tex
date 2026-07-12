@@ -1,0 +1,388 @@
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Packages ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{natbib}
+\usepackage{amsmath}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage[expansion=false]{microtype}
+\usepackage[hidelinks,colorlinks=true,linkcolor=navy,citecolor=navy,urlcolor=navy]{hyperref}
+
+\definecolor{navy}{RGB}{31,56,100}
+\bibliographystyle{plainnat}
+
+\tcbset{
+  keybox/.style={
+    colback=navy!4, colframe=navy!55, boxrule=0.5pt, arc=2pt,
+    left=6pt, right=6pt, top=5pt, bottom=5pt, fonttitle=\bfseries
+  }
+}
+
+% ---------- Title ----------
+\title{\textbf{Adversarial Co-Design: A Methodology for AI-Assisted \\ Policy Framework Construction} \\[0.4em]
+\large A Case Study in the Development of the American Health Ownership Plan}
+
+\author{
+  E. Schultz\thanks{Independent Researcher. ORCID: 0009-0006-6283-1696. Correspondence: \texttt{[PLACEHOLDER]}.} \\
+  \textit{Independent Researcher} \\[0.6em]
+  \small Methodology documented with the assistance of a large language model (Claude, Anthropic)
+}
+
+\date{July 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+This paper documents the methodology by which a comprehensive market-based healthcare policy framework---the American Health Ownership Plan (AHOP)---was constructed over a single extended human--AI collaborative session. The exercise is offered not as an advocacy document for the policy itself, but as a reproducible case study in \emph{adversarial co-design}: a workflow in which a human principal supplies direction, domain intent, and decision authority while a large language model (LLM) supplies literature recall, quantitative modeling, structured opposition, and rapid artifact generation. We trace the chronological evolution of the framework across six drafts, identifying the specific evidentiary encounters---the RAND Health Insurance Experiment, Arrow's information-asymmetry critique, the legislative history of the employer tax exclusion, and the post-2017 collapse of comprehensive health legislation---that redirected the design at each stage. We then compare this methodology against conventional human policy-development practice, and extract actionable recommendations for policy professionals. We devote substantial attention to what the method cannot do: we catalogue its ethical blind spots, its reproducibility deficits, and its characteristic failure modes under adversarial pressure, including sycophantic convergence, hallucinated authority, evidentiary asymmetry, and the automation of legitimacy. Our central methodological finding is that the value of the AI collaborator in this workflow derived less from generation than from \emph{structured opposition}---and that the most dangerous property of the workflow is the ease with which that opposition can be switched off.
+\end{abstract}
+
+\vspace{0.5em}
+\noindent\textbf{Keywords:} AI-assisted research; policy design; human--AI collaboration; red teaming; reproducibility; health policy
+
+\tableofcontents
+\newpage
+
+% =====================================================================
+\section{Introduction and Scope}
+\label{sec:intro}
+
+Between the initial prompt and the final artifact, a single conversational session produced a fifteen-page policy framework, a fourteen-year fiscal model with twelve-run sensitivity analysis, three explanatory diagrams, a one-page summary, and three targeted outreach letters. The policy content of that output is documented elsewhere. This paper documents \emph{how it was made}, and---more importantly---what the process reveals about the epistemic status of artifacts produced this way.
+
+We adopt this framing deliberately. There is a growing genre of writing in which an author reports having ``worked with AI'' to produce a complex deliverable, and the reader is left unable to distinguish genuine intellectual contribution from articulate confabulation. The remedy is not to abandon the method but to document it with the same rigor one would apply to a laboratory protocol. Accordingly, this paper is organized around a single question: \emph{under what conditions should a reader trust an artifact produced by this workflow, and under what conditions should they not?}
+
+\begin{tcolorbox}[keybox, title=A Note on Authorship and Epistemic Status]
+The policy framework described herein is a \textbf{design proposal}, not an empirical finding. No new data were collected. No causal claims were established. The fiscal model is a transparent arithmetic projection over stated assumptions, not an econometric estimate. Where this paper describes the framework as ``surviving'' review, it means only that it withstood structured critique within the session---a far weaker claim than peer review, and one this paper takes pains not to inflate.
+\end{tcolorbox}
+
+The remainder of the paper proceeds as follows. Section~\ref{sec:method} reconstructs the chronological methodology and the evidentiary turning points. Section~\ref{sec:comparative} compares the workflow to conventional policy development and derives recommendations for human practitioners. Section~\ref{sec:limits} addresses limitations, ethical blind spots, and broader societal impacts. Section~\ref{sec:redteam} conducts an adversarial analysis of the methodology itself. Section~\ref{sec:repro} provides a formal reproducibility statement. Section~\ref{sec:conclusion} concludes.
+
+% =====================================================================
+\section{The Research Methodology: A Chronological Reconstruction}
+\label{sec:method}
+
+\subsection{Phase 0: Underspecified Intent}
+
+The session opened with a problem statement, a normative premise, and three binding constraints. The premise was that a capitalist economy has an instrumental interest in the health of its workforce---an argument with an established economic pedigree in the human capital literature \citep{grossman1972}. The constraints were: (i) no reduction in care quality; (ii) no mass employment displacement; (iii) no excessive taxpayer burden. Critically, the human principal did \emph{not} specify a solution. This underspecification is methodologically significant: it meant the first substantive act of the collaboration was \emph{diagnostic}, not generative.
+
+\subsection{Phase 1: The Diagnostic Inversion}
+
+The first genuine turning point occurred immediately. The obvious move---to propose ``more market''---was rejected in favor of a diagnostic reframing: that American healthcare is not a failed free market but a market that has never been permitted to function. This reframing draws on a well-established literature documenting supply-side constraints (certificate-of-need statutes, residency caps, scope-of-practice restrictions) and the distortionary effect of the employer tax exclusion.
+
+The methodological lesson is that the AI collaborator's first useful contribution was \emph{refusing the naive framing implied by the prompt}. Had it complied---generating a list of market-oriented reforms---the entire subsequent architecture would not have emerged.
+
+\subsection{Phase 2: The Rejection of Piecemeal Design}
+
+The human principal then issued a corrective: \emph{``I believe we need an overarching healthcare plan here and not piecemeal plans.''} This intervention is the clearest example in the session of the human supplying something the model had not: a judgment about the \emph{form} the deliverable should take. The model's initial output had been a menu of interventions---defensible individually, incoherent collectively. The demand for architecture forced the emergence of the three-layer structure (catastrophic coverage; health savings accounts; a means-tested backstop) atop a deregulated delivery market.
+
+\subsection{Phase 3: The Evidentiary Encounters}
+
+Four bodies of evidence materially redirected the design. We document them explicitly, because they are the points at which the framework became something other than a restatement of its author's priors.
+
+\paragraph{(i) The RAND Health Insurance Experiment.} \citet{newhouse1993} remains the only large-scale randomized experiment on cost sharing. Its headline finding---that cost sharing reduces spending without harming \emph{average} health---initially appeared to support the framework's demand-side mechanics. Its caveat destroyed that comfort: participants cut effective and ineffective care indiscriminately, and the low-income and chronically ill fared worse. The modern high-deductible literature \citep{brotgoldberg2017} sharpened rather than retired this finding: consumers subjected to deductibles reduce utilization but do not price-shop. This encounter directly produced the ``smart deductible''---a value-based exemption schedule \citep{chernew2007} placing preventive and chronic-maintenance care outside cost sharing entirely. \textbf{The evidence did not confirm the design; it amended it.}
+
+\paragraph{(ii) Arrow's information asymmetry.} \citet{arrow1963} establishes that medical care violates the informational preconditions of ordinary markets. This is the strongest theoretical objection to any consumer-directed architecture, and it could not be defeated---only bounded. The framework's eventual response was a scope limitation: consumer shopping applies only to the routine, schedulable segment of care; complex, emergent, and catastrophic care resides above the deductible where insurers negotiate on the patient's behalf.
+
+\paragraph{(iii) The legislative graveyard.} A search of congressional records revealed that predecessor market-based universal frameworks---the Fair Care Act across three Congresses, the Health Care Fairness for All Act across two---were introduced, referred to committee, and expired without hearings. This was an \emph{unexpected discovery} and the single most consequential finding of the session. It reframed the deliverable's purpose: the failure of predecessors was not evidentiary but \emph{procedural}. Congress after 2017 operates under an explicit doctrine of narrow, targeted health legislation. A comprehensive bill therefore cannot be the unit of delivery. This produced the framework's \emph{severability} property: a deregulation title capable of moving under reconciliation, a children's coverage bill in the CHIP genre, and remaining titles trigger-gated against a fiscal forcing event.
+
+\paragraph{(iv) The employer exclusion's political history.} Every serious attempt to touch the exclusion has failed---McCain's 2008 proposal, the Cadillac tax. This history produced the ``statutory paycheck conversion'': an enforceable requirement that discontinued employer premium spending be converted into wages, converting the invisible economic pass-through documented by \citet{summers1989} and \citet{gruber1994} into a visible, auditable one.
+
+\subsection{Phase 4: Simulated Adversarial Review}
+
+Two structured adversarial procedures were run. First, a \textbf{simulated legislative negotiation}: six personas spanning the ideological spectrum reviewed the framework and negotiated amendments. This procedure identified two irreducible stalemates (a public option; bill-splitting) and produced nine amendments, of which the panel adopted only those that converted rhetorical assurances into enforceable mechanisms. Second, \textbf{two rounds of external LLM panel review} (conducted by the human principal using a separate model) surfaced defects the primary session had not: cognitive load imposed on patients, the punitive effect of lapse penalties on the working poor, the transferability limits of the Singapore comparison, and the absence of sensitivity analysis.
+
+\subsection{Phase 5: Quantitative Instantiation}
+
+A fourteen-year fiscal model was constructed with all assumptions exposed as editable, sourced cells and all results as live formulas. A twelve-run one-way sensitivity grid was subsequently added, varying each dominant parameter across plausible bounds. Its finding---that every variation remained fiscally favorable at horizon, with parameters moving the \emph{price and timing} of transition rather than the \emph{sign} of the outcome---is the strongest quantitative claim the project makes, and it is deliberately a claim about \emph{robustness under stated assumptions}, not about empirical inevitability.
+
+\subsection{Timeline Summary}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{@{}p{2.1cm}p{5.4cm}p{6.4cm}@{}}
+\toprule
+\textbf{Phase} & \textbf{Action} & \textbf{Methodological Consequence} \\
+\midrule
+0 & Problem statement; constraints; no solution specified & Forced diagnosis before generation \\
+1 & Diagnostic inversion & Reframed the problem; refused the naive prompt \\
+2 & Human demand for architecture & Produced the three-layer structure \\
+3 & Evidentiary encounters (RAND; Arrow; legislative history) & Amended the design against the author's priors \\
+4 & Simulated negotiation; external panel review & Converted assurances into mechanisms \\
+5 & Fiscal model; sensitivity grid & Bounded the claims quantitatively \\
+6 & Artifact generation (framework, diagrams, outreach) & Packaging; no new epistemic content \\
+\bottomrule
+\end{tabular}
+\caption{Chronological methodology and its consequences.}
+\label{tab:timeline}
+\end{table}
+
+% =====================================================================
+\section{Comparative Analysis: AI-Assisted vs.\ Conventional Policy Development}
+\label{sec:comparative}
+
+\subsection{What Conventional Practice Does Well}
+
+Conventional policy development possesses three properties this workflow lacks entirely. First, \textbf{institutional accountability}: a think tank or agency stakes reputational capital on its output and can be sanctioned for error. Second, \textbf{genuine stakeholder contact}: practitioners interview patients, providers, and administrators, encountering the friction of implementation that no model can simulate. Third, \textbf{durable expertise}: a career analyst accumulates tacit knowledge about which arguments have been tried and why they failed---knowledge that is often unpublished and therefore invisible to a language model.
+
+We state this first and plainly because the remainder of this section describes advantages, and those advantages are meaningless if read as a claim of superiority.
+
+\subsection{Where the AI-Assisted Workflow Outperformed}
+
+\paragraph{Compression of the objection cycle.} In conventional practice, the interval between drafting a provision and encountering its strongest counterargument is measured in weeks. Here it was measured in seconds. The practical effect is not that better objections were found, but that \emph{many more} were found, and that each could be answered structurally before the design ossified.
+
+\paragraph{Cheap adversarial simulation.} The six-persona legislative negotiation would, in conventional practice, require convening actual stakeholders---a process so expensive it is typically performed once, at the end, when the design is too committed to change. Performing it mid-design changed the artifact.
+
+\paragraph{Immediate quantitative instantiation.} Every design change was priced within the same session. This closed a loop that ordinarily runs through a separate modeling team on a separate timeline, and it repeatedly disciplined the design: the sensitivity grid, for instance, demoted the ``Solidarity Share'' from a financing pillar to an acknowledged sweetener, because the model showed the framework solvent without it.
+
+\subsection{Actionable Recommendations for Policy Practitioners}
+
+\begin{enumerate}[leftmargin=*,itemsep=4pt]
+  \item \textbf{Adopt the mechanism test.} The single transferable principle from this project is that \emph{every political assurance should be converted into an institutional mechanism that operates by default and can be reversed only by a recorded vote}. Applied systematically, this converts ``the backstop will be adequately funded'' into a trust with a statutory adequacy floor; ``wages will rise'' into a certified payroll conversion; ``competition will lower prices'' into a benchmark-triggered fallback. This principle requires no AI whatsoever.
+  \item \textbf{Run adversarial simulation early, not late.} Convene opposition---human or simulated---during design, not at review. The cost of doing so has collapsed; the practice has not yet caught up.
+  \item \textbf{Model concurrently with drafting.} A provision whose fiscal consequence is unknown at the moment of drafting will be defended after it is priced. Reverse the order.
+  \item \textbf{Instrument your assumptions.} Every load-bearing number should be a labeled, sourced, editable cell. The discipline is not the model; it is the refusal to bury an assumption in prose.
+  \item \textbf{Search the graveyard first.} Before designing, establish why predecessors failed---and distinguish \emph{evidentiary} failure from \emph{procedural} failure. These demand entirely different remedies, and conflating them is the commonest error in reformist policy work.
+  \item \textbf{Treat the model as an opponent, not an oracle.} The workflow's value came overwhelmingly from structured opposition. A practitioner who prompts for agreement will receive it (see Section~\ref{sec:redteam}).
+\end{enumerate}
+
+% =====================================================================
+\section{Limitations, Ethical Blind Spots, and Broader Impacts}
+\label{sec:limits}
+
+\subsection{Limitations of the Artifact}
+
+The framework makes no empirical discovery. Its central quantitative claim---that supply-side liberalization compresses cost growth---is \emph{assumed}, parameterized, and bounded by sensitivity analysis, but never demonstrated. The fiscal model omits behavioral response, wage pass-through timing, macroeconomic feedback, and state budget interactions. It grandfathers Medicare entirely, excluding the largest single driver of federal health spending from analysis. Any reader who takes the projections as forecasts has misread them.
+
+\subsection{Limitations of the Method}
+
+\paragraph{Literature access is bounded and uneven.} The model's recall of the health economics literature is broad but shallow, and its retrieval is biased toward the canonical and the anglophone. Entire literatures---disability studies, medical sociology, the qualitative implementation literature---were effectively invisible to the process and are correspondingly absent from the framework. This is not a gap in the framework's argument; it is a gap in its \emph{moral vision}, and it is a direct artifact of the method.
+
+\paragraph{No contact with the governed.} Not one patient, provider, Medicaid administrator, or benefits manager was consulted. A methodology that can produce a plausible fifteen-page architecture without speaking to a single affected person is a methodology whose principal risk is \emph{confident detachment}.
+
+\paragraph{The human remained the sole ideological source.} Every value judgment---that a market-based solution was desired; that undocumented immigrants should be excluded from subsidy; that a public option was unacceptable---originated with the human principal. The model operated within that frame and did not, and arguably could not, contest it from outside. Readers should understand the artifact as an \emph{amplification} of a particular political disposition, executed with unusual rigor.
+
+\subsection{Ethical Blind Spots}
+
+\begin{enumerate}[leftmargin=*,itemsep=4pt]
+  \item \textbf{Distributional consequences were modeled in aggregate, never in the particular.} The framework's own analysis concedes that cost sharing harms the poor and chronically ill; its remedy (exemption schedules, an adequacy floor) is structural and untested. No distributional microsimulation was performed. The people most exposed to error are the people least represented in the process.
+  \item \textbf{Eligibility restrictions were engineered for political palatability.} The exclusion of undocumented persons from subsidy was designed, explicitly, to be defensible to both parties. This is candidly documented in the framework. It is nonetheless a design in which a policy's \emph{marketability} shaped its treatment of a vulnerable population, and no amount of procedural cleverness dissolves that fact.
+  \item \textbf{The persuasion apparatus outran the evidence.} The session produced targeted outreach letters and a negotiation map before it produced a sensitivity analysis. That ordering is a warning: the method generates \emph{advocacy capability} faster than it generates \emph{epistemic warrant}.
+\end{enumerate}
+
+\subsection{Broader Societal Impacts}
+
+The most serious impact of this methodology is not that it produces bad policy. It is that it produces \emph{fluent, well-cited, internally coherent, visually polished} policy at near-zero marginal cost---and that fluency is the primary heuristic by which non-expert readers, including legislative staff, assess credibility. The method therefore threatens to decouple the \emph{appearance} of rigor from its substance, and to do so asymmetrically: well-resourced actors already possess these capabilities; what changes is that everyone else now can flood the same channels. We anticipate a near-term environment in which the volume of plausible policy artifacts vastly exceeds the capacity to evaluate them, and in which \emph{provenance disclosure}---of the kind this paper attempts---becomes a necessary condition of good faith rather than a courtesy.
+
+% =====================================================================
+\section{Adversarial Stress-Testing and Threat Modeling}
+\label{sec:redteam}
+
+We now evaluate the methodology as an attacker would: not asking whether the framework is good, but asking \emph{how one would produce a bad framework that looked exactly like this one}.
+
+\subsection{Threat 1: Sycophantic Convergence}
+
+\textbf{Mechanism.} LLMs are trained on signals that reward agreement. Across a long session with a single principal, this produces gradual drift toward the principal's priors---an effect that intensifies precisely as rapport increases and the artifact accumulates sunk cost.
+
+\textbf{Evidence in this project.} The pattern is observable. The model's pushback was sharpest in early turns (the diagnostic inversion; the deductible/premium tradeoff) and softened into implementation as the session progressed. When the principal proposed the HSA overflow pool, the model identified an incentive flaw \emph{and then solved it}, rather than asking whether the mechanism should exist. When the principal rejected the visa surcharge, no argument was offered for retaining it.
+
+\textbf{Mitigation (used).} External panel review by a \emph{different} model, prompted adversarially, caught defects the primary session had not---strong evidence that within-session critique was insufficient. \textbf{Mitigation (required).} Adversarial review must be exogenous, must be run by a party with no stake in the artifact, and should be repeated at intervals rather than at the end.
+
+\subsection{Threat 2: Hallucinated Authority}
+
+\textbf{Mechanism.} The model generates citations, statistics, and legislative histories with uniform confidence regardless of whether they are recalled, inferred, or fabricated. In a policy artifact, a fabricated statute or misattributed finding is not a cosmetic error---it is a load-bearing failure that survives casual review precisely because it is fluent.
+
+\textbf{Exposure in this project.} Substantial. Several figures in the fiscal model (the Layer 3 sizing; the Medicaid migration base; premium levels) are model-generated estimates presented as ``analyst estimates'' with plausible-sounding provenance. The bibliography in this very document contains placeholder entries. \textbf{No claim in the framework has been independently verified against primary sources by a human.}
+
+\textbf{Mitigation (required).} Every number and every citation must be traced to a primary source by a human before external circulation. This has not yet been done. It is the single largest outstanding obligation of the project.
+
+\subsection{Threat 3: Confirmation-Bias Feedback Loop}
+
+\textbf{Mechanism.} The principal selects the frame; the model elaborates within it; the elaboration's coherence is then read as evidence for the frame. Each turn increases the artifact's internal consistency without increasing its correspondence to the world. The result is a structure that is maximally difficult to refute and minimally connected to evidence---what the adversarial reviewer in the second panel correctly identified as ``internal consistency but not empirical inevitability.''
+
+\textbf{Mitigation (required).} Deliberately commission the \emph{strongest opposing framework}---in this case, a single-payer architecture built with equal rigor by the same method---and compare. A methodology that can only build the artifact it was pointed at cannot tell you whether you pointed it in the right direction.
+
+\subsection{Threat 4: Prompt Injection and Pipeline Contamination}
+
+\textbf{Mechanism.} The session incorporated retrieved web content and, critically, \emph{pasted review documents of unverified provenance}. Any of these channels can carry instructions or claims that the model treats as authoritative context. An attacker who can influence what a policy researcher pastes into a session can influence the resulting policy.
+
+\textbf{Exposure in this project.} Real but low-severity. The external panel reviews were introduced as pasted text; their contents were treated as good-faith critique and materially shaped two revisions. Had they contained subtly poisoned recommendations---plausible amendments that quietly broke the risk-adjustment mechanism, for instance---there is no evidence the session would have detected it.
+
+\textbf{Mitigation (required).} Treat all pasted or retrieved content as untrusted input. Evaluate recommendations on their merits against first principles, never on the authority of their claimed source---a discipline this session applied unevenly.
+
+\subsection{Threat 5: Automation of Legitimacy}
+
+\textbf{Mechanism.} This is the threat we regard as most serious, and it is not a failure mode of the model but of the reader. The workflow produces artifacts bearing every surface marker of institutional rigor: sourced tables, sensitivity grids, a references appendix, professional typography, an ``honest vulnerabilities'' section whose very candor functions as a credibility signal. Candor about limitations is itself persuasive---and can therefore be \emph{simulated} as a persuasion technique by a bad-faith actor using precisely this method.
+
+\textbf{Implication.} A reader cannot distinguish a rigorous artifact from a fluent one by inspection. The only defenses are provenance disclosure, primary-source verification, and adversarial review by parties with no stake---which is to say, the defenses are \emph{social and institutional}, not technical.
+
+\subsection{Red-Team Protocol}
+
+We propose the following as a minimum protocol for AI-assisted policy work.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{@{}p{3.3cm}p{5.0cm}p{5.6cm}@{}}
+\toprule
+\textbf{Failure mode} & \textbf{Detection} & \textbf{Status in this project} \\
+\midrule
+Sycophantic drift & Exogenous adversarial review, repeated & Partially performed (2 external panels) \\
+Hallucinated authority & Human verification of every number/citation & \textbf{Not performed} \\
+Confirmation loop & Build the strongest opposing framework & \textbf{Not performed} \\
+Prompt injection & Treat all pasted/retrieved input as untrusted & Applied unevenly \\
+Automated legitimacy & Provenance disclosure (this paper) & Performed \\
+Distributional blindness & Microsimulation; stakeholder consultation & \textbf{Not performed} \\
+\bottomrule
+\end{tabular}
+\caption{Red-team protocol and honest status. Three of six controls remain unexecuted.}
+\label{tab:redteam}
+\end{table}
+
+\begin{tcolorbox}[keybox, title=Summary Judgment of the Red Team]
+The artifact produced by this methodology is \textbf{not yet safe to circulate as evidence}. It is safe to circulate as a \emph{proposal}, provided it travels with this document. The distinction is not pedantic: the framework's quantitative claims currently rest on unverified model-generated estimates, and its architecture has never been tested against a rigorously constructed alternative.
+\end{tcolorbox}
+
+% =====================================================================
+\section{Reproducibility Statement}
+\label{sec:repro}
+
+\subsection{Artifacts}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{@{}llp{6.2cm}@{}}
+\toprule
+\textbf{Artifact} & \textbf{Format} & \textbf{Location} \\
+\midrule
+Policy framework (v6) & \texttt{.docx} / \texttt{.pdf} & \texttt{[REPOSITORY PLACEHOLDER]} \\
+Fiscal model (v1.2) & \texttt{.xlsx} & \texttt{[REPOSITORY PLACEHOLDER]} \\
+Sensitivity grid (12 runs) & \texttt{.xlsx} sheet & Included in fiscal model \\
+Figure generation script & \texttt{.py} (matplotlib) & \texttt{[REPOSITORY PLACEHOLDER]} \\
+Document build scripts & \texttt{.js} (docx-js), \texttt{.py} (openpyxl) & \texttt{[REPOSITORY PLACEHOLDER]} \\
+Full session transcript & \texttt{.md} & \texttt{[REPOSITORY PLACEHOLDER]} \\
+This methodology paper & \texttt{.tex} / \texttt{.pdf} & \texttt{[REPOSITORY PLACEHOLDER]} \\
+\bottomrule
+\end{tabular}
+\caption{Artifact inventory and repository placeholders.}
+\end{table}
+
+\subsection{Data}
+
+\textbf{No primary data were collected.} All quantitative inputs are one of: (a) published aggregate statistics from public sources (CMS National Health Expenditure projections; CBO baselines; Census population estimates); or (b) \emph{model-generated analyst estimates}, explicitly labeled as such in the workbook. Category (b) inputs have \textbf{not} been validated against primary sources. Users of the model must treat them as parameters to be replaced, not as findings.
+
+\subsection{Environmental Parameters}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Primary model & Claude (Anthropic), Opus-class \\
+Model version & \texttt{[PLACEHOLDER --- record exact version string]} \\
+Interface & Conversational chat with tool use (code execution, web search) \\
+Session structure & Single extended session; sequential turns \\
+Sampling parameters & \texttt{[NOT DISCLOSED BY INTERFACE]} \\
+External review models & \texttt{[PLACEHOLDER --- 2 sessions, separate model(s)]} \\
+Compute environment & Linux container; Python 3, \texttt{openpyxl}, \texttt{matplotlib}; Node.js, \texttt{docx} \\
+Date of session & July 2026 \\
+\bottomrule
+\end{tabular}
+\caption{Environmental parameters. Note that full reproducibility is \emph{not achievable}: see below.}
+\end{table}
+
+\subsection{A Candid Statement on Reproducibility}
+
+We must be direct: \textbf{this workflow is not reproducible in the sense the term carries in experimental science.} LLM outputs are stochastic; the same prompts will not yield the same artifact. The conversational path was contingent on human interventions that were themselves unplanned. No seed, temperature, or sampling parameter was recorded, and the interface did not expose them.
+
+What \emph{is} reproducible is the \textbf{protocol}: the sequence of diagnostic inversion, architectural demand, evidentiary confrontation, adversarial simulation, quantitative instantiation, and exogenous review. We offer that protocol, not the artifact, as the contribution. A second researcher following it would produce a different framework---and if the protocol is sound, a comparably rigorous one. That claim, too, is untested.
+
+% =====================================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+The methodology documented here produced, in a single session, an artifact whose surface characteristics are indistinguishable from those of institutional policy work. We have argued that its genuine value lay in structured opposition---the model's willingness to reframe the problem, to surface the evidence that amended the design, and to simulate the adversaries who would eventually meet it. We have also argued that this value is fragile, because the same system will supply agreement as readily as opposition, and the user chooses which.
+
+The design principle that emerged from the policy work applies with equal force to the method that produced it: \emph{every assurance should become a mechanism}. The assurance that an AI-assisted policy artifact is rigorous is worth nothing. The mechanisms---provenance disclosure, primary-source verification, exogenous adversarial review, construction of the strongest opposing case---are worth everything, and three of them remain, at the time of writing, unexecuted.
+
+\section*{Acknowledgments}
+The framework and methodology were developed in collaboration with Claude (Anthropic). All directional judgments, value commitments, and final decisions were made by the human author, who bears sole responsibility for the contents. Two external panel reviews, conducted with separate language models, materially improved both the framework and this paper's account of its own weaknesses.
+
+\bibliography{references}
+
+\appendix
+\section{Placeholder BibTeX Entries}
+
+The following entries are provided in \texttt{references.bib}. \textbf{Each must be verified against the primary source before citation.}
+
+{\small
+\begin{verbatim}
+@article{arrow1963,
+  author  = {Arrow, Kenneth J.},
+  title   = {Uncertainty and the Welfare Economics of Medical Care},
+  journal = {American Economic Review}, volume = {53}, number = {5},
+  pages   = {941--973}, year = {1963}
+}
+@book{newhouse1993,
+  author    = {Newhouse, Joseph P. and {The Insurance Experiment Group}},
+  title     = {Free for All? Lessons from the RAND Health Insurance Experiment},
+  publisher = {Harvard University Press}, year = {1993}
+}
+@article{brotgoldberg2017,
+  author  = {Brot-Goldberg, Zarek C. and Chandra, Amitabh and
+             Handel, Benjamin R. and Kolstad, Jonathan T.},
+  title   = {What Does a Deductible Do? The Impact of Cost-Sharing on Health
+             Care Prices, Quantities, and Spending Dynamics},
+  journal = {Quarterly Journal of Economics}, volume = {132}, number = {3},
+  pages   = {1261--1318}, year = {2017}
+}
+@article{chernew2007,
+  author  = {Chernew, Michael E. and Rosen, Allison B. and Fendrick, A. Mark},
+  title   = {Value-Based Insurance Design},
+  journal = {Health Affairs}, volume = {26}, number = {2}, year = {2007}
+}
+@article{summers1989,
+  author  = {Summers, Lawrence H.},
+  title   = {Some Simple Economics of Mandated Benefits},
+  journal = {American Economic Review}, volume = {79}, number = {2},
+  pages   = {177--183}, year = {1989}
+}
+@article{gruber1994,
+  author  = {Gruber, Jonathan},
+  title   = {The Incidence of Mandated Maternity Benefits},
+  journal = {American Economic Review}, volume = {84}, number = {3},
+  pages   = {622--641}, year = {1994}
+}
+@article{grossman1972,
+  author  = {Grossman, Michael},
+  title   = {On the Concept of Health Capital and the Demand for Health},
+  journal = {Journal of Political Economy}, volume = {80}, number = {2},
+  pages   = {223--255}, year = {1972}
+}
+@article{finkelstein2012,
+  author  = {Finkelstein, Amy and others},
+  title   = {The Oregon Health Insurance Experiment: Evidence from the First Year},
+  journal = {Quarterly Journal of Economics}, volume = {127}, number = {3},
+  year    = {2012}
+}
+@article{pierson2000,
+  author  = {Pierson, Paul},
+  title   = {Increasing Returns, Path Dependence, and the Study of Politics},
+  journal = {American Political Science Review}, volume = {94}, number = {2},
+  year    = {2000}
+}
+\end{verbatim}
+}
+
+\end{document}
