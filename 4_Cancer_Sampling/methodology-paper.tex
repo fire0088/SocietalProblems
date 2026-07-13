@@ -1,0 +1,562 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage[breakable]{tcolorbox}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hidelinks,colorlinks=true,linkcolor=linknavy,urlcolor=linknavy,citecolor=linknavy]{hyperref}
+
+\definecolor{linknavy}{HTML}{184A7A}
+\definecolor{rulegray}{HTML}{9A9A94}
+\definecolor{boxbg}{HTML}{F4F2EC}
+\definecolor{warnbg}{HTML}{FBF0E8}
+
+\tcbset{
+  keybox/.style={colback=boxbg, colframe=rulegray, boxrule=0.4pt, arc=2pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, breakable},
+  warnbox/.style={colback=warnbg, colframe=orange!60!black, boxrule=0.6pt, arc=2pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, breakable}
+}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.7ex plus .4ex}{0.9ex}
+
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{0pt}
+\renewcommand{\arraystretch}{1.2}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\itshape Methodology of an AI-assisted identifiability audit}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.2pt}
+
+\title{\vspace{-1.5em}\textbf{Seven Refutations and a Missing Host}\\[0.4em]
+\large A Methodological Post-Mortem of an AI-Assisted Research Project\\
+\normalsize\itshape What the process caught, what it could not have caught,\\
+\itshape and what that implies for human and machine research practice}
+
+\author{Eric Schultz\\[0.2em]
+\small Independent Researcher --- ORCID 0009-0006-6283-1696\\[0.5em]
+\small\itshape Prepared with a five-perspective review panel:\\
+\small\itshape Research Methodologist, Cognitive Scientist, Reproducibility Auditor,\\
+\small\itshape Red-Team Analyst, and Document Architect}
+
+\date{\small Companion methodology paper to \emph{An Identifiability Audit of Evolutionary Oncology}}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{abstract}
+\noindent
+We document the complete methodology of a research project conducted in close
+collaboration with a large language model, in which an identifiability audit of
+evolutionary oncology was designed, executed, refuted, re-derived, and refuted again
+across a single extended session. The project produced a substantive scientific result
+--- that the parameters underpinning adaptive cancer therapy are unidentifiable under
+standard-of-care measurement, and that the field has been arguing about the wrong
+parameter --- but the process is at least as instructive as the product.
+
+\textbf{Seven distinct hypotheses were refuted, six of them by the authors' own
+adversarial self-testing.} Every error was one of \emph{interpretation}, never of
+\emph{implementation}: an independent verification suite found the code correct to
+$10^{-6}$ throughout. This asymmetry is the paper's central empirical claim about
+method, and it inverts where most research effort is currently spent.
+
+\textbf{The seventh refutation was found by an external human reviewer, and could not
+have been found internally.} The model had omitted the host organism from a model of
+drug holidays in cancer patients. No amount of internal verification --- multi-start
+optimisation, Fisher-information cross-checks, independent reimplementation, null
+controls --- can detect a missing compartment, because all of it operates \emph{inside}
+the specification under audit. We treat this as the load-bearing finding of the
+methodology and argue it generalises: \textbf{AI-assisted research systematically
+converts interpretation errors into detectable ones while leaving omission errors
+undetectable, and therefore concentrates residual risk in exactly the category humans
+are worst at auditing.}
+
+We provide a comparative analysis against standard human research practice, an
+adversarial threat model of the AI-assisted pipeline (including a documented,
+self-caught instance of citation fabrication), a reproducibility statement, and a set
+of concrete protocols we recommend to any researcher adopting this mode of work.
+\end{abstract}
+
+\tableofcontents
+
+\vspace{1em}
+\hrule
+\vspace{0.4em}
+
+\section{Introduction and scope}
+
+This is a methodology paper, not a results paper. The scientific object it refers to
+--- an identifiability audit of adaptive cancer therapy --- is described in a companion
+manuscript \citep{schultz2026audit} and summarised here only where the process cannot
+be understood without it.
+
+The claim we defend is narrow and, we think, testable: that \textbf{an AI-assisted
+research loop has a characteristic and predictable error profile}, distinct from that
+of an unassisted human researcher, and that this profile can be described precisely
+enough to be defended against. It is not the profile the popular discussion expects.
+The failures were not hallucinated facts or incoherent mathematics. The mathematics was
+correct every single time. The failures were failures of \emph{framing} --- of asking
+the wrong question with impeccable rigour --- and, in one decisive case, of omitting a
+piece of the world from the model entirely.
+
+We report the failures in full, in chronological order, including one in which the model
+fabricated bibliographic metadata and caught itself doing so. A methodology paper that
+reported only the successes of the method would be committing the precise error the
+method exists to prevent.
+
+\vspace{0.5em}
+\hrule
+\vspace{0.6em}
+\begin{center}\large\bfseries PART I --- THE RECORD\end{center}
+\vspace{0.2em}
+\hrule
+
+\section{Chronology of the research process}
+\emph{Contributed by the Research Methodologist \& Historian.}
+
+\subsection{Phase 0: an open question, deliberately underspecified}
+
+The project did not begin with a hypothesis. It began with an open prompt --- what is
+structurally underemphasised in cancer research? --- and a list of candidate deficits:
+evolutionary dynamics ignored in favour of static targeting; metastasis and dormancy
+understudied relative to primary tumour biology; preclinical irreproducibility
+\citep{errington2021investigating,begley2012raise}; prevention underfunded relative to
+treatment; overdiagnosis; the absence of any institution funded to run unprofitable
+trials; and a coarse measurement cadence.
+
+The choice to pursue the last of these was made on tractability grounds, not importance
+grounds. This is worth recording because it is a species of selection effect: \textbf{the
+question we could attack with the tools at hand became the question we attacked.} We
+have no argument that it was the most important item on the list.
+
+\subsection{Phase 1--7: the hypothesis chain}
+
+Table~\ref{tab:chain} is the complete record. Each row is a hypothesis that was
+seriously held, operationalised in code, and abandoned.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{0.9cm}p{5.4cm}p{7.4cm}}
+\toprule
+& \textbf{Hypothesis held} & \textbf{What refuted it}\\
+\midrule
+H1 & Oncology samples too slowly; denser ctDNA sampling closes the gap. \emph{(The founding thesis.)} & Direct test. 6 draws $\to$ 281 draws (daily, 40 weeks): sign-error rate $57\% \to 57\%$, \emph{exactly unchanged}. The system was not bandwidth-limited but information-limited.\\
+\addlinespace
+H2 & Clone number is recoverable with a per-variant panel; the polyclonal hazard is closable. & The candidate set. We had fitted $k=1,2,3,4$ --- all discrete. Admitting a \emph{continuum} model, BIC preferred it in \emph{both} worlds, including 6/8 against a genuinely 3-clone truth.\\
+\addlinespace
+H3 & The fitness cost of resistance $c$ is the quantity to measure. \emph{(The field's framing, inherited unaudited.)} & A sweep we had no particular reason to run. With $c = 0$ --- resistance entirely free --- adaptive therapy still beat MTD substantially. The cost was not the mechanism; competition ($\alpha$) was.\\
+\addlinespace
+H4 & The benefit of adaptive therapy is flat in $c$; the fitness cost is irrelevant. & Our own arithmetic. We had normalised by MTD survival, which \emph{also} rises with $c$. In absolute days the benefit roughly doubles. A moving denominator concealed a real effect.\\
+\addlinespace
+H5 & The directional suppression coefficient $\alpha_{SR}$ is structurally unidentifiable under any design. & Two errors. (i) We applied a \emph{per-patient} standard to $\alpha_{SR}$ that no other parameter had been held to. Pooled at $n=10$ it resolves cleanly. (ii) The bound came from pseudo-inverting a Fisher matrix with $\kappa \sim 10^7$, and was \emph{non-monotone in the data} --- a numerical red flag we read as a finding.\\
+\addlinespace
+H6 & Resource supply rate can be used to vary competition strength in a mechanistic model. & The $R^*$ rule \citep{tilman1982resource}. Equilibrium resource level is independent of supply. There was never a no-competition control. The mis-specified experiment produced a clean-looking, entirely spurious $11\times$ inversion of the headline result.\\
+\addlinespace
+\textbf{H7} & \textbf{Any incidental treatment interruption is a free excitation of the system.} & \textbf{An external human reviewer.} A Grade 3/4 toxicity hold is not a clean drug-off window --- it is a systemic crisis that alters the very growth and competition parameters being measured. \textbf{No internal method found this, and none could have.}\\
+\bottomrule
+\end{tabular}
+\caption{The complete hypothesis chain. Six refutations were internal; the seventh, and
+most consequential, was not.}
+\label{tab:chain}
+\end{table}
+
+\subsection{The three genuine pivots}
+
+Three moments changed the direction of the work rather than merely correcting it.
+
+\textbf{(1) Reframing from biology to information.} The decisive move was to stop asking
+\emph{does a fitness cost exist?} --- a biological question the field has debated for a
+decade --- and instead ask \emph{could we tell, from the data we collect?} This is a
+question about Fisher information, not about cancer, and it is answerable in an
+afternoon. The reframing is the entire reason the project produced anything.
+
+\textbf{(2) The $R^*$ rule.} Realising that equilibrium resource concentration is
+independent of supply rate \citep{tilman1982resource} invalidated an entire mechanistic
+experiment \emph{that had already produced a confident, publication-shaped table}. The
+question that caught it --- ``what does this knob actually \emph{do} to the
+equilibrium?'' --- should have been asked before running the sweep, not after.
+
+\textbf{(3) Independent corroboration we did not expect.} Only during the citation pass
+did we discover \citet{bacevic2017spatial}, who report experimentally that
+\emph{spatial competition alone} constrains resistance to targeted therapy. Our audit
+had derived from scratch that competition, not fitness cost, drives adaptive therapy.
+An existing experiment already said so, and the theoretical literature had not
+connected it. This converted a surprising simulation result into a simulation result
+that agrees with a real experiment.
+
+\vspace{0.5em}
+\hrule
+\vspace{0.6em}
+\begin{center}\large\bfseries PART II --- ANALYSIS\end{center}
+\vspace{0.2em}
+\hrule
+
+\section{Comparative analysis: the AI loop versus standard practice}
+\emph{Contributed by the AI Safety \& Cognitive Scientist.}
+
+\subsection{The economics of refutation}
+
+The single largest methodological difference is not intelligence. It is
+\textbf{the marginal cost of attempting to destroy your own claim.}
+
+In standard practice, testing H1 --- does denser sampling actually help? --- requires
+writing a simulation, validating it, running it, and analysing it: days to weeks of a
+researcher's time, and the researcher already believes the answer. The rational move,
+under realistic incentives, is not to check. In the loop described here, the same test
+cost roughly four minutes and no emotional investment. \textbf{When refutation becomes
+cheap, refutation becomes rational} --- and a thesis that would have survived to
+publication instead died in the first hour.
+
+This effect compounds. Six internal refutations occurred in a single session. No
+individual step was beyond a competent human; the difference is that a human would have
+had to \emph{want} to take all six, in sequence, against their own accumulating
+investment.
+
+\begin{tcolorbox}[keybox]
+\textbf{The core asymmetry.} Every error in this project was one of
+\emph{interpretation}. Not one was a coding error. An independent verification suite
+--- three model implementations agreeing to $<10^{-6}$; the piecewise integrator against
+brute-force Euler to $1.3\times10^{-4}$; the Fisher information against the numerical
+Hessian of the expected log-likelihood to $2\times10^{-8}$ --- passed cleanly at every
+stage, \textbf{including while the conclusions it was supporting were wrong}.
+
+Research culture invests heavily in code review, unit tests, and computational
+reproducibility. Those defences were, in this project, \textbf{100\% effective and
+0\% relevant}.
+\end{tcolorbox}
+
+\subsection{What human researchers should actually adopt}
+
+We offer six protocols. They are not AI-specific; the AI merely made them cheap enough
+to notice they were missing.
+
+\begin{enumerate}[leftmargin=1.8em,itemsep=0.4em]
+
+\item \textbf{Run the identifiability audit \emph{before} the experiment, not after the
+disagreement.} The entire contribution of the companion paper is that a decade of
+argument was conducted over parameters that, under the field's own model and its own
+data, could not have been measured either way. Ask what your protocol can \emph{see}
+before you argue about what your model \emph{implies}
+\citep{raue2009structural,eisenberg2017confidence}.
+
+\item \textbf{Audit the candidate set, not just the model.} H2 died because our model
+selection could only choose among the models we offered it. Concluding ``the tumour is
+discrete'' from a menu of exclusively discrete models is circular. \textbf{Before
+running model selection, write down the class of model you have made it impossible to
+select.}
+
+\item \textbf{Treat every normalisation as a suspect.} H4 --- reporting a
+\emph{relative} gain whose denominator was itself moving with the parameter of interest
+--- is the most ordinary statistical error in the record, and it produced the most
+confident sentence in the draft it appeared in. This is a special case of the garden of
+forking paths \citep{gelman2013garden}: the normalisation was not chosen dishonestly,
+it was chosen \emph{because it looked clean}, immediately after we became excited.
+
+\item \textbf{Distrust bounds computed on ill-conditioned surfaces --- and check
+monotonicity as a diagnostic.} H5's spurious standard errors were \emph{non-monotone in
+the quantity of data}. More data cannot reduce information. That non-monotonicity was
+the numerics announcing that the bound was meaningless, and we read it as a substantive
+finding. \textbf{A cheap, general check: if your uncertainty does not shrink when you
+add data, your uncertainty estimate is broken, not interesting.}
+
+\item \textbf{Ask what every knob controls before you turn it.} H6 produced a
+fully-formed spurious result because we varied a parameter that, by the $R^*$ rule,
+does not control the thing we believed it controlled. Nothing in the output looked
+wrong.
+
+\item \textbf{Maintain an errata log as a first-class artefact.} The companion paper
+carries its seven refutations in the body, not a supplement. This is unusual and
+strategically risky. It is also the only reason the eighth claim is worth anything: a
+reader can see exactly how many times we were wrong, and by what mechanism.
+
+\end{enumerate}
+
+\subsection{What the loop is bad at, and it is not what you expect}
+
+The AI-assisted loop was strong at exactly the things folklore says it is weak at:
+arithmetic, code correctness, internal consistency, and the willingness to abandon a
+cherished claim (there being no cherishing). It was weak at exactly one thing, and that
+weakness is the subject of the next two sections: \textbf{it could not notice what was
+not there.}
+
+\section{Adversarial stress-testing and threat modelling}
+\emph{Contributed by the AI Red Teaming \& Vulnerability Analyst.}
+
+We evaluate the pipeline as an attacker would: not asking whether it produced a good
+result, but asking \textbf{what class of wrong result it would produce with maximum
+confidence and minimum detectability.}
+
+\subsection{Threat model}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{3.5cm}p{4.6cm}p{5.6cm}}
+\toprule
+\textbf{Failure mode} & \textbf{Did it occur?} & \textbf{Detection / mitigation}\\
+\midrule
+\textbf{Confirmation-bias feedback loop} & \textbf{Yes --- H4.} A normalisation was chosen that flattered a conclusion reached minutes earlier. & Caught internally, but only on a later unrelated audit. \emph{Mitigation:} pre-register the estimand and the normalisation before running the sweep.\\
+\addlinespace
+\textbf{Fabrication / hallucination} & \textbf{Yes --- bibliography.} Author lists truncated in sources (``Diehl F, Schmidt K, Choti MA, \emph{et al.}'') were silently completed from parametric memory across 7 entries. One reconstruction propagated a name error. & Caught by an explicit verification pass in which every author name was required to trace to a source actually read. All 7 entries were truncated to verified authors $+$ \texttt{and others}. \emph{This is the canonical LLM failure mode and it occurred exactly where attention was lowest.}\\
+\addlinespace
+\textbf{Fluency-as-evidence} & \textbf{Yes --- H6.} The mis-specified mechanistic model produced a clean, well-formatted, publication-shaped table pointing the \emph{opposite} direction from the truth. & \textbf{Nothing in the output looked wrong.} No internal check flags a well-executed experiment on the wrong system. \emph{Mitigation:} require a mechanistic account of what each swept parameter controls at equilibrium.\\
+\addlinespace
+\textbf{Sycophancy / drift toward the user's framing} & \textbf{Structurally present.} The model inherited the field's cost-of-resistance framing (H3) uncritically, and would plausibly have inherited the user's had one been asserted. & Partially mitigated by the user posing open rather than leading questions. \emph{Unresolved risk.}\\
+\addlinespace
+\textbf{Monoculture / correlated blind spots} & \textbf{Yes --- H7, decisively.} The same system generated the hypothesis, the model, the code, \emph{and} the critique. Its blind spots are therefore perfectly correlated across all four roles. & \textbf{Not mitigable from inside.} See \S\ref{sec:h7}.\\
+\addlinespace
+\textbf{Prompt injection via retrieved content} & Not observed. Literature search returned no adversarial content. & Live vector in any pipeline with automated retrieval. Treat fetched text as untrusted data, never as instruction.\\
+\addlinespace
+\textbf{Optimiser-assisted confirmation} & Guarded against. & Multi-start MLE with restarts drawn from the \emph{entire} admissible box, never perturbed from the truth; $c$ free on $[-3, 0.99]$ so a fit was \emph{permitted} to conclude resistance is beneficial.\\
+\bottomrule
+\end{tabular}
+\caption{Threat model. Five of seven anticipated failure modes actually occurred.}
+\end{table}
+
+\subsection{Red-team protocols that were executed}
+
+\begin{itemize}[leftmargin=1.4em,itemsep=0.25em]
+\item \textbf{Independent reimplementation.} Three separate implementations of the
+dynamics, cross-checked to $<10^{-6}$.
+\item \textbf{Analytic-versus-numerical cross-check.} Fisher information matrix versus
+the numerical Hessian of the expected negative log-likelihood: agreement to
+$2\times10^{-8}$.
+\item \textbf{Integrator validation.} Event-driven piecewise LSODA against a
+brute-force 20{,}000-step Euler integration: $1.3\times10^{-4}$.
+\item \textbf{Observable saturation check.} Verified the allele-fraction channel never
+pinned at its floor or ceiling, which would have silently destroyed sensitivity.
+\item \textbf{Seed-set stability.} Headline rates recomputed across independent seed
+sets; this demoted several point estimates to ranges (50--57\%, not 57\%) and caught one
+near-miss where a 57\% and a 14\% figure were both drawn from $n=14$ replicates.
+\item \textbf{A genuine null control.} The MacArthur model's $\omega = 0$ arm --- clones
+consuming \emph{different} resources --- is a real zero-competition control, and returns
+exactly zero benefit. Its absence was precisely what invalidated H6.
+\end{itemize}
+
+\subsection{The protocol that was missing, and had to come from outside}
+\label{sec:h7}
+
+\begin{tcolorbox}[warnbox]
+\textbf{Every protocol above operates \emph{inside} the model specification.}
+
+Multi-start optimisation searches the parameter space of a given model. Cross-checking
+the Fisher information against the Hessian verifies that two derivations of the
+\emph{same} likelihood agree. Independent reimplementation confirms that three encodings
+of the \emph{same} dynamics coincide. A null control tests a hypothesis
+\emph{within} the specified system.
+
+\textbf{None of them can detect that the system is missing a compartment.} They will all
+pass, cleanly and to eight decimal places, on a model of a tumour that has no patient
+attached to it.
+\end{tcolorbox}
+
+This is what happened. The design's central move is to exploit incidental treatment
+interruptions as ``free excitations'' of the tumour system. An external reviewer with
+clinical knowledge observed that a hold for Grade 3/4 toxicity is not a clean
+perturbation --- the patient is in systemic crisis (hepatotoxicity, neutropenia,
+inflammation), and the growth and competition parameters of a tumour in a metabolically
+deranged host are not those of a tumour in a well one.
+
+When we modelled this, the critique was confirmed and the structure of the damage proved
+sharper than the critique itself. A \emph{symmetric} host insult is comparatively benign
+--- the fitness cost is a \emph{ratio}, and a common factor largely cancels. A
+\emph{differential} insult that spares the resistant clone is fatal: the sign-error rate
+returns to \textbf{58\%}, and, worst of all, the bias runs \textbf{downward} --- toward
+concluding that resistance is free, which is \emph{precisely} the error the entire paper
+exists to prevent. The confound is aligned with the failure mode. Fitting the host effect
+as a nuisance parameter does not rescue it ($36\% \to 22\%$).
+
+The remedy is an inclusion criterion, not a statistical one: only interruptions that
+perturb the drug \emph{and nothing else} --- insurance lapse, supply interruption,
+scheduled surgery, non-adherence --- are clean excitations.
+
+\begin{tcolorbox}[keybox]
+\textbf{The generalisable claim.} An AI-assisted loop with adequate verification
+converts \emph{interpretation errors} into \emph{detectable} errors at very low cost.
+It does nothing whatsoever about \emph{omission errors} --- and by dramatically raising
+the polish, internal consistency, and apparent rigour of the artefact, it makes
+omission errors \emph{harder} for downstream readers to detect.
+
+\textbf{Residual risk is therefore concentrated entirely in the category the method
+cannot see, and delivered in the most persuasive possible packaging.}
+\end{tcolorbox}
+
+\subsection{Recommended protocols for future work}
+
+\begin{enumerate}[leftmargin=1.8em,itemsep=0.3em]
+\item \textbf{Mandatory external domain review, treated as a required experiment rather
+than a courtesy.} H7 was worth more than any internal check performed. Budget for it
+accordingly.
+\item \textbf{Heterogeneous adversaries.} A critique generated by the same model that
+generated the work inherits its blind spots exactly. Use a different architecture, a
+different training distribution, or --- best --- a human with different training.
+\item \textbf{An explicit ontology review.} Before verification begins, ask: \emph{what
+entities exist in the real system that do not appear in this model?} For this project
+the correct answer included ``the patient'', and no one asked.
+\item \textbf{Pre-register the estimand and the normalisation.} Defuses H4-class errors.
+\item \textbf{Require every cited fact to trace to a source actually retrieved in-session.}
+Defuses the bibliography failure. Parametric memory is not a citation.
+\end{enumerate}
+
+\section{Limitations and broader impacts}
+\emph{Contributed by the Ethics \& Reproducibility Auditor.}
+
+\subsection{Limitations of the scientific object}
+
+The companion paper is \textbf{entirely simulation-based}. It makes no empirical claim
+about any patient, and its central assertion --- that certain parameters are
+unidentifiable under current measurement --- is a statement about information in a model,
+not a discovery about cancer. The efficiency figures ($n \approx 7$--$10$ patients) are
+\emph{ideal-pooling bounds} and will inflate under realistic between-patient
+heterogeneity; the qualitative claim (tens, not tens of thousands) is robust, the integer
+is not, and it is the integer a reader will quote.
+
+\subsection{Limitations and hazards of the methodology}
+
+\begin{itemize}[leftmargin=1.4em,itemsep=0.35em]
+
+\item \textbf{The method raises the production value of error.} This is the principal
+societal hazard, and it deserves to be stated plainly. A wrong result that is
+well-typeset, correctly cited, internally consistent, and accompanied by a passing
+verification suite is \emph{more} dangerous than a wrong result that looks wrong. H6
+produced exactly such an artefact. Peer review's informal defences --- sloppiness as a
+signal of unreliability --- are substantially degraded by this class of tool.
+
+\item \textbf{Automation bias in reviewers.} A manuscript displaying this density of
+self-refutation and verification may induce unearned trust. \textbf{The errata section is
+not evidence that the remaining claims are correct.} It is evidence only that a
+particular class of error was searched for.
+
+\item \textbf{Speed outruns domain contact.} The project reached a fully-formed,
+cited, typeset manuscript before a single domain expert had seen it --- which is
+precisely how a model of cancer patients came to have no patients in it. The traditional
+slowness of research is partly incidental friction and partly a \emph{sampling process
+over human expertise}. Removing the friction removes the sampling.
+
+\item \textbf{Selection effect on the research question.} We chose the deficit we could
+attack, not the deficit that mattered most (\S2.1). AI assistance sharpens this bias by
+making formally tractable questions dramatically cheaper relative to empirically
+grounded ones.
+
+\item \textbf{Documented fabrication incident.} During bibliography construction, author
+lists that appeared truncated in retrieved sources were completed from parametric memory
+in seven entries; one reconstruction propagated a name error. This was caught by an
+explicit verification pass and corrected. \textbf{We report it because a methodology
+paper that concealed it would be worthless.} Any reader adopting this workflow should
+assume this failure will occur in their pipeline, because it will.
+
+\item \textbf{Single-operator, single-session.} $n = 1$. Everything here is a case study.
+We make no claim that these findings replicate across researchers, models, or domains,
+and we would regard a confident generalisation from this sample as an instance of the
+error the paper documents.
+\end{itemize}
+
+\subsection{Ethical considerations}
+
+No human subjects, no patient data, and no personally identifiable information were
+involved at any stage; all data were synthetic. The proposed clinical design is
+\textbf{purely observational by construction} --- it prescribes no change to any
+treatment decision --- which was an explicit design constraint from the outset rather
+than a post-hoc justification. Nevertheless, we note that a compelling, well-produced
+simulation argument could influence clinical research priorities, and that this
+influence would be unearned: \textbf{no result in the companion paper constitutes
+evidence about a patient.}
+
+\section{Reproducibility statement}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{4.3cm}p{9.5cm}}
+\toprule
+\textbf{Artefact} & \textbf{Location / value}\\
+\midrule
+Code repository & \texttt{[PLACEHOLDER: repository URL]}\\
+Archived snapshot & \texttt{[PLACEHOLDER: Zenodo DOI]}\\
+Companion manuscript & \texttt{[PLACEHOLDER: preprint DOI]}\\
+Simulation scripts & 27 Python modules: dynamics, Fisher information, bootstrap MLE, cohort pooling, ontology selection, scheduling, mechanistic replication, toxicity confound, verification suite\\
+Data & \textbf{None.} All results are generated from synthetic data; no external dataset is used or required.\\
+Random seeds & Explicitly set and reported per experiment; headline results verified across independent seed sets\\
+Language / libraries & Python 3; NumPy, SciPy (\texttt{solve\_ivp} LSODA, \texttt{least\_squares}), Matplotlib\\
+Hardware & Single CPU core; no GPU\\
+Total compute & $<1$ CPU-hour. \emph{Energy cost of the simulations is negligible; the dominant environmental cost of this project is LLM inference, which we are unable to quantify from available disclosures.}\\
+Verification suite & \texttt{verify.py} --- cross-implementation, integrator, Fisher-vs-Hessian, saturation, seed-stability. All checks pass.\\
+Session transcript & \texttt{[PLACEHOLDER: link, if released]} --- \emph{we recommend release; the errors are the contribution}\\
+\bottomrule
+\end{tabular}
+\caption{Reproducibility statement. Placeholders to be completed at deposition.}
+\end{table}
+
+\textbf{Reproduction instructions.} Every numerical claim in the companion paper is
+regenerated by executing the corresponding module. No result depends on proprietary
+data, licensed software, or specialised hardware. The verification suite should be run
+first; if it fails, no downstream number should be trusted.
+
+\textbf{A caveat specific to this workflow.} Reproducibility of the \emph{code} is not
+reproducibility of the \emph{research}. Every error in this project would reproduce
+perfectly. A reader re-running our scripts would obtain our wrong answers to eight
+decimal places, seven times over. \textbf{Computational reproducibility is orthogonal to
+correctness, and this project is an unusually clean demonstration of that fact.}
+
+\section{Conclusion}
+
+The scientific result of this project is that evolutionary oncology cannot currently
+measure the parameters its models depend on, and has been arguing about the wrong one.
+The methodological result is more uncomfortable.
+
+An AI-assisted loop refuted six of its own hypotheses in a single session --- a rate no
+unassisted researcher would sustain, not through lack of ability but through entirely
+rational unwillingness to spend weeks disproving their own work. It maintained perfect
+code correctness throughout, verified to eight decimal places. It produced a polished,
+cited, internally consistent manuscript.
+
+And it left the patient out of a model of patients.
+
+\begin{tcolorbox}[keybox]
+\textbf{Internal rigour cannot find a missing compartment.} Every verification protocol
+we ran --- and we ran good ones --- operates inside the specification under audit. They
+were 100\% effective and 0\% relevant to the one error that could have invalidated the
+work.
+
+The correct lesson is not that AI-assisted research is unreliable. It is that its
+reliability profile is \textbf{sharply non-uniform}: near-perfect where verification
+applies, and \emph{unchanged} where it does not --- while the persuasiveness of the
+output rises in both cases.
+
+The defence is not more verification. It is a human who knows what the model left out.
+\end{tcolorbox}
+
+\vspace{0.5em}
+
+We would encourage anyone adopting this mode of work to keep an errata log, publish it,
+and treat the first domain expert who reads their manuscript as the most important
+experiment they will run.
+
+\vspace{1em}
+\hrule
+\vspace{0.6em}
+
+{\small\itshape Correspondence: ORCID 0009-0006-6283-1696. The authors declare no
+competing interests. Entries marked \texttt{[PLACEHOLDER]} are to be completed at
+deposition. Bibliographic entries marked \texttt{[UNVERIFIED]} in the source
+\texttt{.bib} have not been checked against primary sources in-session and must be
+verified before submission --- an instruction we issue in light of \S5.2.}
+
+\bibliographystyle{unsrtnat}
+\bibliography{methodology}
+
+\end{document}
