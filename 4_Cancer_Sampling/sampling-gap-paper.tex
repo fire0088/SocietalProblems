@@ -1,0 +1,1157 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage[hidelinks,colorlinks=true,linkcolor=linknavy,urlcolor=linknavy,citecolor=linknavy]{hyperref}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{tabularx}
+\usepackage[breakable]{tcolorbox}
+\usepackage[numbers,sort&compress]{natbib}
+
+\definecolor{linknavy}{HTML}{184A7A}
+\definecolor{rulegray}{HTML}{9A9A94}
+\definecolor{boxbg}{HTML}{F4F2EC}
+
+\tcbset{
+  keybox/.style={
+    colback=boxbg, colframe=rulegray, boxrule=0.4pt, arc=2pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, breakable
+  }
+}
+
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.6ex plus .4ex}{0.9ex}
+
+\newcommand{\ceff}{c_{\mathrm{eff}}}
+\newcommand{\aSR}{\alpha_{SR}}
+\newcommand{\aRS}{\alpha_{RS}}
+\newcommand{\chat}{\hat{c}}
+
+\setlength{\parskip}{0.55em}
+\setlength{\parindent}{0pt}
+\renewcommand{\arraystretch}{1.18}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\itshape An identifiability audit of evolutionary oncology}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.2pt}
+
+\title{\vspace{-1.5em}\textbf{An Identifiability Audit of Evolutionary Oncology}\\[0.35em]
+\large What standard-of-care measurement can and cannot recover ---\\and what it would take}
+
+\author{Eric Schultz\\[0.2em]
+\small Independent Researcher\\
+\small ORCID 0009-0006-6283-1696}
+
+\date{\small Working paper}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{tcolorbox}[keybox]
+\small
+\textbf{Note on structure.} \textbf{Part I} (\S\S1--\ref{sec:limits}) states what we
+believe. \textbf{Part II} (\S\ref{sec:errata}) states how we got there --- including
+every hypothesis of our own that we had to abandon, and the one a referee had to find
+for us.
+\end{tcolorbox}
+
+\section*{Abstract}
+
+Adaptive and evolution-guided cancer therapies rest on quantitative claims about
+tumour population dynamics. We ask a prior question: \textbf{given the data
+oncology actually collects, can those claims be tested at all?}
+
+They cannot. Fitting a two-population competition model to simulated patients
+under uninterrupted maximum-tolerated-dose (MTD) therapy with q8w restaging,
+\textbf{roughly half (50--57\%) of honest maximum-likelihood fits conclude that
+resistance is free or advantageous when its true fitness cost is 30\%} --- worse
+than a coin flip, with a median estimate of $\chat = -2.17$. The competition
+coefficient is worse still: its estimate wanders the entire admissible range.
+The Fisher information matrix has condition number ${\sim}10^{10}$ and the
+likelihood is flat to the boundary. These parameters are not imprecise; they are
+\emph{unidentified}.
+
+\textbf{Denser sampling does not fix this.} A sevenfold increase in blood draws
+leaves the sign-error rate exactly unchanged. Identifiability requires a
+\emph{conjunction} of three things --- a clone-resolved observable, a window with
+the drug \textbf{off}, and sampling concentrated around that window --- and
+removing any one collapses it. Because treatment interruptions already occur in
+routine care for clinical reasons, the triad can be assembled \textbf{without
+prescribing any change in treatment}. Under this design the fitness cost resolves
+at $n \approx 7$ patients and the directional suppression coefficient at
+$n \approx 10$, at ${\sim}18$ blood draws each.
+
+Crucially, \textbf{not every interruption is usable}. A hold for Grade 3/4 toxicity is
+not a clean perturbation but a systemic crisis, and if the host insult spares the
+resistant clone --- biologically plausible --- it biases the fitness cost
+\emph{downward}, reproducing precisely the error the design exists to prevent
+(sign-error returns to 58\%). The identifying set must be restricted to interruptions
+that perturb the drug and nothing else: insurance lapses, supply interruptions,
+scheduled surgery, non-adherence. The design can test this assumption on itself.
+
+We then ask what the data \emph{should} be asked for, and find the field is asking
+for the wrong thing. \textbf{The benefit of adaptive therapy is driven by
+competition, not by the fitness cost of resistance.} A fitness cost is neither
+necessary (36 days of benefit when resistance is \emph{free or advantageous}) nor
+sufficient (4 days when the cost is large but competition is weak). Competition
+carries roughly twice the leverage. This replicates in a mechanistic
+consumer--resource model where competition \emph{emerges} from resource sharing
+rather than being a free coefficient, and where a genuine zero-competition control
+exists (leverage ratio 1.65 vs 1.95).
+
+Finally, \textbf{scheduling requires no model at all}: closed-loop feedback
+captures 86\% of an oracle's gain, where an open-loop schedule from a misspecified
+model captures 6\%.
+
+\vspace{1em}
+\hrule
+\vspace{0.6em}
+\begin{center}\large\bfseries PART I --- WHAT WE BELIEVE\end{center}
+\vspace{0.2em}
+\hrule
+
+\section{Introduction: a field with structural, not conceptual, deficits}
+
+Cancer research does not suffer from a shortage of ideas or of rigour. It suffers,
+like any large scientific enterprise, from deficits that are \emph{structural} ---
+ones that no individual investigator is incentivised to repair, however clearly they
+see them. We list them not as an indictment but to locate this paper among them, and
+because the last item is the one we can actually do something about.
+
+\begin{enumerate}[label=(\roman*),leftmargin=2.2em,itemsep=0.35em]
+\item \textbf{Cancer is an evolving population, treated as a static target.}
+Resistant subclones are near-inevitable in large heterogeneous metastatic
+disease~\citep{gerlinger2012intratumor}, and MTD therapy plausibly
+\emph{accelerates} their expansion by removing the sensitive competitors
+suppressing them --- competitive release. Adaptive therapy has been formalised for
+over a decade~\citep{gatenby2009adaptive}, validated preclinically
+\citep{enriquez2016exploiting} and tested in metastatic castrate-resistant prostate
+cancer~\citep{zhang2017integrating}; MTD remains standard of care.
+
+\item \textbf{Metastasis and dormancy --- what actually kills patients --- are
+studied less than primary tumour biology,} which is more tractable and more
+publishable.
+
+\item \textbf{Much of the foundational preclinical literature does not
+replicate}~\citep{errington2021investigating,errington2021challenges,begley2012raise,prinz2011believe},
+and no funded institution exists whose job is to confirm a preclinical result
+before it consumes a phase III.
+
+\item \textbf{Prevention and causation are underweighted relative to treatment,}
+despite prevention accounting for several of the largest historical wins.
+
+\item \textbf{Overdiagnosis and surrogate endpoints corrupt the measurement of
+success.} Progression-free survival is not survival.
+
+\item \textbf{Nobody runs the trials nobody profits from} --- off-patent agents,
+generic combinations, de-escalation, schedule variation.
+
+\item \textbf{The measurement protocol cannot identify the quantities the models
+depend on.}
+\end{enumerate}
+
+This paper is about (vii). It is \textbf{not} a claim that adaptive therapy works.
+It is a narrower and more defensible claim: \textbf{under current measurement
+practice, adaptive therapy's central premises are not testable} --- and this is
+fixable, cheaply, without asking any clinician to treat any patient differently.
+
+\section{The two candidate parameters}
+
+Adaptive therapy's mechanism is \emph{competitive suppression}: keep drug-sensitive
+cells alive so they hold resistant cells in check. Two parameters could underwrite
+this, and the field has fixated on one of them.
+
+\textbf{The fitness cost of resistance, $c$.} Resistant cells are assumed to grow
+more slowly without drug: $r_R = r_S(1-c)$, a life-history trade-off
+\citep{aktipis2013life} with direct empirical support in EGFR-mutant lung cancer
+\citep{chmielecki2011optimization}. The standard framing is that adaptive therapy
+works \emph{if and only if} $c > 0$~\citep{gatenby2009adaptive}. This is the
+parameter the literature argues about.
+
+\textbf{The competition coefficient, $\alpha$.} Specifically $\aSR$: the degree to
+which sensitive biomass denies carrying capacity to resistant cells. There is direct
+experimental evidence that spatial competition alone constrains resistance
+\citep{bacevic2017spatial}. This is the parameter nobody measures.
+
+We will show that neither is identifiable under standard of care; that both become
+identifiable under a cheap observational redesign; and that \textbf{$\alpha$, not
+$c$, is the one that decides the question.}
+
+\section{Model and audit design}
+
+\textbf{Dynamics.} Two competing populations under therapy:
+\begin{align}
+\frac{dS}{dt} &= r_S\, S \left(1 - (S + \aRS R)\right) - d\, u(t)\, S\\
+\frac{dR}{dt} &= r_R\, R \left(1 - (R + \aSR S)\right), \qquad r_R = r_S(1-c)
+\end{align}
+with $u(t) \in \{0,1\}$ the drug indicator. Truth: $r_S = 0.03$/d, $c = 0.30$,
+$\alpha = 1.0$, $d = 0.05$/d, initial resistant fraction $f_0 = 0.01$.
+
+\textbf{Observation.} ctDNA is cleared from plasma with a half-life of minutes to
+a few hours~\citep{lo1999rapid,diehl2008circulating,esmo2022ctdna}, so plasma
+concentration is a near-instantaneous readout of current shedding rather than a
+smoothed average. Shedding has a burden-proportional and a death-proportional
+component, the latter reproducing the transient ctDNA \emph{rise} seen days after
+cytotoxic initiation~\citep{esmo2022ctdna}:
+\begin{equation}
+y(t) = (S + \rho R) + \kappa\, d\, u(t)\, S
+\end{equation}
+
+Two observables are compared:
+\begin{itemize}[leftmargin=1.4em,itemsep=0.2em]
+\item \textbf{total} --- plasma ctDNA burden alone (a tumour-agnostic assay), 30\%
+CV lognormal noise.
+\item \textbf{clone-resolved} --- burden \textbf{and} the resistant allele fraction
+(a tumour-informed panel), on the logit scale.
+\end{itemize}
+
+\textbf{Protocols.} \emph{Continuous} MTD (standard of care); and an
+\emph{incidental hold} --- an unplanned interruption of $L$ days, of the kind that
+occurs routinely for toxicity, dose reduction, surgery, insurance gaps, or
+non-adherence.
+
+\textbf{Inference.} We distinguish \emph{structural} from \emph{practical}
+non-identifiability throughout~\citep{raue2009structural,miao2011identifiability},
+following the approach of \citet{eisenberg2017confidence} for cancer chemotherapy
+models. We use Fisher information and Cram\'er--Rao bounds, validated throughout
+against \textbf{multi-start} maximum likelihood on synthetic patients,
+with $c$ free on $[-3, 0.99]$ so a fit is \emph{permitted} to conclude resistance
+is beneficial. Restarts are drawn from the whole parameter box, not perturbed from
+the truth.
+
+\textbf{The test.} Not ``is $c$ estimated precisely'' but the weakest possible bar:
+\textbf{can we determine its sign?}
+
+\section{Under standard of care, nothing is identifiable}
+
+\subsection{The fitness cost}
+
+\begin{center}
+\begin{tabular}{lrrrc}
+\toprule
+\textbf{Sampling} & \textbf{Draws} & \textbf{cond(FIM)} & \textbf{SE($c$)} & \textbf{Sign resolved?}\\
+\midrule
+\textbf{standard (q8w)} & 6 & $6.6\times10^{10}$ & 5.21 & no\\
+q4w & 11 & $5.8\times10^{10}$ & 3.72 & no\\
+q2w & 21 & $6.3\times10^{10}$ & 3.03 & no\\
+weekly & 41 & $6.8\times10^{10}$ & 2.44 & no\\
+\textbf{daily} & 281 & $7.6\times10^{10}$ & 1.07 & \textbf{no}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\emph{Total ctDNA, continuous MTD.} \textbf{Daily sampling for forty weeks --- 281
+draws --- fails.} The condition number is ${\sim}10^{10}$ throughout and barely
+moves with cadence: adding measurements does not add information about $c$.
+
+The estimator correlation matrix shows why: $\chat$ correlates with $\hat{r}_S$ at
+0.996, and $\hat{\alpha}$ with $\hat{f}_0$ at 1.000. \textbf{Total burden cannot
+distinguish a slow-growing resistant clone from a fast-growing clone that started
+rarer.} The clonal split is not in the observable.
+
+At these condition numbers a Cram\'er--Rao bound is a linearisation of a
+near-singular surface, so we fit synthetic patients directly. This degradation with
+parameter count is consistent with what is already known for simpler growth models:
+two-parameter models are practically identifiable while three-parameter models
+frequently are not, even on dense preclinical
+data~\citep{simpson2022parameter,porthiyas2024practical}, and lack of practical
+identifiability is a known route to confidently wrong
+predictions~\citep{gallo2022lack}.
+
+\subsection{Multi-start MLE: worse than the bound suggests}
+
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Design} & \textbf{median $\chat$} & \textbf{95\% interval} & \shortstack{\textbf{fits concluding resistance}\\\textbf{is FREE or BENEFICIAL}}\\
+\midrule
+\textbf{status quo} --- total, q8w, MTD & $\mathbf{-2.17}$ & $[-3.00, +0.88]$ & \textbf{50--57\%}\\
+dense only --- total, \textbf{weekly}, MTD & $-0.34$ & $[-3.00, +0.86]$ & \textbf{57\%}\\
+clones only --- cloneAF, q8w, MTD & $+0.25$ & $[-3.00, +0.74]$ & \textbf{37\%}\\
+\textbf{proposed} --- cloneAF, burst, 28d hold & $\mathbf{+0.33}$ & $[-0.06, +0.51]$ & \textbf{7--10\%}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The lower bound hits the \emph{box constraint} in the first three rows: the
+likelihood is flat to the boundary. The parameter is unidentified, and the ``SE''
+of 5.21 is a meaningless number attached to a flat surface.
+
+\begin{tcolorbox}[keybox]
+In a world where resistance carries a substantial 30\% fitness cost, a competent
+analyst fitting a competent model to competently collected data concludes that
+\textbf{resistance is free or advantageous roughly half the time}. The median
+honest estimate is $\chat = -2.17$: confidently, wildly, in the wrong direction.
+\end{tcolorbox}
+
+\subsection{The competition coefficient is worse}
+
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Design} & \textbf{median $\hat{\alpha}$} & \textbf{95\% interval} & \textbf{$\alpha=0$ excluded?}\\
+\midrule
+status quo & 3.000 \emph{(pinned at bound)} & $[0.000, 3.000]$ --- \textbf{the entire box} & no\\
+\textbf{proposed} & \textbf{0.867} & $\mathbf{[0.471,\ 1.573]}$ & \textbf{yes}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Under standard of care the estimate for $\alpha$ wanders the whole admissible
+range. There is essentially no information in the data about it.
+
+\section{The identifiability triad}
+
+\textbf{The three ingredients are conjunctive, not additive.} Removing any one
+collapses identifiability.
+
+\begin{itemize}[leftmargin=1.4em,itemsep=0.3em]
+\item \textbf{Sampling density alone:} 6 draws $\to$ 41 draws (a $7\times$ increase
+in phlebotomy). Sign-error: 57\% $\to$ \textbf{57\%}. \emph{Exactly unchanged.}
+\item \textbf{Clone resolution alone:} total ctDNA $\to$ total $+$ resistant allele
+fraction, at q8w. Sign-error: 57\% $\to$ \textbf{37\%}. Better; still catastrophic.
+\item \textbf{Both, plus a 28-day drug-off window:} \textbf{7--10\%}.
+\end{itemize}
+
+\subsection{Why the drug-off window is indispensable}
+
+Under continuous MTD the sensitive population is driven toward extinction, the
+competition term $\alpha S$ vanishes, and the resistant clone expands essentially
+unopposed at $r_R$ --- which is confounded with $r_S$ and $f_0$.
+
+\begin{tcolorbox}[keybox]
+A drug-off window is the only thing that lets the sensitive population re-express
+its growth advantage --- which is what competitive suppression \emph{is}. This is a
+system-identification truism: \textbf{you cannot identify a system you never
+excite.} Evolutionary oncology has been trying to.
+\end{tcolorbox}
+
+\subsection{What the interruption must look like}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Hold length} & \textbf{SE($c$)} & \textbf{Sign resolved (single patient)?}\\
+\midrule
+7 d & 0.394 & no\\
+21 d & 0.191 & no\\
+\textbf{28 d} & \textbf{0.151} & \textbf{yes}\\
+42 d & 0.107 & yes\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Hold \emph{timing} matters far less than hold \emph{length} (SE 0.177--0.247 for
+holds starting anywhere between days 28 and 196). This is fortunate: one cannot
+choose when a toxicity hold occurs, but one can choose to sample around it.
+
+\subsection{Design efficiency, in patients}
+
+Patients required to determine the sign of a subtle cost ($c = 0.15$), ideal-pooling
+bound:
+
+\begin{center}
+\begin{tabular}{lllrr}
+\toprule
+\textbf{Observable} & \textbf{Sampling} & \textbf{Protocol} & \textbf{Draws/pt} & \textbf{Patients}\\
+\midrule
+total & q8w & uninterrupted & 6 & \textbf{89{,}424}$^\dagger$\\
+total & burst & uninterrupted & 18 & 23{,}087$^\dagger$\\
+total & burst & 28d hold & 18 & 150\\
+cloneAF & q8w & uninterrupted & 6 & 102\\
+cloneAF & q8w & 28d hold & 6 & 23\\
+\textbf{cloneAF} & \textbf{burst} & \textbf{28d hold} & \textbf{18} & \textbf{7}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+{\small $^\dagger$ Read as ``unidentified'', not as a literal sample size --- these
+are extrapolations from a singular surface.}
+
+The \textbf{directional} suppression coefficient $\aSR$ (with $\aSR$ and $\aRS$ kept
+separate --- the hard case) resolves at $\mathbf{n \approx 10}$:
+
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+\textbf{patients} & \textbf{median $\hat{\alpha}_{SR}$} & \textbf{95\% interval} & \textbf{resolved?}\\
+\midrule
+1 & 1.201 & $[-1.000, 3.000]$ & no\\
+5 & 0.774 & $[-0.733, 2.184]$ & no\\
+\textbf{10} & \textbf{1.048} & $\mathbf{[0.472,\ 1.941]}$ & \textbf{yes}\\
+40 & 0.986 & $[0.511, 1.322]$ & yes\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{No single patient's data will do it; a cohort of ten will.} This is a
+\emph{cohort} design, not a personalised one --- it can establish whether
+competitive suppression is real in a tumour type, not whether it is operating in
+the patient in front of you.
+
+\section{Robustness, and the right estimand}
+
+\subsection{What the design absorbs}
+
+\begin{itemize}[leftmargin=1.4em,itemsep=0.3em]
+\item \textbf{Differential clone shedding.} If clones shed ctDNA at different rates
+($\rho = \beta_R/\beta_S \neq 1$), the plasma allele fraction is a biased view of
+clonal composition. Making $\rho$ a free parameter costs \textbf{nothing}: SE($c$)
+unchanged at 0.151. Even \emph{wrongly} assuming $\rho = 1$ against a threefold
+truth biases $\chat$ by only $-0.037$.
+\item \textbf{Shedding-model ($\kappa$) misspecification.} A $2.5\times$ error
+biases $\chat$ by $-0.02$ to $-0.05$. Conservative in direction.
+\item \textbf{Between-patient heterogeneity.} Inflation is mild while
+$\omega < \mathrm{SE}_1$ ($n$: 10 $\to$ 14 at $c = 0.15$ with $\omega = 0.15$).
+\item \textbf{Competition regime.} SE($c$) $=0.151$ for the proposed design at every
+$\alpha$ from 0.5 to 1.0. Identifiability is regime-robust.
+\end{itemize}
+
+\subsection{What it does not absorb: a fixed compartment count}
+
+Real resistance is polyclonal and spatially structured
+\citep{gerlinger2012intratumor,diaz2012molecular,misale2012emergence}. Fitting a
+two-clone model to three-clone truth destroys the estimate --- \textbf{and the sign
+of the bias is set by modelling convention, not by data:}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+\textbf{2-clone model variant} & \textbf{median $\chat$} & \textbf{bias}\\
+\midrule
+rigid kill (resistant assumed fully refractory) & 0.369 & $\mathbf{+0.069}$\\
+$+$ differential shedding & 0.445 & $\mathbf{+0.145}$\\
+\textbf{flexible kill} (kill rate free) & $\mathbf{-0.12}$ to $\mathbf{-0.04}$ & $\mathbf{\approx -0.4}$, \textbf{sign flips}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Same data, same clone count, opposite conclusion. \textbf{Pooling divides variance
+by $n$ and does nothing to bias.} At large $n$ one converges, with tight confidence
+intervals, on a number whose sign was decided by a modelling choice.
+
+\subsection{The ontology is undecidable --- and does not need to be decided}
+
+Within a \emph{discrete} candidate set, clone number is recoverable \textbf{only
+with a per-variant panel}:
+
+\begin{center}
+\begin{tabular}{llc}
+\toprule
+\textbf{Truth} & \textbf{Assay} & \textbf{$k$ recovered}\\
+\midrule
+$k=3$ & \textbf{lumped} allele fraction & \textbf{0\%} --- selects $k{=}2$ in 10/10\\
+$k=3$ & \textbf{per-variant panel} & \textbf{100\%}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The lumped assay reports a plausible-looking $\chat = 0.185$ with no diagnostic
+complaint. Silent, confident, unfalsifiable from within the analysis.
+
+But admit a \textbf{continuum} model --- resistance as a distribution of
+sensitivities rather than compartments --- and clone number evaporates:
+
+\begin{center}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Truth} & \textbf{$\hat{k}=2$} & \textbf{$\hat{k}=3$} & \textbf{continuum} & \textbf{correct?}\\
+\midrule
+CONTINUUM & 1/8 & 0/8 & \textbf{7/8} & yes\\
+DISCRETE-3 & 2/8 & 0/8 & \textbf{6/8} & \textbf{no --- spurious}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{BIC prefers the continuum in both worlds.} The compartment count is not
+identifiable.
+
+\textbf{It does not need to be.} The clone number was never the estimand. What
+adaptive therapy requires is a \emph{functional} of the resistance distribution,
+well-defined under either ontology:
+\begin{equation}
+\ceff = 1 - \frac{\mathbb{E}\!\left[\, r(x) \mid x > 0 \,\right]}{r_S}
+\end{equation}
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Truth} & \textbf{true $\ceff$} & \textbf{reported $\hat{c}_{\mathrm{eff}}$} & \textbf{wrong sign}\\
+\midrule
+CONTINUUM & 0.121 & 0.075 & \textbf{0\%}\\
+DISCRETE-3 & 0.200 & 0.119 & \textbf{0\%}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{The sign is recovered in both worlds, under the wrong ontology, every
+time} --- with a bias that \emph{understates} the cost, erring against the
+hypothesis being tested.
+
+Two requirements are non-negotiable: a \textbf{per-variant panel} (a lumped allele
+fraction recovers nothing, and reports a plausible wrong answer silently), and a
+\textbf{continuum model in the candidate set} (discrete-only candidate sets inflate
+$\hat{c}_{\mathrm{eff}}$ by $2$--$2.6\times$, in the direction that flatters
+adaptive therapy).
+
+\begin{tcolorbox}[keybox]
+Any published fitness-cost estimate derived from a small fixed number of
+compartments fitted to a lumped allele fraction should be treated as
+\textbf{uninterpretable} --- not as an estimate with wide error bars, but as a
+number whose sign was determined by a modelling convention.
+\end{tcolorbox}
+
+
+\subsection{The host is not a neutral bystander: which interruptions are actually clean}
+
+An earlier draft of this paper treated \emph{any} incidental treatment interruption
+as a free excitation. That was wrong, and the error was material.
+
+A hold for Grade 3/4 toxicity is not a clean drug-off window. The patient is in
+systemic crisis --- hepatotoxicity, neutropenia, inflammation --- and the growth and
+competition parameters of a tumour in a metabolically deranged host are not those of
+a tumour in a well one. We model this explicitly. During the hold, let
+$r_i \to r_i(1 + \delta_i)$ and $\alpha \to \alpha(1 + \delta_\alpha)$, generate data
+from the \emph{sick} host, and fit the naive model that assumes the window is clean.
+
+\begin{center}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Scenario} & \textbf{median $\chat$} & \textbf{bias} & \textbf{sign wrong}\\
+\midrule
+\textbf{clean (non-toxic) hold} & $+0.301$ & $+0.001$ & \textbf{9\%}\\
+symmetric insult (both clones $\times 0.60$) & $+0.238$ & $-0.062$ & 29\%\\
+\textbf{differential} (sens $\times0.60$, res $\times0.80$) & $+0.146$ & $-0.154$ & \textbf{36\%}\\
+\quad \emph{same data, host effect fitted as nuisance} & $+0.241$ & $-0.059$ & 22\%\\
+\textbf{severe differential} (sens $\times0.40$, res $\times0.90$) & $\mathbf{-0.178}$ & $\mathbf{-0.478}$ & \textbf{58\%}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Three findings, and the structure of them matters more than the numbers.
+
+\textbf{(1) A \emph{symmetric} host insult is comparatively benign.} Because $c$ is
+defined by a \emph{ratio}, $r_R = r_S(1-c)$, a factor common to both clones largely
+cancels. Severe symmetric slowing still degrades the estimate --- not by biasing it
+but by \emph{attenuating the excitation itself}, since the information in a drug-off
+window scales with how fast the clones diverge during it --- but it does not invert
+the sign.
+
+\textbf{(2) A \emph{differential} insult that spares the resistant clone is fatal.}
+This does not cancel; it is directly confounded with $c$. And it is the biologically
+plausible case: efflux pumps, stress-response programs and quiescence plausibly
+confer \emph{both} drug resistance \emph{and} robustness to host metabolic crisis.
+Worse, it biases $\chat$ \textbf{downward}.
+
+\begin{tcolorbox}[keybox]
+\textbf{The confound is aligned with the failure mode.} A host insult that spares the
+resistant clone makes resistance \emph{look} free --- which is precisely the false
+conclusion this paper exists to prevent. It does not add noise; it manufactures our
+error, and it does so with a straight face.
+\end{tcolorbox}
+
+\textbf{(3) Fitting the host effect as a nuisance parameter does not rescue it}
+(36\% $\to$ 22\%). We tried the obvious statistical fix and it is insufficient.
+
+\textbf{The remedy is therefore not statistical but an inclusion criterion.} Not every
+incidental hold carries a host insult. Interruptions arising from
+\emph{insurance lapse or prior-authorisation delay, drug supply interruption,
+scheduled surgery, elective procedure, travel, non-adherence, or clinic closure}
+perturb the drug and nothing else. \textbf{These, and only these, are clean
+excitations.} Toxicity holds must be excluded from the identifying set --- or, at
+minimum, analysed as a separate stratum and never pooled with the clean ones.
+
+The cost is enrolment, not validity: if a fraction $f$ of interruptions are non-toxic,
+enrol $n/f$ patients to obtain $n$ usable ones. At a plausible $f \approx 0.3$--$0.5$,
+that is roughly 15--35 patients enrolled to yield the 7--10 the design requires. Still
+a small study.
+
+This tightens the design rather than weakening it, and it yields a new falsifiable
+prediction (\S\ref{sec:predict}): \emph{within the same cohort, $\hat{c}$ estimated from toxic
+holds should be systematically lower than $\hat{c}$ estimated from non-toxic holds.}
+If the two strata agree, the confound is absent. If they diverge, the design has
+detected its own principal threat --- from the inside, using data it was already
+collecting.
+
+
+\section{What actually drives adaptive therapy}
+
+\subsection{Competition, not cost}
+
+Sweeping the fitness cost $c$ (including \textbf{negative} values, where resistance
+is advantageous) against the competition coefficient $\alpha$, restricted to the
+\textbf{stable-coexistence regime} ($\alpha < 1$ --- above that the populations
+cannot coexist at all, which is the thing adaptive therapy depends on).
+
+\textbf{Absolute gain (days) of model-free adaptive therapy over MTD:}
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+$\alpha \downarrow$ \textbf{/} $c \rightarrow$ & $-0.20$ & $0.00$ & $+0.20$ & $+0.40$\\
+\midrule
+\textbf{0.10} & $-1$ & 0 & 1 & \textbf{4}\\
+0.40 & 8 & 12 & 17 & 27\\
+0.70 & 16 & 30 & 33 & 51\\
+\textbf{0.85} & \textbf{30} & \textbf{36} & 39 & \textbf{66}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Leverage of $\alpha$: \textbf{43 days.} Leverage of $c$: \textbf{22 days.}
+\textbf{Ratio $\approx 2:1$.}
+
+\begin{enumerate}[leftmargin=1.6em,itemsep=0.3em]
+\item \textbf{A fitness cost is not necessary.} 36 days of benefit at $c \leq 0$,
+where resistance is free or \emph{advantageous}.
+\item \textbf{A fitness cost is not sufficient.} At weak competition, a \emph{large}
+cost ($c = +0.40$) buys \textbf{4 days}.
+\item \textbf{$\alpha$ carries roughly twice the leverage.}
+\end{enumerate}
+
+The field's ``if and only if'' is false in both directions.
+
+\begin{tcolorbox}[keybox]
+Sensitive cells suppress resistant ones primarily by \textbf{occupying space they
+need}, not by \textbf{outgrowing} them. A fitness cost amplifies the effect; it does
+not create it.
+\end{tcolorbox}
+
+This is not without empirical precedent. \citet{bacevic2017spatial} report that
+\emph{spatial} competition alone constrains resistance to targeted therapy --- a
+result our audit predicts, and which sits awkwardly with a literature that continues
+to frame adaptive therapy as contingent on a fitness cost.
+
+\subsection{This is not an artefact of Lotka--Volterra}
+
+In LV, $\alpha$ and $c$ are independent free parameters --- and that independence is
+what makes the comparison possible. So we rebuilt the test in \textbf{MacArthur's consumer--resource
+model}~\citep{macarthur1970species}, the mechanistic model from which LV competition
+coefficients are \emph{derived}, with $\alpha \propto$ niche overlap $\omega$:
+\begin{align}
+\mathrm{uptake}_S &= a_S\,(\mathrm{Res}_1 + \omega\,\mathrm{Res}_2)\\
+\mathrm{uptake}_R &= a_R\,(\omega\,\mathrm{Res}_1 + \mathrm{Res}_2), \qquad a_R = a_S(1-c)
+\end{align}
+
+Here competition \textbf{emerges} from resource sharing rather than being assumed;
+$\omega = 0$ is a \textbf{genuine zero-competition control} (the clones eat
+different resources); and $c$ is a separate trait (uptake efficiency), not collapsed
+into competitive ability.
+
+\begin{center}
+\begin{tabular}{llrrr}
+\toprule
+$\omega$ & \textbf{competition} & $c=-0.10$ & $0.00$ & $+0.30$\\
+\midrule
+\textbf{0.00} & \textbf{NONE} & $\mathbf{-0}$ & $\mathbf{-0}$ & $\mathbf{-0}$\\
+0.50 & moderate & 96 & 107 & 240\\
+1.00 & maximal & 124 & 147 & 298\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+ & \textbf{Lotka--Volterra} & \textbf{MacArthur}\\
+\midrule
+\textbf{ratio competition : cost} & \textbf{1.95} & \textbf{1.65}\\
+benefit with \textbf{no competition}, best $c$ & $\approx 0$ d & \textbf{exactly 0 d}\\
+benefit with \textbf{no fitness cost} & 36 d & \textbf{148 d}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{The result replicates.} Different model, different mechanism, a real
+control --- the same conclusion.
+
+\subsection{Scheduling needs no model}
+
+Adaptive therapy's clinical rule is \textbf{closed-loop}: treat until burden falls
+to 50\% of baseline, stop, resume at baseline --- the rule used in the metastatic
+prostate cancer trial~\citep{zhang2017integrating}. It has \emph{no parameters}.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Truth} & \textbf{MTD} & \textbf{Gatenby (no model)} & \textbf{Open-loop (misspec.)} & \textbf{Oracle}\\
+\midrule
+continuum & 637 d & \textbf{847 d} & \textbf{651 d} & 882 d\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The model-free feedback rule captures \textbf{86\%} of the oracle's available gain.
+The open-loop schedule derived from a misspecified model captures \textbf{6\%} ---
+while looking principled.
+
+\begin{tcolorbox}[keybox]
+\textbf{Feedback substitutes for identification --- in \emph{execution}, not in
+\emph{selection}.} You do not need an accurate model to \emph{run} the therapy, given
+an accurate sensor and a stabilising feedback law. You still need $\alpha$ to know
+\emph{whom to run it on}.
+\end{tcolorbox}
+
+This distinction is easy to miss and it does not undercut the trial --- it is the
+trial's whole justification. A feedback controller is only worth deploying in a tumour
+where competitive suppression actually operates; at $\omega = 0$ or $\alpha \approx 0$
+the loop captures nothing (\S7.1--7.2), and the patient has been managed at
+sub-maximal dose for no benefit. \textbf{Identification is what tells you which
+cancers, and which patients, are candidates for the loop in the first place.} The
+measurement is for \emph{selection}; the feedback is for \emph{execution}. Neither
+replaces the other.
+
+\section{The proposed design}
+
+The audit demands a drug-off window, which looks like an intervention. It is not ---
+because \textbf{the perturbation already exists.}
+
+Treatment interruptions occur constantly in routine oncology for reasons that have
+nothing to do with evolutionary theory. From a system-identification standpoint these
+are \textbf{free excitations of the system}, and they are currently wasted, because
+nobody samples around them.
+
+But --- and this is the correction forced by \S6.4 --- \textbf{not all of them are
+clean}. The identifying set must be restricted to interruptions that perturb
+\emph{the drug and nothing else}:
+
+\begin{center}
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{Clean (use these)} & \textbf{Confounded (exclude, or stratify separately)}\\
+\midrule
+insurance lapse / prior-auth delay & Grade 3/4 toxicity hold\\
+drug supply interruption & hepatotoxicity, neutropenia, sepsis\\
+scheduled surgery or elective procedure & severe fatigue / performance-status collapse\\
+travel, clinic closure, holiday & intercurrent serious illness\\
+non-adherence, physician discretion & dose reduction for tolerability\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+A hold caused by an insurance company tells you nothing about the patient's
+physiology. A hold caused by Grade 4 neutropenia tells you a great deal, and all of it
+is confounded with what you are trying to measure.
+
+\begin{tcolorbox}[keybox]
+\textbf{We do not ask you to stop the drug.} We ask that when you stop it --- for
+whatever clinical reason you judge appropriate --- we may draw blood densely around
+that window, and that the assay resolve clones rather than only total burden.
+\end{tcolorbox}
+
+Concretely:
+
+\begin{enumerate}[label=(\alph*),leftmargin=1.8em,itemsep=0.3em]
+\item A tumour-informed panel reporting \textbf{each resistance variant separately}
+--- not tumour-agnostic total ctDNA, and not a single merged allele fraction.
+Serial ctDNA tracking of specific resistance variants is already established
+practice~\citep{dawson2013analysis,diaz2012molecular,misale2012emergence}; what is
+missing is that the variants be reported separately rather than merged. This
+is the difference between recovering the clone structure and recovering nothing, at
+zero extra cost in phlebotomy.
+\item ${\sim}18$ draws per patient, concentrated in a \textbf{burst} bracketing any
+qualifying interruption, rather than spread uniformly.
+\item \textbf{The window must be measured from drug \emph{clearance}, not from the
+last dose.} $u(t)$ is not a step function: an agent with a multi-day half-life is
+still exerting selective pressure well after the pill stops. The effective drug-off
+window is the nominal hold \emph{minus} the pharmacokinetic washout. Since 21 days is
+insufficient and 28 sufficient (\S5.2), the operative requirement is
+\textbf{28 days of \emph{cleared} drug} --- for a long-half-life agent this may mean a
+nominal hold of 35--40 days, and for a very long-lived agent the design may simply not
+be feasible.
+\item \textbf{Clone number fitted, not assumed}, with a continuum model in the
+candidate set; $\ceff$ and $\aSR$ as the estimands, not per-clone costs.
+\item \textbf{No alteration whatsoever to the treatment decision.}
+\end{enumerate}
+
+This preserves every property that made the observational framing worth having. No
+clinician is asked to accept any evolutionary hypothesis --- one may believe adaptive
+therapy is nonsense and still have no objection to the measurement; indeed,
+\emph{if} one believes it is nonsense, this is the study that would show it. No
+therapeutic risk is introduced. It composes with existing trials as a companion
+sampling module. And it is falsifiable.
+
+\begin{center}
+\textbf{${\sim}89{,}000$ patients under current practice versus ${\sim}7$--$10$ under
+this design, for the same scientific question.}
+\end{center}
+
+\section{A falsifiable prediction the design tests on itself}\label{sec:predict}
+
+\S6.4 leaves the design exposed to a confound it cannot fully model. It can, however,
+\textbf{detect} it, using data it is already collecting:
+
+\begin{tcolorbox}[keybox]
+\textbf{Prediction.} Within the same cohort, $\hat{c}_{\mathrm{eff}}$ estimated from
+\emph{toxic} holds will be systematically \emph{lower} than $\hat{c}_{\mathrm{eff}}$
+estimated from \emph{non-toxic} holds.
+
+If the strata agree, the host confound is absent and the toxic holds can be pooled.
+If they diverge --- in the predicted direction --- the design has detected its own
+principal threat from the inside, and the toxic stratum is discarded.
+\end{tcolorbox}
+
+This is not a patch. It is the strongest property the design acquired from being
+attacked: the confound that could invalidate it is \emph{itself measurable} with the
+same eighteen blood draws, because the cohort naturally contains both hold types.
+
+\section{Limitations}\label{sec:limits}
+
+\begin{itemize}[leftmargin=1.4em,itemsep=0.35em]
+\item \textbf{Simulation is not evidence about patients.} Everything here is a
+statement about information in a model, not a finding about cancer. That is exactly
+the claim we intend, and no more.
+\item \textbf{This is a cohort design, not a personalised one.} No single patient's
+data identifies $\aSR$.
+\item \textbf{The ontology is genuinely undecidable, and we route around it rather
+than solving it.} A reader who wants to know whether resistance in a given tumour is
+clonal will get no help here.
+\item \textbf{We did not vary the progression endpoint or the feedback rule.} All
+results use a burden threshold and the Gatenby-50\% rule. These are the field's
+conventions, not established facts.
+\item \textbf{$\ceff$ is coarser than what the models want.} It answers whether the
+resistant mass grows more slowly --- enough to decide whether adaptive therapy can
+\emph{exist}. Fine-grained \emph{scheduling} would want clonal detail we have shown
+to be unidentifiable; \S7.3 suggests this may not matter, since feedback beats
+model-based scheduling anyway.
+\item \textbf{No immune compartment.} Both model classes are bipartite (sensitive
+vs. resistant); immune predation is absent. Note, however, that immune pressure acting
+on \emph{total burden} is structurally a host effect of the kind analysed in \S6.4:
+benign if it acts symmetrically on the clones, dangerous if it acts
+\emph{differentially}. Since immune escape and drug resistance can co-occur, the
+differential case is plausible, and a three-compartment audit with an immune predator
+is the most important extension we have not done.
+\item \textbf{Shedding is assumed to scale linearly with burden.} Necrotic cores and
+vascularised margins plausibly shed at different rates, making $\beta$ a function of
+tumour size and structure. We tested misspecification of the shedding \emph{ratio}
+($\rho$) and the death-coupling ($\kappa$), but not \emph{nonlinearity} in the
+burden--shedding map. This is untested and could matter.
+\item \textbf{The continuum rescue assumes resistance is smoothly distributed.} If
+resistance arises from a single catastrophic macro-evolutionary jump to a distant
+phenotype, fitting a continuum could smooth the likelihood surface and yield a
+\emph{false positive} for identifiability. We tested discrete truths at $k = 2$ and
+$k = 3$; a single, extreme, isolated resistant phenotype is a case we did not test.
+\item \textbf{The models are well-mixed; real tumours are spatial.} $\alpha$ is a
+mean-field summary of what is physically a local, geometric process. Since
+\citet{bacevic2017spatial} find that \emph{spatial} structure constrains resistance,
+our well-mixed treatment probably \emph{understates} competition --- but "probably
+conservative" is not a substitute for having done the spatial version.
+\item \textbf{Parameter sweeps are evidence, not proof.} We varied $c$
+(0.05--0.40), assay CV (30--50\%), shedding ratio (0.5--3), $\kappa$ (2--20), clone
+number (2--3), competition (0--1.25), and model class (LV, MacArthur). The
+conclusions were stable across all of it.
+\end{itemize}
+
+\clearpage
+\hrule
+\vspace{0.6em}
+\begin{center}\large\bfseries PART II --- HOW WE GOT HERE\end{center}
+\vspace{0.2em}
+\hrule
+
+\section{Hypotheses, failures, and revisions}\label{sec:errata}
+
+Part I is what survived. This is what did not.
+
+We report it in full for three reasons: the failures are more instructive than the
+successes; a reader is entitled to know how many times the authors were wrong before
+arriving at a conclusion they are now asked to trust; and the \emph{pattern} in the
+failures is this paper's most transferable finding.
+
+\subsection*{H1 --- ``Oncology samples too slowly. Denser sampling will close the gap.'' --- \textcolor{red!60!black}{REFUTED}}
+
+This was the paper's founding thesis. It was wrong.
+
+The reasoning was seductive: ctDNA clears from plasma with a half-life of minutes to
+hours, the dynamics of interest run over days, and restaging happens every eight
+weeks. A high-bandwidth sensor read at low bandwidth by convention. Fix the cadence,
+fix the problem.
+
+\textbf{What broke it.} We tested it. Six draws $\to$ 281 draws (daily, for forty
+weeks). The sign-error rate went from ${\sim}57\%$ to ${\sim}57\%$. \emph{Exactly
+unchanged.}
+
+\textbf{What replaced it.} Sampling density is \emph{necessary but nowhere near
+sufficient}. The binding constraint was never cadence --- it was that we were
+observing an \textbf{unperturbed} system through an observable that \textbf{cannot
+see the clones}. Hence the triad (\S5). Density is one leg of three, and worthless on
+its own.
+
+\textbf{Why we got it wrong.} We reasoned from an analogy --- signal processing,
+Nyquist --- to a system that was not bandwidth-limited but \emph{information}-limited.
+The analogy was elegant and irrelevant.
+
+\subsection*{H2 --- ``Clone number is recoverable with the right panel.'' --- \textcolor{red!60!black}{REFUTED}}
+
+Having found that a fixed compartment count destroys the estimate, we proposed
+inferring it. We showed a per-variant panel recovers the true clone number 100\% of
+the time where a lumped allele fraction recovers it 0\%, and declared the hazard
+closed.
+
+\textbf{What broke it.} The candidate set. We had fitted $k = 1, 2, 3, 4$ --- all
+discrete. Adding a \textbf{continuum} model, BIC prefers it in \emph{both} worlds,
+including 6/8 against a genuinely three-clone truth. We had been asking \emph{which}
+discrete model while assuming the answer to \emph{whether}.
+
+\textbf{What replaced it.} The ontology is undecidable, and does not need to be
+decided (\S6.3). Re-specify the estimand as a \emph{functional} of the resistance
+distribution and the sign comes back correct under either ontology.
+
+\textbf{Why we got it wrong.} We let the candidate set encode the hypothesis. A
+model-selection procedure can only tell you which of the models you \emph{offered} it
+fits best. Offering only discrete models and concluding ``the tumour is discrete'' is
+circular --- and we did it without noticing.
+
+\subsection*{H3 --- ``The cost of resistance is the quantity to measure.'' --- \textcolor{red!60!black}{REFUTED}}
+
+This was not merely our assumption; it is the field's. Adaptive therapy is standardly
+justified as working \emph{if and only if} resistance carries a fitness cost.
+
+\textbf{What broke it.} In a world where resistance was entirely \emph{free}
+($c = 0$), the model-free adaptive rule still beat MTD substantially. If it works when
+resistance costs nothing, the cost is not the mechanism.
+
+\textbf{What replaced it.} $\alpha$ (\S7). Sensitive cells suppress resistant ones by
+\textbf{occupying carrying capacity}, not by outgrowing them. The cost amplifies this
+but does not create it: it is neither necessary (36 days of benefit at $c \leq 0$) nor
+sufficient (4 days at large cost, weak competition), and competition carries
+${\sim}2\times$ the leverage. Replicated in a mechanistic consumer--resource model with
+a genuine no-competition control.
+
+\textbf{Why we got it wrong.} We inherited the field's framing without auditing it. The
+identifiability machinery we had built to \emph{test} the field's parameter is what
+eventually revealed the parameter was the wrong one --- but only because we ran a sweep
+we had no particular reason to run.
+
+\subsection*{H4 --- ``The benefit is flat in the cost of resistance.'' --- \textcolor{red!60!black}{REFUTED (our own arithmetic)}}
+
+Having discovered H3, we overshot. We reported the benefit as a \textbf{relative} gain,
+$(\mathrm{TTP}_{\text{adaptive}} - \mathrm{TTP}_{\text{MTD}})/\mathrm{TTP}_{\text{MTD}}$,
+observed it was flat across $c$, and concluded the fitness cost was simply irrelevant.
+
+\textbf{What broke it.} The denominator. MTD survival \emph{also} rises with $c$
+(resistant cells grow more slowly, so even MTD does better), masking a real effect in
+the numerator. In \textbf{absolute days}, the benefit roughly \textbf{doubles} across
+the range of $c$.
+
+\textbf{What replaced it.} The corrected, weaker, true claim: $c$ is not
+\emph{required}, but it is not irrelevant either. It roughly doubles the benefit across
+its range; $\alpha$ carries twice its leverage; neither is negligible.
+
+\textbf{Why we got it wrong.} We chose a normalisation that flattered a conclusion we
+had just become excited about, and did not check whether the denominator was moving.
+This is the most ordinary statistical error in this document, and it produced the most
+confident-sounding sentence in the draft it appeared in.
+
+\subsection*{H5 --- ``$\aSR$ is structurally unidentifiable.'' --- \textcolor{red!60!black}{REFUTED (our own arithmetic)}}
+
+While auditing H4 we discovered our $\alpha$ results assumed \emph{symmetric}
+competition. Relaxing that, the directional coefficient $\aSR$ appeared unrecoverable:
+SE $\approx 1.5$, interval spanning zero \emph{and negative} --- the data apparently
+could not distinguish suppression from assistance. Extra drug-off windows did not help,
+suggesting the barrier was structural. We wrote it up as the paper's most serious
+limitation.
+
+\textbf{What broke it.} Two things, both embarrassing.
+
+\begin{enumerate}[leftmargin=1.6em,itemsep=0.3em]
+\item Those intervals were \textbf{per-patient}. Every other parameter in this paper is
+unresolved per-patient and becomes resolvable by pooling --- $c$ needs $n \approx 7$. We
+had silently demanded that $\aSR$ clear a bar in one patient that $c$ had never cleared,
+then called the failure structural. Pooled across $n = 10$, \textbf{$\aSR$ resolves
+cleanly}: $[0.472, 1.941]$.
+\item The SEs came from pseudo-inverting a Fisher matrix with condition number
+${\sim}10^{7}$ --- and they were \textbf{non-monotone in the amount of data}
+($1.507 \to 1.418 \to 1.553$ as holds went $1 \to 2 \to 3$). \emph{More data cannot
+reduce information.} That non-monotonicity was the numerics telling us the bound was
+garbage. We read it as a finding.
+\end{enumerate}
+
+\textbf{Why we got it wrong.} We committed, twenty minutes later, exactly the error our
+own \S4.2 warns against --- trusting a Cram\'er--Rao bound on a near-singular surface.
+Writing the warning did not immunise us against the mistake.
+
+\emph{A negative result worth keeping.} We hypothesised that reparameterising to
+$\sigma := r_R \aSR$ --- the directly observable slope $-\partial g_R/\partial S$ ---
+would be identifiable where $\aSR$ was not, since the data only ever see the product.
+\textbf{It buys nothing.} $\sigma$ needs $n \approx 11$, essentially identical. Because
+$r_R$ is adequately determined under this design, $\sigma$ and $\aSR$ carry the same
+information.
+
+\subsection*{H6 --- ``Vary the resource supply rate to vary competition strength.'' --- \textcolor{orange!70!black}{MIS-SPECIFIED}}
+
+Testing whether $\alpha$-dominance survived outside Lotka--Volterra, our first
+mechanistic model varied competition by varying the resource \textbf{supply rate} $\phi$.
+
+\textbf{What broke it.} The $R^*$ rule~\citep{tilman1982resource}. In a
+consumer--resource system the equilibrium resource level is
+$\mathrm{Res}^* = K m/(r - m)$, which is \textbf{independent of supply}. Raising $\phi$ raises equilibrium \emph{biomass}, not resource
+\emph{availability}. Every arm remained fully resource-limited; there was never a
+no-competition control.
+
+The mis-specified experiment reported an apparent \textbf{$11\times$ inversion} of the
+$\alpha$ result --- a clean-looking, entirely spurious finding.
+
+\textbf{What replaced it.} Niche overlap (\S7.2), which \emph{is} the mechanistic origin
+of $\alpha$, and which gives a genuine $\omega = 0$ control. The result then replicated.
+
+\textbf{Why it matters.} This error produced a confident, publishable-looking table
+pointing the opposite direction from the truth. Nothing in the output looked wrong. We
+caught it only by asking \emph{what does this knob actually do to the equilibrium?} ---
+a question we should have asked before running the sweep, not after.
+
+
+\subsection*{H7 --- ``Any incidental treatment interruption is a free excitation.'' --- \textcolor{red!60!black}{REFUTED (by a referee, correctly)}}
+
+Every draft through v1.0 listed toxicity holds first among the interruptions the design
+would exploit. A referee pointed out that this is biologically naive: a Grade 4
+neutropenia hold means the patient is in systemic crisis, and the growth and
+competition parameters of a tumour in a metabolically deranged host are not those of a
+tumour in a well one. We had been treating a physiological catastrophe as a clean
+laboratory perturbation.
+
+\textbf{What broke it.} We modelled it (\S6.4). The critique is correct, and the damage
+is severe --- but the \emph{structure} of the damage is sharper than the critique
+stated. A \textbf{symmetric} host insult is comparatively benign, because $c$ is a
+\emph{ratio} and a common factor cancels. A \textbf{differential} insult that spares
+the resistant clone is fatal: sign-error goes to \textbf{58\%}, and $\chat$ is biased
+\textbf{downward} --- i.e. toward concluding resistance is free, which is exactly the
+error the paper exists to prevent. Fitting the host effect as a nuisance parameter only
+partly helps (36\% $\to$ 22\%).
+
+\textbf{What replaced it.} An inclusion criterion, not a statistical fix. Only
+interruptions that perturb \emph{the drug and nothing else} --- insurance lapse, supply
+interruption, scheduled surgery, travel, non-adherence --- are clean excitations.
+Toxicity holds are excluded from the identifying set. Enrolment rises by $1/f$; validity
+is preserved. And the design gains a way to detect the confound on itself (\S9).
+
+\textbf{Why we got it wrong.} We were reasoning about $u(t)$ and forgot there was a
+patient attached to it. The model had a drug term and a tumour term and no host, so the
+host could not appear in the analysis --- a category of error no amount of internal
+verification would ever have caught, because the machinery was working perfectly on the
+wrong system. It took someone outside the model to see it.
+
+\subsection{What survived, and the pattern}
+
+\begin{tcolorbox}[keybox]
+\textbf{Every substantive thesis in this paper's first five drafts was refuted. The
+design recommendation survived all of them --- and then a referee found the one thing
+that could break it.}
+\end{tcolorbox}
+
+That asymmetry is worth dwelling on. The \emph{estimand} moved three times (from $c$, to
+$\ceff$, to $\aSR$). The \emph{ontology} collapsed. The \emph{mechanism} inverted. But
+``clone-resolved observation $+$ a drug-off window $+$ burst sampling around it, at
+${\sim}18$ draws and ${\sim}10$ patients, purely observationally'' was right from the
+first audit and never moved.
+
+H7 is the exception, and it is the instructive one. It did not come from us. Six
+rounds of adversarial self-audit, a verification suite that checks the Fisher
+information against the numerical Hessian to $2\times10^{-8}$, and three independent
+implementations of the model agreeing to $10^{-6}$ --- none of it could find H7,
+because none of it was looking outside the model. The machinery was working perfectly
+on a system that was missing a host. \textbf{Internal rigour cannot find a missing
+compartment.} Only a reader who knows what a Grade 4 neutropenia hold actually does to
+a patient can find that, and no amount of Monte Carlo substitutes for one.
+
+This is what one would hope for from an identifiability analysis. \textbf{Conclusions
+about what a protocol can \emph{see} are far more robust than conclusions about what the
+world \emph{is}.} That is an argument for doing the audit first.
+
+And the pattern in the failures:
+
+\begin{center}
+\small
+\begin{tabular}{ll}
+\toprule
+\textbf{Failure} & \textbf{Category}\\
+\midrule
+H1 --- sampling density & Reasoned from a wrong analogy (bandwidth, not information)\\
+H2 --- clone number & Let the candidate set encode the hypothesis\\
+H3 --- cost of resistance & Inherited the field's framing without auditing it\\
+H4 --- ``flat in $c$'' & Chose a normalisation that flattered the conclusion\\
+H5 --- $\aSR$ & Trusted a bound we had ourselves warned against\\
+H6 --- supply rate & Did not ask what the knob controlled\\
+H7 --- toxicity holds & Modelled the drug and the tumour, and forgot the host\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Not one of these was a coding error} --- and the most dangerous one was not
+even a reasoning error \emph{within} the model. It was a missing piece of biology.
+
+We ran an independent verification suite over the machinery: three model implementations
+cross-checked to $<10^{-6}$; the piecewise integrator against brute-force Euler to
+$1.3\times10^{-4}$; the Fisher information against the numerical Hessian of the expected
+likelihood to $2\times10^{-8}$; the allele-fraction observable checked for saturation;
+the headline result checked across independent seed sets. \textbf{All passed.} The code
+was right every time.
+
+\begin{tcolorbox}[keybox]
+\textbf{Every error was one of interpretation, or of omission.} That is almost certainly
+where the errors in this literature live too --- and it is the strongest argument we can
+make for why an identifiability audit of \emph{other people's} models is worth doing at
+all. It is also an argument for showing your audit to someone who knows the biology, and
+believing them when they tell you the perturbation you have been counting on is a sick
+patient.
+\end{tcolorbox}
+
+\section{Conclusion}
+
+Oncology cannot currently measure the parameters its evolutionary models depend on. Not
+the cost of resistance --- roughly half of honest fits get its sign wrong. Not the
+competition coefficient --- its estimate wanders the entire admissible range. And not at
+any sampling rate, because the system is never perturbed and the observable cannot see
+the clones.
+
+The repair is cheap and requires no clinician to accept anything. Resolve the clones.
+Sample densely around the drug-free windows that routine care already hands over for
+nothing. Ten patients, eighteen draws each, no change to any treatment decision.
+
+And the quantity the field has organised itself around --- the fitness cost of resistance
+--- is not the one that decides the question. Competition is. A fitness cost is neither
+necessary nor sufficient for adaptive therapy to work; it merely amplifies an effect that
+comes from sensitive cells occupying space that resistant cells need. This holds in the
+field's own model class, and replicates in a mechanistic one with a genuine control.
+
+We would not want a reader's takeaway to be any single number in this paper;
+\S\ref{sec:errata} records how many of them we have had to withdraw. The takeaway is the method:
+
+\begin{tcolorbox}[keybox]
+\begin{center}
+\textbf{Ask what your measurement protocol can identify,\\before you argue about what your
+model implies.}
+\end{center}
+\end{tcolorbox}
+
+A decade of argument has been conducted over parameters that, under the field's own model
+and its own data, could not have been measured either way.
+
+\vspace{1.5em}
+\hrule
+\vspace{0.6em}
+
+{\small\itshape Code, models, and the full audit --- including every experiment that
+refuted an earlier draft --- are reproducible from the accompanying scripts.
+Correspondence: ORCID 0009-0006-6283-1696.}
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\end{document}
