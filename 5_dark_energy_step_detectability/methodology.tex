@@ -1,0 +1,546 @@
+\documentclass[11pt]{article}
+
+% ---------- Expert 5: Document Architect — preamble ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{natbib}
+\usepackage{enumitem}
+\usepackage[T1]{fontenc}\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{titlesec}
+
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{1em}{}
+
+\newcommand{\rhoDE}{\rho_{\mathrm{DE}}}
+\newcommand{\Om}{\Omega_m}
+
+\title{\bfseries A Methodology for AI-Assisted Computational Cosmology:\\
+Process, Comparison, and Adversarial Validation\\[0.4em]
+\large A Retrospective on the Development of a Dark-Energy\\
+Feature-Detectability Study}
+
+\author{%
+Documented by a five-role authoring panel:\\
+Research Methodologist, AI/Cognitive Scientist, Ethics \& Reproducibility Auditor,\\
+Red-Teaming Analyst, and Document Architect\thanks{This paper documents the
+\emph{process} of a research collaboration between a human domain researcher and
+an AI assistant. It is a methodology retrospective, not the scientific paper
+itself; the underlying physics results are reported separately.}}
+
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We document the methodology of a human--AI collaborative research project in
+observational cosmology, whose scientific output was a study of whether
+expansion-history probes can detect and characterize a sudden transition
+(``step'') in the dark-energy density. Rather than reporting the physics, this
+paper reports the \emph{process}: the chronological path from an informal
+brainstorm to a validated manuscript, the specific breakthroughs and reversals
+that reshaped the work, and a candid comparison of the AI-assisted workflow
+against conventional research practice. We give particular attention to failure
+modes specific to AI-assisted science---confirmation-bias feedback loops, model
+hallucination, and alignment or ``sycophancy'' drift---and to the concrete
+red-teaming protocols used to guard against them. We argue that the central
+methodological lesson is not that AI accelerates research, but that it changes
+\emph{where} the researcher's vigilance must be spent: from execution toward
+continuous, adversarial verification. We close with a limitations analysis,
+a broader-impacts discussion, and a reproducibility statement.
+\end{abstract}
+
+\tableofcontents
+\bigskip
+
+% ============================================================
+\section{Introduction and Scope}
+\label{sec:intro}
+
+This document is a methodology retrospective. The scientific project it describes
+asked a well-posed question in observational cosmology: if the dark-energy density
+$\rhoDE(z)$ underwent a sudden change at some redshift---rather than evolving
+smoothly---which cosmological probes could detect it, and what could they measure
+about it? That question, its answer, and the supporting computations are reported
+in the companion physics manuscript. Here we instead examine \emph{how the work
+was done}, because the collaboration was unusual in one respect: the bulk of the
+implementation, literature synthesis, debugging, and drafting was carried out by
+an AI assistant working interactively with a human researcher, over an extended
+sequence of sessions.
+
+We believe the process is worth documenting for three reasons. First, the project
+exhibited a clear, instructive arc in which several early conclusions were
+\emph{overturned} by later, more careful work---a pattern that reveals how
+AI-assisted research can go wrong and how it can be made to self-correct. Second,
+the division of cognitive labor between human and machine differed markedly from
+both traditional solo research and traditional collaboration, in ways that suggest
+transferable practices. Third, the failure modes we encountered are precisely those
+the AI-safety and research-integrity communities have flagged as systemic risks,
+and we can report concretely on which materialized and which were successfully
+mitigated.
+
+The intended audience is deliberately broad: practitioners in observational
+cosmology who may wish to adopt or critique the workflow; AI researchers and
+enthusiasts interested in a concrete, non-trivial scientific application; and
+research-integrity specialists concerned with the epistemics of machine-assisted
+discovery.
+
+% ============================================================
+\section{Expert 1 --- The Research Methodology and Its History}
+\label{sec:history}
+
+\subsection{Origin: an informal analogy, disciplined into a question}
+
+The project did not begin with a hypothesis. It began with a loose analogy---the
+question of whether dark energy could ``discharge'' or ``crack'' in a manner
+loosely reminiscent of a sudden physical release, generated in an exploratory,
+free-associative brainstorm. The first methodological act was therefore
+\emph{triage}: separating the physically defensible kernel of the idea from the
+parts that were metaphor. Dark energy cannot radiate a detectable gravitational-wave
+signature from such an event (any such signal redshifts far below the band of
+foreseeable detectors), so the only observational handle is the background
+expansion history $H(z)$. This reduction---from an evocative image to a precise,
+testable statement about a step in $\rhoDE(z)$---set the entire subsequent
+program.
+
+The lesson, recorded early, is that the value of the initial analogy was not its
+correctness but its \emph{generativity}: it pointed at a question
+(``can we detect an abrupt dark-energy feature?'') that turned out to be
+under-explored, even though the specific mechanism that inspired it was not viable.
+
+\subsection{The methodological spine}
+
+The work settled quickly on a fixed methodological template that was reused for
+every probe and every variant:
+\begin{enumerate}[leftmargin=1.5em]
+  \item define a parametric feature model (a $\tanh$ step in $\rhoDE(z)$ with
+        amplitude $A$, location $z_t$, width $\Delta z$);
+  \item embed it in the Friedmann equation and forward-model each probe's
+        observables;
+  \item perform a nested likelihood-ratio test on a dense parameter grid;
+  \item \textbf{validate the null distribution} against the analytic
+        $\chi^2_1$ expectation before trusting any detection rate;
+  \item report Monte-Carlo detection probabilities from the real covariance of
+        each probe.
+\end{enumerate}
+Step~4 is the load-bearing one. It is the discipline that repeatedly caught errors,
+and it is the single most transferable element of the methodology.
+
+\subsection{The first breakthrough: a bug that masqueraded as a result}
+
+An early implementation used a multi-start numerical optimizer to fit the nested
+models. It produced \emph{negative} likelihood-ratio statistics---a restricted
+model apparently fitting better than the model that contained it, which is
+impossible. Rather than patch the number, the team treated the impossibility as
+diagnostic. The root cause was that the optimizer failed to enforce nesting: the
+step model has an ill-defined location and width when its amplitude is zero (a
+Chernoff-type boundary problem), so the null was not $\chi^2_3$ and the optimizer
+wandered. The fix---replacing the optimizer with a dense grid that includes
+$A=0$ exactly, guaranteeing nesting---made the null match $\chi^2_1$ to two
+decimal places. \textbf{The methodological principle crystallized here:} in
+nested model comparison, a negative $\Delta\chi^2$ is not noise to be clipped but
+a signal that the inference machinery is broken.
+
+\subsection{The pivotal reversal: synthetic optimism meets real data}
+
+The most consequential episode was a reversal. Initial detection rates were
+computed with a \emph{synthetic} supernova survey carrying a realistic error
+budget. These suggested supernovae could detect a large dark-energy step a
+substantial fraction of the time. When the same analysis was rerun against the
+\emph{real} Pantheon+ compilation with its full published stat+sys covariance,
+the detection rate collapsed by roughly an order of magnitude. The synthetic
+survey had been optimistic in exactly the way synthetic surveys usually are: it
+lacked the correlated systematics and the parameter degeneracies of the real
+instrument.
+
+This forced a deeper question---\emph{why}---and produced the project's central
+scientific insight, which in turn only emerged because the reversal demanded an
+explanation. A single integrated distance (a supernova magnitude) is nearly
+degenerate with the matter density $\Om$: both reshape $H(z)$ similarly, so a
+floating $\Om$ absorbs the step. Anisotropic BAO escapes this because it supplies
+\emph{two} geometric observables at each redshift, one of which (the radial
+distance, $\propto 1/H$) responds to the step directly. The mechanism was then
+proven by a controlled numerical experiment: stripping BAO to a single distance
+collapsed its sensitivity to supernova-like blindness.
+
+\subsection{Consolidation and extension}
+
+With the mechanism understood, the same validated apparatus was turned to a
+sequence of further questions, each a small, self-contained study: what amplitudes
+the real data already \emph{exclude}; where in redshift each probe is most
+sensitive; whether the transition \emph{width} is recoverable (it is not, at
+current precision); and whether the framework applies to a physically motivated
+model rather than a phenomenological step. The last of these led to an extension
+into horizon-entropy (holographic) dark energy, where the same
+degeneracy-breaking logic reappeared: a smooth deformation could be constrained
+only when an early-universe anchor (the CMB) was added. Finally, the accumulated
+results were unified under a single, standard criterion from the Fisher formalism
+(feature recoverability as a subspace-overlap condition), explicitly framed as an
+\emph{application} of existing theory rather than a novel invention.
+
+\subsection{Chronological summary}
+
+\begin{table}[h]
+\centering
+\caption{Condensed timeline of the research process, emphasizing the points at
+which the direction of the work changed.}
+\label{tab:timeline}
+\begin{tabular}{@{}p{0.24\textwidth}p{0.68\textwidth}@{}}
+\toprule
+Phase & Character and turning points \\
+\midrule
+Brainstorm & Informal analogy; triaged to a precise question about a step in $\rhoDE(z)$. \\
+First implementation & Optimizer produced impossible negative $\Delta\chi^2$; diagnosed as a nesting/boundary failure; replaced by a dense grid with validated null. \\
+Synthetic phase & Encouraging supernova detection rates---later shown to be over-optimistic. \\
+\textbf{Reversal} & Real Pantheon+ covariance collapsed supernova sensitivity $\sim$10$\times$; demanded a mechanistic explanation. \\
+Mechanism & Two-observable structure of BAO breaks the step--$\Om$ degeneracy; proven by a controlled single-observable experiment. \\
+Consolidation & Exclusion limits, location scan, width (non-)recoverability, signed amplitudes. \\
+Physical extension & Holographic (Barrow/Tsallis/R\'enyi) dark energy; CMB distance priors; multi-model comparison. \\
+Unification & Results recast as instances of a standard marginalized-Fisher criterion; explicit ancestry acknowledged. \\
+Adversarial review & Simulated expert panel; a residual-plot demand and a section reordering were adopted. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+\section{Expert 2 --- Comparative Analysis: AI-Assisted vs.\ Conventional Practice}
+\label{sec:comparison}
+
+\subsection{What was structurally different}
+
+The collaboration inverted the usual time-allocation of computational research. In
+conventional practice, a researcher spends the majority of effort on
+\emph{execution}---writing code, wrangling data formats, debugging, formatting
+figures---and a minority on \emph{judgment}: deciding what to compute, whether to
+believe a result, and what it means. The AI-assisted workflow compressed execution
+to near-zero marginal cost and thereby shifted almost the entire cognitive burden
+onto judgment. Implementing a new probe, a new estimator, or a new figure became a
+matter of minutes, which meant the rate-limiting resource was no longer typing but
+\emph{deciding what deserved to be typed and whether to trust the output}.
+
+This has a subtle consequence that we want to state plainly for practitioners: the
+cheapness of execution is a double-edged instrument. It enables an unusually
+thorough exploration---many small, self-contained sub-studies that a
+time-constrained human might never attempt---but it also makes it trivially easy to
+generate plausible-looking results faster than they can be checked. The
+productivity gain is real only if verification scales with generation. When it does
+not, the workflow manufactures unearned confidence.
+
+\subsection{Actionable practices human researchers can adopt}
+
+Several elements of this workflow are separable from the AI and can be adopted by
+any researcher:
+
+\begin{enumerate}[leftmargin=1.5em]
+  \item \textbf{Validate the null before trusting the signal.} Every detection
+        statistic in this project was checked against its analytic null
+        distribution before any rate was reported. This single habit caught the
+        most serious methodological error. It requires no AI and is undervalued in
+        routine practice.
+  \item \textbf{Treat impossibilities as diagnostics.} A negative $\Delta\chi^2$,
+        a $\chi^2/\text{dof}$ far from unity, a parameter railing against a
+        boundary---these are not to be smoothed over. Each such anomaly in this
+        project pointed at a specific bug.
+  \item \textbf{Prefer the controlled experiment to the plausible narrative.} The
+        two-observable mechanism was not asserted; it was \emph{proven} by
+        artificially removing one observable and watching sensitivity collapse.
+        When an explanation is cheap to test directly, test it directly.
+  \item \textbf{Re-run on real data early.} The synthetic-to-real reversal would
+        have been far more costly had it come late. The cost of premature reliance
+        on idealized inputs is a general hazard, not an AI-specific one.
+  \item \textbf{Separate generativity from correctness in early ideas.} The seeding
+        analogy was wrong in its specifics but valuable in its direction. Human
+        researchers often discard generative-but-flawed ideas too early or commit
+        to them too hard; the discipline is to mine the question and discard the
+        mechanism.
+  \item \textbf{Write the limitations while the work is fresh.} Caveats were
+        recorded continuously rather than reconstructed at the end, which kept the
+        claims calibrated to what the computations actually supported.
+\end{enumerate}
+
+\subsection{Where the AI did not substitute for the human}
+
+It is equally important to record what the automation did \emph{not} do. It did not
+choose the questions; the decision to pursue the $\rhoDE$-step framing, to re-run on
+real data, and to stop extending rather than over-claim were human judgments. It did
+not, on its own, resist the temptation to over-interpret; that restraint had to be
+imposed and repeatedly reasserted. And it did not supply ground truth: every number
+it produced was, in principle, capable of being confidently wrong, which is the
+subject of the next two sections.
+
+% ============================================================
+\section{Expert 4 --- Adversarial Stress-Testing and Threat Modeling}
+\label{sec:redteam}
+
+We evaluate the methodology from an attacker's perspective: not a malicious external
+actor, but the more relevant adversary of \emph{systematic self-deception}, in which
+the human--AI system converges confidently on a wrong answer. We enumerate the
+AI-specific failure modes, note which materialized, and describe the protocols that
+did or should guard against them.
+
+\subsection{Confirmation-bias feedback loops}
+
+\textbf{Threat.} An AI assistant optimized for helpfulness can preferentially
+produce evidence for whatever hypothesis the human appears to favor, and the human,
+seeing agreement, grows more confident, prompting further confirmatory work. The
+loop can lock a collaboration onto a false conclusion with mutually reinforcing
+certainty.
+
+\textbf{Materialization.} This risk was live throughout. The synthetic-data phase
+is the clearest near-miss: an encouraging early result was, briefly, believed.
+
+\textbf{Mitigation used.} The null-validation discipline and the insistence on
+controlled experiments repeatedly injected disconfirming pressure. The decisive
+correction---re-running on real data---was an act of deliberate self-challenge. The
+recommended protocol is to \emph{schedule} disconfirmation: for every headline
+result, require an independent computation whose natural outcome would falsify it.
+
+\subsection{Model hallucination and fabricated specifics}
+
+\textbf{Threat.} Language-model assistants can produce fluent, specific, and
+\emph{false} content: non-existent citations, incorrect numerical constants,
+plausible-but-wrong formulae, or fabricated intermediate values.
+
+\textbf{Materialization.} Two forms occurred. First, bibliographic details were
+assembled by the assistant and are known to be unreliable; this is explicitly
+flagged in the reproducibility statement and the physics manuscript, with
+verification against primary sources listed as a required pre-submission step.
+Second, and more insidiously, there was at least one instance of a
+fabricated intermediate value entering a hand-assembled table, later caught by
+re-derivation from source.
+
+\textbf{Mitigation used.} The end-to-end, self-validating pipeline was the primary
+defense: any number that mattered was regenerated from raw data by a script that
+also checked its own null, rather than being trusted as an assistant-reported
+scalar. The transferable rule is \textbf{no load-bearing hand-carried numbers}: if
+a value appears in a conclusion, a script must reproduce it from inputs.
+
+\subsection{Alignment / sycophancy drift}
+
+\textbf{Threat.} Over a long interaction, an assistant may drift toward telling the
+human what they want to hear---softening negative results, overstating the
+significance of findings, or declining to push back on a flawed request.
+
+\textbf{Materialization.} The pressure existed but was actively countered. Several
+results in this project were \emph{deflating} (supernovae are nearly blind; the
+transition width is not recoverable; no dark-energy model beat the standard one;
+the method does not resolve the Hubble tension). That these were reported plainly,
+rather than dressed up, is the relevant evidence that drift was contained.
+
+\textbf{Mitigation used.} Honesty about negative and null results was treated as a
+first-class objective, and claims were continuously re-calibrated to the
+computations. The protocol we recommend is to make ``report the disappointing
+version'' an explicit standing instruction, and to audit late-stage outputs for
+tone inflation relative to early-stage ones.
+
+\subsection{Prompt injection and pipeline integrity}
+
+\textbf{Threat.} In workflows where the assistant ingests external content (web
+pages, files, tool output), adversarial instructions embedded in that content could
+in principle redirect the research or corrupt results.
+
+\textbf{Materialization.} The project ingested literature via search and fetched
+real datasets from public repositories. No injection was observed, but the attack
+surface was real: a compromised data file or a poisoned web result could have
+altered a covariance matrix or a cited value.
+
+\textbf{Mitigation used and recommended.} Data provenance was restricted to known
+public repositories, and the covariances were sanity-checked against published
+scalar results (e.g.\ reproducing a known published constraint to three significant
+figures before use). The general protocol is provenance pinning plus an independent
+consistency check on every externally sourced quantity.
+
+\subsection{Linearization and approximation risk}
+
+\textbf{Threat.} An AI will readily deploy a standard tool (here, the Fisher matrix)
+without volunteering that its assumptions are violated. Fisher forecasts are linear
+approximations, and the features studied here are large and non-linear.
+
+\textbf{Mitigation used.} The Fisher criterion was used only as an
+\emph{explanatory} lens for degeneracy directions, with fully non-linear Monte-Carlo
+rates retained as the primary results---and this limitation is stated in the
+manuscript. The lesson is to demand, for every convenient approximation, an explicit
+statement of where it breaks and an independent estimate that does not rely on it.
+
+\subsection{Red-team summary}
+
+\begin{table}[h]
+\centering
+\caption{AI-specific failure modes, whether they materialized, and the primary
+mitigation.}
+\label{tab:redteam}
+\begin{tabular}{@{}p{0.26\textwidth}p{0.16\textwidth}p{0.5\textwidth}@{}}
+\toprule
+Failure mode & Materialized? & Primary mitigation \\
+\midrule
+Confirmation-bias loop & Near-miss & Scheduled disconfirmation; real-data re-run. \\
+Hallucinated citations & Yes & Flagged; primary-source verification required pre-submission. \\
+Fabricated intermediate value & Yes (caught) & Self-validating pipeline; no hand-carried numbers. \\
+Sycophancy / tone drift & Contained & Negative results reported plainly; tone audit. \\
+Prompt injection & Not observed & Provenance pinning; consistency checks on external data. \\
+Approximation overreach & Yes (bounded) & Non-linear MC retained as primary; Fisher explanatory only. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+\section{Expert 3 --- Limitations and Broader Impacts}
+\label{sec:limitations}
+
+\subsection{Limitations of the AI-assisted process}
+
+Beyond the failure modes of Section~\ref{sec:redteam}, several structural
+limitations deserve emphasis. The workflow's throughput can outpace human
+comprehension: it is possible to accumulate correct results faster than any single
+person fully internalizes them, creating a comprehension debt that undermines the
+researcher's ability to defend or extend the work. The assistant's fluency can also
+lend unwarranted authority to provisional claims; text that reads as authoritative
+is not thereby correct. Finally, the assistant's knowledge has a training cutoff and
+is uneven across subfields, so its literature synthesis is a starting point for human
+verification, never a substitute for it.
+
+\subsection{Ethical blind spots}
+
+Two blind spots merit naming. First, \textbf{automation bias}: the ease and polish
+of AI-generated output can suppress the healthy skepticism a researcher would apply
+to their own hand computation, and this effect is strongest exactly when the output
+agrees with prior expectations. Second, \textbf{diffuse accountability}: when an AI
+drafts analysis, code, and prose, the locus of scientific responsibility can blur.
+We take the position that responsibility remains entirely with the human authors;
+the assistant is an instrument, and its errors are the authors' errors to catch.
+
+\subsection{Broader societal impacts}
+
+The positive impact of workflows like this one is a genuine lowering of the barrier
+to rigorous computational science, enabling smaller teams and independent
+researchers to undertake work previously requiring large collaborations. The
+countervailing risk is a potential flood of plausible, fluent, under-verified
+manuscripts that strains peer review and pollutes the literature. The mitigating
+factor within our control is the same discipline described throughout: results that
+are regenerable from raw inputs by validated code are cheap for reviewers to check,
+whereas hand-asserted results are not. We suggest that \emph{regenerability} become
+an explicit expectation for AI-assisted computational submissions.
+
+\subsection{Reproducibility Statement}
+\label{sec:repro}
+
+The scientific project was designed for end-to-end reproducibility. All headline
+quantities are regenerated from raw public data by self-validating scripts that
+check their own null distributions. We provide the following (placeholders to be
+completed at release):
+
+\begin{itemize}[leftmargin=1.5em]
+  \item \textbf{Code repository:} \texttt{[REPOSITORY\_URL\_PLACEHOLDER]}
+        --- pipeline, model, and analysis scripts, organized by function, with a
+        manifest mapping each script to the result it produces.
+  \item \textbf{Datasets:} Type Ia supernovae, \texttt{[PANTHEON+\_DOI\_PLACEHOLDER]};
+        anisotropic BAO, \texttt{[DESI\_DR2\_DOI\_PLACEHOLDER]}; cosmic-chronometer
+        compilation, \texttt{[CC\_COMPILATION\_DOI\_PLACEHOLDER]}. All are public;
+        provenance is restricted to the originating repositories.
+  \item \textbf{Derived data products:} result arrays and figures,
+        \texttt{[ARCHIVE\_DOI\_PLACEHOLDER]}.
+  \item \textbf{Environment:} Python
+        \texttt{[PYTHON\_VERSION]}; \texttt{numpy [VERSION]},
+        \texttt{scipy [VERSION]}, \texttt{matplotlib [VERSION]}. Random seeds for
+        all Monte-Carlo runs are fixed and recorded in
+        \texttt{[SEED\_MANIFEST\_PLACEHOLDER]}.
+  \item \textbf{Validation:} each pipeline script prints its null-distribution
+        median and compares it to the analytic $\chi^2_1$ value prior to reporting
+        detection rates; reviewers can confirm calibration without rerunning the
+        full Monte Carlo.
+  \item \textbf{Known verification debt:} bibliographic metadata assembled during
+        the project must be checked against primary sources before archival; the
+        multi-model CMB treatment uses distance priors rather than a full
+        likelihood; one model's high-redshift extension is numerically unreliable
+        and only its low-redshift result is validated. These are documented in the
+        physics manuscript.
+\end{itemize}
+
+% ============================================================
+\section{Synthesis and Conclusions}
+\label{sec:conclusion}
+
+Read together, the five perspectives converge on a single thesis. The
+distinguishing feature of this AI-assisted methodology was not speed for its own
+sake but a \emph{relocation of effort}: because execution became nearly free, the
+scarce resource became verification, and the quality of the work was determined
+almost entirely by how rigorously the human--AI system challenged its own outputs.
+Every genuine advance in the project---the grid that fixed the nesting bug, the
+real-data reversal that overturned the supernova result, the controlled experiment
+that proved the mechanism---was an act of disconfirmation. Every serious risk---the
+confirmation loop, the hallucinated specifics, the drift toward comfortable
+conclusions---was an act of unchecked confirmation waiting to happen.
+
+The practical recommendation that follows is uncomfortable but simple. In
+AI-assisted research, the assistant's fluency is not the product; the verification
+scaffolding around it is. A workflow that generates results faster than it can
+falsify them is not doing science faster---it is accumulating risk faster. The
+methodology documented here worked to the extent that it inverted this: it made
+disconfirmation cheap, scheduled, and habitual, and it refused to let any
+conclusion rest on a number that a validated script could not reproduce from raw
+data. We offer that inversion, rather than any particular result, as the
+transferable contribution.
+
+% ============================================================
+% Expert 5 --- Bibliography (placeholder BibTeX; verify before use)
+\bibliographystyle{plainnat}
+\begin{thebibliography}{99}
+
+\bibitem[Chevallier \& Polarski(2001)]{CPL2001}
+Chevallier, M. \& Polarski, D. (2001).
+\newblock Accelerating universes with scaling dark matter.
+\newblock \emph{Int.\ J.\ Mod.\ Phys.\ D}, \textbf{10}, 213.
+\newblock [PLACEHOLDER --- verify against primary source.]
+
+\bibitem[Linder(2003)]{Linder2003}
+Linder, E.~V. (2003).
+\newblock Exploring the expansion history of the universe.
+\newblock \emph{Phys.\ Rev.\ Lett.}, \textbf{90}, 091301.
+\newblock [PLACEHOLDER --- verify.]
+
+\bibitem[Linder \& Huterer(2005)]{LinderHuterer2005}
+Linder, E.~V. \& Huterer, D. (2005).
+\newblock How many dark energy parameters?
+\newblock \emph{Phys.\ Rev.\ D}, \textbf{72}, 043509.
+\newblock [PLACEHOLDER --- verify.]
+
+\bibitem[Moresco et al.(2022)]{Moresco2022}
+Moresco, M. et al. (2022).
+\newblock Unveiling the universe with cosmic chronometers.
+\newblock \emph{Living Reviews in Relativity} [PLACEHOLDER --- verify volume/page].
+
+\bibitem[Scolnic et al.(2022)]{PantheonPlus2022}
+Scolnic, D. et al. (2022).
+\newblock The Pantheon+ analysis: the full dataset and light-curve release.
+\newblock \emph{Astrophys.\ J.} [PLACEHOLDER --- verify].
+
+\bibitem[DESI Collaboration(2025)]{DESIDR2}
+DESI Collaboration (2025).
+\newblock DESI DR2 results: baryon acoustic oscillations.
+\newblock [PLACEHOLDER --- verify arXiv/journal reference.]
+
+\bibitem[Saridakis(2020)]{Saridakis2020}
+Saridakis, E.~N. (2020).
+\newblock Barrow holographic dark energy.
+\newblock \emph{Phys.\ Rev.\ D}, \textbf{102}, 123525.
+\newblock [PLACEHOLDER --- verify.]
+
+\bibitem[Chen et al.(2019)]{Chen2019}
+Chen, L., Huang, Q.-G. \& Wang, K. (2019).
+\newblock Distance priors from Planck final release.
+\newblock \emph{JCAP}, \textbf{02}, 028.
+\newblock [PLACEHOLDER --- verify.]
+
+\bibitem[Amann et al.(placeholder)]{ReproPlaceholder}
+[Author(s)] ([Year]).
+\newblock [Foundational reference on reproducibility / research-integrity in
+computational science --- to be supplied.]
+
+\end{thebibliography}
+
+\end{document}
