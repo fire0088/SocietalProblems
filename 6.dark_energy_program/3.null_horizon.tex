@@ -1,0 +1,555 @@
+\documentclass[twocolumn,10pt]{article}
+
+\usepackage[margin=0.75in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{authblk}
+\usepackage{abstract}
+
+\renewcommand{\Affilfont}{\small}
+\setlength{\affilsep}{0.3em}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+\newcommand{\keff}{k_{\rm eff}}
+\newcommand{\dDE}{\delta_{\rm DE}}
+\newcommand{\dm}{\delta_{\rm m}}
+
+\title{\vspace{-2em}\textbf{Which dark energy can structure growth see?
+A response-kernel classification of geometric dark energy}}
+
+\author[]{Eric Schultz}
+\affil[]{Independent researcher \quad ORCID: 0009-0006-6283-1696}
+\date{\today}
+
+\begin{document}
+
+\twocolumn[
+  \begin{@twocolumnfalse}
+  \maketitle
+  \begin{abstract}
+  \noindent
+  A dark-energy model whose density is fixed by a geometric construction---a
+  horizon length, a curvature scalar, a nonlocal functional of the
+  metric---has no independent perturbation sector: its density contrast is
+  \emph{inherited} from the gravitational potential through whatever functional
+  defines it. We show that the observability of such a model in the linear
+  structure-growth rate $f\sigma_8$ is controlled by a single quantity: the
+  ultraviolet scaling of the kernel through which the dark-energy density
+  responds to the potential. Because the density perturbation is always a linear
+  functional of the metric perturbation, geometric dark-energy models partition
+  exhaustively by this kernel's large-$k$ behaviour into a small number of
+  classes. Local constructions (Hubble, Ricci, Granda--Oliveros, and---we
+  emphasize---the apparent horizon) have a delta-function kernel, cluster like
+  an ordinary $c_s^2\!=\!1$ fluid, and remain growth-informative. Light-cone
+  constructions (the future event horizon and the particle horizon) have a
+  one-dimensional oscillatory kernel; phase-averaging of the potential along
+  the ray suppresses their density contrast as $\dDE/\dm\sim1/k^{3}$, so they
+  carry no growth information beyond the background expansion. Smooth-nonlocal
+  constructions are smoother still. We give the criterion, prove the partition
+  is exhaustive, identify the future event horizon as the unique cutoff whose
+  growth channel is \emph{unconditionally} closed, and delineate the two
+  boundary subtleties---acoustic resonance on the particle-horizon ray, and a
+  crossover scale for cutoffs with a small local admixture---that separate the
+  exact statement from its observational version. The result reorganizes a large
+  and fragmented model space around a single computable diagnostic and tells an
+  observer, in advance, which geometric dark-energy models a growth measurement
+  can and cannot constrain.
+  \end{abstract}
+  \vspace{1em}
+  \end{@twocolumnfalse}
+]
+
+%========================================================================
+\section{Introduction}
+
+Dark energy is increasingly probed not only through the background expansion
+$H(z)$ but through the rate at which cosmic structure grows, $f\sigma_8(z)$.
+The premise of that program is that growth carries information the expansion
+does not: two models with identical $H(z)$ can differ in how dark energy
+clusters, and $f\sigma_8$ sees the difference. For a broad and popular class of
+models, however, that premise fails---and it fails for a structural reason that
+can be stated once and checked model by model.
+
+The class in question is what we will call \emph{geometric dark energy}: models
+in which the dark-energy density is not an independent dynamical field but is
+fixed by a construction built from the spacetime geometry. Holographic dark
+energy, $\rho_{\rm DE}\propto L^{-2}$ with $L$ an infrared cutoff length, is the
+best-known example, and its generalized-entropy variants (Barrow, Tsallis,
+R\'enyi, Kaniadakis) form a large post-DESI literature. But the category is
+wider: it includes Ricci and Granda--Oliveros dark energy, apparent-horizon and
+thermodynamic constructions, and nonlocal-gravity models in which the
+dark-energy density is a nonlocal functional of the curvature.
+
+For every such model the same fact holds: the dark-energy density perturbation
+is not free. If $\rho_{\rm DE}=f(L[g])$ for some geometric length functional
+$L$ of the metric $g$, then
+\begin{equation}
+\dDE=\frac{d\ln f}{d\ln L}\,\frac{\delta L}{L},
+\label{eq:inherit}
+\end{equation}
+and the entire scale dependence of $\dDE$ lives in $\delta L$, the perturbation
+of the geometric construction. The prefactor---where all the entropy physics
+sits---is a bounded, scale-independent number. Whether growth can see the model
+is therefore not a question about entropy or equation of state; it is a
+question about $\delta L$, and specifically about \emph{how $\delta L$ responds
+to the gravitational potential as a function of scale}.
+
+This paper makes that question precise and answers it in general. We show
+(Sec.~\ref{sec:kernel}) that $\delta L$ is always a linear functional of the
+metric perturbation, so that in Fourier space
+$\delta L_k=\int \mathcal{K}(k;\cdot)\,\Phi\,$, and that the observability of the
+model is fixed by the large-$k$ scaling of the kernel $\mathcal{K}$. We prove
+(Sec.~\ref{sec:partition}) that geometric dark-energy models partition
+exhaustively into a small number of classes by this scaling, and that only the
+local class remains growth-informative at observable scales. We identify
+(Sec.~\ref{sec:eventhorizon}) the future event horizon as the unique
+construction whose channel is unconditionally closed, and we treat
+(Sec.~\ref{sec:boundaries}) the two boundary cases---particle-horizon acoustic
+resonance and mixed cutoffs---that mark the edge of the clean statement. The
+holographic closed-channel result established for event-horizon models
+elsewhere~\cite{CompanionPaper} is the central, cleanest member of the
+classification given here.
+
+%========================================================================
+\section{The response kernel}
+\label{sec:kernel}
+
+We work in the conformal-Newtonian gauge with metric potential $\Phi$, on
+sub-horizon scales $k\gg aH$ where the observations live, and to linear order.
+Matter perturbations obey the standard growth equation, whose only cosmological
+input is $H(a)$; two models with the same expansion history give the same
+matter growth unless dark energy itself clusters and back-reacts through the
+Poisson equation,
+\begin{equation}
+-\frac{k^2}{a^2}\Phi=4\pi G\left[\rho_{\rm m}\dm+\rho_{\rm DE}\dDE(1+3c_{\rm eff}^2)\right].
+\label{eq:poisson}
+\end{equation}
+The dark-energy term is the whole question. Its size relative to the matter
+term is governed by $\dDE$, which by Eq.~\eqref{eq:inherit} is set by $\delta L$.
+
+\paragraph{$\delta L$ is a linear functional of $\Phi$.}
+A geometric length $L$ is a functional of the metric. Its first-order
+perturbation is therefore a linear functional of the metric perturbation:
+schematically
+\begin{equation}
+\delta L(x,t)=\int \mathcal{K}(x,t;x',t')\,\Phi(x',t')\,d^4x',
+\label{eq:linfunctional}
+\end{equation}
+for a kernel $\mathcal{K}$ determined entirely by how $L$ is built from $g$.
+In Fourier space $\delta L_k=\widetilde{\mathcal{K}}(k)\,\Phi_k$ (times a
+possible integral along a curve or over a region, made explicit below).
+Sub-horizon, the potential is sourced by matter, $\Phi_k\sim -4\pi G a^2
+\rho_{\rm m}\dm/k^2$, so the density contrast carries the Poisson factor
+$1/k^2$ together with the ultraviolet scaling of the kernel,
+\begin{equation}
+\frac{\dDE}{\dm}\;\sim\;\frac{1}{k^{2}}\;S(k),\qquad
+S(k)\equiv\frac{\widetilde{\mathcal K}(k)}{\widetilde{\mathcal K}_{\rm local}},
+\label{eq:master}
+\end{equation}
+with $S$ normalized to unity for a purely local response. The organizing claim
+of this paper is that the growth-observability of a geometric dark-energy model
+is fixed by $S(k)$---what the geometry adds beyond the universal pressure
+(Jeans) floor $1/k^2$. Section~\ref{sec:partition} makes both factors precise:
+the floor is the same for every construction (Lemma~\ref{lem:factor}), while
+$S(k)$ takes one of a few forms set by the type of geometric functional
+(Lemma~\ref{lem:kernels}). We caution that the local class does \emph{not}
+follow from a naive derivative count on $\widetilde{\mathcal K}$; its value is
+set by the pressure floor, as the proof makes explicit.
+
+\paragraph{$S(k)$ is gauge-invariant.}
+Although $\delta L$ for a nonlocal length is gauge-dependent---it integrates the
+metric perturbation over a curve or region, and a coordinate change shifts the
+integrand---the ultraviolet scaling of $S(k)$ is not. Two facts secure this.
+First, the potential appearing in Eq.~\eqref{eq:linfunctional} is the
+Newtonian-gauge $\Phi$, which equals the Bardeen invariant $\Phi_A$; the
+geometric object over which it is integrated (a null ray, a causal region, the
+support of $\Box^{-1}$) is coordinate-independent, so the leading large-$k$
+behaviour of $\widetilde{\mathcal K}$ is a property of the invariant pair
+$(\Phi_A,\text{geometry})$, not of the slicing. Second, $S$ is defined as a
+\emph{ratio} to the local response, and any residual gauge contribution to
+$\delta L$ enters at $\mathcal{O}(aH/k)$ relative to the leading term---the same
+order in every gauge---so it cancels in the ratio to the order at which $S(k)$
+is evaluated. A gauge transformation can therefore rescale $\delta L$ but cannot
+change the exponent of $S(k)$; the local/nonlocal boundary of
+Lemma~\ref{lem:kernels}, which depends only on that exponent, is a
+gauge-invariant statement. We verified this explicitly for the light-cone class
+by recomputing the leading scaling with $\Phi_A$ in place of the Newtonian
+$\Phi$: the $1/k$ is unchanged.
+
+%========================================================================
+\section{The classification}
+\label{sec:partition}
+
+The kernel $\widetilde{\mathcal K}(k)$ is fixed by the \emph{type} of geometric
+object $L$ is. There are only a few types, distinguished by the support of
+$\mathcal K$ in Eq.~\eqref{eq:linfunctional}, and they exhaust the possibilities
+because every geometric $L$ is one of them.
+
+\begin{definition}[Kernel classes]
+(Table~\ref{tab:classes} places the standard constructions in these classes.)
+A geometric length functional $L$ is
+\begin{itemize}
+\item[\textbf{(L)}] \emph{local} if $\mathcal K$ is a delta function (with
+possible derivatives): $\delta L=c(t)\Phi+\dots$. Then
+$\widetilde{\mathcal K}\sim k^0$.
+\item[\textbf{(N)}] \emph{null-line} if $\mathcal K$ has one-dimensional support
+along a null ray: $\delta L_k=\int_{\rm ray}\Phi_k(u)\,e^{iku}\,du$. Then
+$\widetilde{\mathcal K}\sim 1/k$ for a smooth envelope.
+\item[\textbf{(S)}] \emph{smooth-nonlocal} if $\mathcal K$ is a rapidly
+decaying spatial window (e.g. a Gaussian average over scale $R$,
+$\widetilde{\mathcal K}\sim e^{-k^2R^2}$).
+\item[\textbf{(I)}] \emph{inverse-box nonlocal} if $L$ involves
+$\square^{-1}$ acting on curvature, so $\widetilde{\mathcal K}\sim 1/k^2$.
+\end{itemize}
+\end{definition}
+
+\begin{theorem}[Exhaustive growth partition]
+\label{thm:partition}
+Let dark energy be geometric, $\rho_{\rm DE}=f(L[g])$ with $d\ln f/d\ln L$
+bounded and nonzero. Then its sub-horizon density contrast relative to matter
+scales as
+\begin{equation}
+\frac{\dDE}{\dm}\sim
+\begin{cases}
+1/k^{2} & \text{class (L): clusters, growth-informative}\\[2pt]
+1/k^{3} & \text{class (N): growth-empty}\\[2pt]
+\text{$\ll 1/k^{n}\,\forall n$} & \text{class (S): super-smooth}\\[2pt]
+1/k^{4} & \text{class (I): growth-empty}
+\end{cases}
+\label{eq:partition}
+\end{equation}
+and every geometric $L$ is growth-informative or growth-empty according to the
+dichotomy of Lemma~\ref{lem:kernels}; the four rates are those of the
+constructions in current use.
+\end{theorem}
+
+The classification rests on a decomposition of the density response into a
+universal part and a geometry-dependent part.
+
+\begin{lemma}[Jeans floor and suppression factor]
+\label{lem:factor}
+For geometric dark energy with $\rho_{\rm DE}=f(L[g])$, the sub-horizon
+density contrast factorizes as
+\begin{equation}
+\frac{\dDE}{\dm}\;\sim\;\underbrace{\frac{1}{k^{2}}}_{\text{Jeans floor}}\;\times\;S(k),
+\label{eq:factor}
+\end{equation}
+where $S(k)$ is the ultraviolet scaling of the kernel $\widetilde{\mathcal
+K}(k)$ through which $\delta L$ responds to the potential, normalized so that a
+purely local response gives $S=1$.
+\end{lemma}
+
+\begin{proof}
+Two facts combine. \emph{(i) The floor.} We take as the defining property of
+\emph{geometric} dark energy that its density is a functional of the metric with
+no independent matter or scalar degree of freedom---no separate kinetic term in
+the action carrying its own momentum. For such a component the rest-frame sound
+speed is not a free Lagrangian parameter; the prescription that renders
+$\rho_{\rm DE}=f(L[g])$ well-defined ties its pressure perturbation to its
+density perturbation through the same geometric relation, fixing the effective
+sound speed to the smooth branch $c_{\rm eff}^2=1$. A component with
+$c_{\rm eff}^2=1$ has its sound horizon equal to the Hubble radius, so
+sub-horizon its perturbations are pressure-supported and Jeans-suppressed,
+$\dDE/\dm\sim(aH/k)^2=1/k^2$ (in units $aH=1$)~\cite{Hu1998,WellerLewis2003}.
+This is the universal floor for the geometric class, independent of which
+construction is used. We flag the one way out explicitly: a functional that
+implicitly reintroduces an independent momentum flux---for instance by making
+$L$ depend on the matter velocity field, not the metric alone---would carry its
+own $c_{\rm eff}^2\neq1$ and fall outside this class; our floor, and hence the
+partition, is asserted for metric functionals, which is the case of interest and
+covers every construction in Table~\ref{tab:classes}. \emph{(ii) The factor.} By
+Eq.~\eqref{eq:inherit}, $\dDE=(d\ln f/d\ln L)\,\delta L/L$ with the prefactor
+bounded, and by Eq.~\eqref{eq:linfunctional} $\delta L_k=\widetilde{\mathcal
+K}(k)\,\Phi_k$. Any suppression of $\widetilde{\mathcal K}$ beyond the local
+(delta-function) response multiplies the floor: writing $S(k)\equiv
+\widetilde{\mathcal K}(k)/\widetilde{\mathcal K}_{\rm local}$, the response is
+the floor times $S(k)$. A local response has $S=1$ and saturates the floor; a
+nonlocal one has $S(k)\to0$ and lies below it. The two statements are
+independent---(i) is a fluid pressure result, (ii) a functional-analytic
+scaling---so their product is Eq.~\eqref{eq:factor}.
+\end{proof}
+
+\begin{lemma}[Locality dichotomy]
+\label{lem:kernels}
+On the homogeneous background the response $\Phi\mapsto\delta L$ is linear and
+translation-invariant, hence diagonal in Fourier space,
+$\delta L_k=\widetilde{\mathcal K}(k)\,\Phi_k$, and the suppression factor
+$S(k)=\widetilde{\mathcal K}(k)/\widetilde{\mathcal K}_{\rm local}$ has a
+well-defined ultraviolet order. Then:
+\begin{itemize}
+\item[(i)] If $\mathcal K$ contains a local (delta-supported) component---$L$
+depending on the metric and finitely many derivatives at the point---that
+component dominates the ultraviolet, $S(k)\!\to\!\mathrm{const}$ or grows, so
+$\dDE/\dm\gtrsim1/k^{2}$: the dark energy clusters at or above the Jeans floor
+and remains growth-informative.
+\item[(ii)] If $\mathcal K$ is genuinely nonlocal---an integrable kernel with no
+delta component---then by the Riemann--Lebesgue lemma
+$\widetilde{\mathcal K}(k)\!\to\!0$, so $S(k)\!\to\!0$ and
+$\dDE/\dm=o(1/k^{2})$: the dark energy is smoother than the Jeans floor and is
+growth-empty.
+\end{itemize}
+The boundary $S\sim k^0$ is therefore exactly the local/nonlocal divide.
+\end{lemma}
+
+\begin{proof}
+Linearity and translation invariance on an FRW background give the Fourier
+diagonalization directly. For (i), a delta-supported kernel has
+$\widetilde{\mathcal K}(k)=\sum_n c_n(ik)^n$, which does not vanish at large $k$;
+the leading term sets $S$, and the density response is bounded below by the
+$c_{\rm eff}^2=1$ Jeans floor of Lemma~\ref{lem:factor}(i), since a local
+$\dDE\sim\Phi$ is a genuine pressure-supported fluid perturbation (the extra
+derivative terms of a curvature cutoff enter only at subleading order
+$(aH/k)^2$ and do not lift the response above the floor's scaling). For (ii),
+an $L^1$ kernel with no atomic part has $\widetilde{\mathcal K}(k)\to0$ by
+Riemann--Lebesgue, hence $S(k)\to0$; the model is strictly smoother than a
+local one at every large $k$.
+\end{proof}
+
+The dichotomy is the rigorous content: \emph{growth can see a geometric
+dark-energy model if and only if its density responds to the potential through
+a locally-supported kernel.} Intuitively: a local response reads the potential
+at a point, so a small-scale fluctuation registers at full strength; a nonlocal
+response averages the potential over an extended ray or region, and a
+small-scale fluctuation---many crests and troughs within the averaging
+domain---largely cancels itself out. The more spread-out the kernel, the more
+complete the cancellation, which is why the smooth spatial window (class S) is
+smoother than the light-cone integral (class N), which is smoother than the
+local cutoff (class L). Riemann--Lebesgue is the precise form of ``averaging an
+oscillation sends it to zero.'' The specific exponents of
+Theorem~\ref{thm:partition} refine this by computing the \emph{rate} at which
+$S(k)$ vanishes for the nonlocal constructions actually in use---a rate that
+Riemann--Lebesgue alone does not fix. For a light-cone integral, integration by
+parts on the oscillatory kernel gives $S\sim1/k$ (a smooth envelope;
+Sec.~\ref{sec:boundaries}), hence $1/k^3$. For an inverse d'Alembertian,
+$S\sim1/k^2$, hence $1/k^4$. For a smooth spatial window, $S$ decays faster than
+any power (Paley--Wiener). We do not claim these exhaust all conceivable
+covariant functionals; they are the constructions the literature employs, and
+each is placed by direct computation of its kernel order in
+Table~\ref{tab:classes}.
+
+\begin{proof}[Proof of Theorem~\ref{thm:partition}]
+Lemma~\ref{lem:factor} gives $\dDE/\dm\sim S(k)/k^2$, and
+Lemma~\ref{lem:kernels} establishes the dichotomy: $S\!\to\!\mathrm{const}$ for
+a locally-supported kernel (clustering, growth-informative) and $S\!\to\!0$ for
+a nonlocal one (growth-empty). The four entries of
+Eq.~\eqref{eq:partition} are the values of $S(k)/k^2$ for the constructions in
+Table~\ref{tab:classes}, using the kernel rates computed after
+Lemma~\ref{lem:kernels}: $S=1$ (local) gives $1/k^2$; $S=1/k$ (light-cone) gives
+$1/k^3$; $S=1/k^2$ (inverse-box) gives $1/k^4$; a smooth window gives faster
+than any power. The partition into growth-informative and growth-empty is
+exhaustive by the dichotomy; the specific exponents catalog the constructions
+in use rather than claiming to exhaust all covariant functionals.
+\end{proof}
+
+Table~\ref{tab:classes} places the standard constructions. The entry that most
+often causes confusion is the apparent horizon: in a spatially flat
+Friedmann--Robertson--Walker background the apparent horizon coincides with the
+Hubble radius, $L=1/H$, which is a \emph{local} function of the expansion rate.
+Apparent-horizon dark energy is therefore in class (L)---it clusters---despite
+the ``horizon'' name that might suggest a light-cone construction. Only the
+future event horizon and the particle horizon, defined by null-geodesic
+integrals, are class (N).
+
+\begin{table}[!t]
+\caption{Geometric dark-energy constructions by kernel class. Only class (L)
+is informative to linear growth at observable scales.}
+\label{tab:classes}
+\begin{center}\small
+\begin{tabular}{lll}\hline\hline
+Construction & $L\sim$ & Class \\ \hline
+Hubble cutoff & $1/H$ & (L) \\
+Ricci cutoff & $(\dot H+2H^2)^{-1/2}$ & (L) \\
+Granda--Oliveros & $(\alpha H^2+\beta\dot H)^{-1/2}$ & (L) \\
+Apparent horizon (flat) & $1/H$ & (L) \\
+Future event horizon & $a\!\int_t^\infty\!dt'/a$ & (N) \\
+Particle horizon & $a\!\int_0^t\!dt'/a$ & (N) \\
+Gaussian-averaged scale & smoothing window & (S) \\
+Nonlocal $\square^{-1}R$ & inverse d'Alembertian & (I) \\
+\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+%========================================================================
+\section{The event horizon is unconditionally closed}
+\label{sec:eventhorizon}
+
+Among the growth-empty class (N), the future event horizon is the cleanest
+case. Its defining ray runs from the observation time into the infinite future,
+a region that (for accelerating cosmologies) is smoothly dark-energy dominated:
+the potential envelope along the ray is monotone and non-oscillatory, so the
+phase-averaging argument applies with no envelope condition at all, and
+$\dDE/\dm\sim1/k^3$ holds for every event-horizon construction---every
+generalized entropy, every deformation parameter---because the entropy enters
+only the bounded prefactor in Eq.~\eqref{eq:inherit}. The particle horizon
+reaches the same $1/k^3$ but by a slightly stronger route: its ray does cross
+the oscillatory radiation era, yet the phase-average survives because the ray
+is null and cannot resonate with the sub-luminal acoustic oscillation
+(Sec.~\ref{sec:boundaries}). Class (N) is thus closed throughout, with the
+event horizon closed \emph{unconditionally} and the particle horizon closed
+by the light-versus-sound separation. This is the sense in which the
+holographic closed-channel result~\cite{CompanionPaper} is not one result among
+many but the representative of a class.
+
+It is worth noting that this same cutoff is the one the data independently
+prefer. Combined expansion-plus-growth analyses disfavor the Ricci and
+Granda--Oliveros (class (L)) constructions because they overproduce early dark
+energy, while the future-event-horizon construction remains
+viable~\cite{Akhlaghi2018}. The cutoff for which the growth channel is provably
+empty is thus also the cutoff that survives the data---so the closure is not a
+statement about a disfavored corner of model space but about the observationally
+central one.
+
+%========================================================================
+\section{Two boundary subtleties}
+\label{sec:boundaries}
+
+The clean partition of Theorem~\ref{thm:partition} has two edges where the exact
+mathematical statement and its observational version diverge. Both are benign,
+and naming them precisely is part of the result.
+
+\paragraph{Acoustic resonance on the particle-horizon ray.}
+The particle horizon is class (N), but its ray threads the radiation era, where
+the potential is not a smooth envelope but oscillates with the acoustic phase.
+Using the exact radiation-era transfer function
+$\Phi\propto[\sin x-x\cos x]/x^3$ with $x=c_s k\tau$, the large-$x$ envelope
+oscillates at frequency $c_s k$, while the null kernel oscillates at $\gamma k$,
+where $\gamma$ is the ray's propagation speed in the relevant coordinate. Their
+product beats to zero frequency---defeating the phase-average and degrading the
+suppression from $1/k^3$ to $1/k^2$---only if
+\begin{equation}
+\gamma=c_s,
+\end{equation}
+that is, only if the null ray propagates at the acoustic sound speed. It does
+not: the ray is null, $\gamma$ is the speed of light, and light is strictly
+faster than sound in the photon-baryon plasma, $c_s=1/\sqrt3<1$. The
+resonance is therefore not a fine-tuned near-miss but a structural
+impossibility, and a high-precision evaluation of the ray integral with the full
+transfer function confirms $\widetilde{\mathcal K}\sim1/k$ (hence
+$\dDE/\dm\sim1/k^3$), robustly and independently of the ray parametrization.
+The particle-horizon channel is thus closed for the same structural reason as
+the event-horizon channel: the only configuration that would reopen it requires
+sound to overtake light.
+
+\paragraph{Envelope regularity along the ray.}
+The class-(N) scaling $\widetilde{\mathcal K}\sim1/k$ was stated for a smooth
+envelope, which invites the objection that a sharp background feature---a rapid
+phase transition, a sudden shift in the dominant component---makes $\Phi(u)$
+along the ray non-smooth and could, through the boundary terms of the
+integration by parts, degrade the suppression back toward class (L). It cannot.
+Integration by parts on $\int\Phi(u)e^{iku}du$ converts each order of
+smoothness into one power of $1/k$: a jump discontinuity in the envelope
+contributes a surface term of order $1/k$ (oscillating in $k$ through a phase
+$e^{iku_0}$), a kink (derivative discontinuity) contributes $1/k^2$, and a
+smooth envelope gives the interior $1/k$. In every case $\widetilde{\mathcal
+K}=\mathcal{O}(1/k)$ or smaller. A direct evaluation with an imposed jump and an
+imposed kink confirms $\widetilde{\mathcal K}\sim k^{-1}$ unchanged. Lifting the
+model to class (L) ($S\sim k^0$) would require an $\mathcal{O}(1)$, non-decaying
+$\widetilde{\mathcal K}$---that is, a delta function in $\Phi$ itself, a singular
+potential, which is unphysical for any finite-energy perturbation. The honest
+statement is therefore that the smooth-envelope assumption can be relaxed to
+$\Phi$ of bounded variation along the ray, under which $\widetilde{\mathcal
+K}=\mathcal{O}(1/k)$ and the class-(N) suppression is at worst $1/k^3$; sharp
+features can only make it faster, never slower, and never local.
+
+\paragraph{Mixed cutoffs and the crossover scale.}
+Class membership is a statement about the \emph{pure} construction. A cutoff
+with a local admixture, $L=\alpha L_{\rm EH}+\beta/H$, has
+$\delta L_k=\alpha\,O(1/k)+\beta\,O(1)$: the local piece carries no
+$k$-suppression and dominates once $k>k_{\rm cross}\equiv\alpha/\beta$. Any
+nonzero $\beta$ therefore returns the model to class (L) asymptotically---but
+only beyond $k_{\rm cross}$. For a small admixture ($\beta\ll\alpha$) the
+crossover lies far above the observable range $k/aH\sim1$--$10^3$, and the model
+is \emph{effectively} growth-empty across the window a survey can measure. The
+exact boundary ($\beta=0$, unconditional $1/k^3$) and the observational boundary
+(``dominantly null,'' $k_{\rm cross}$ beyond reach) thus differ, in exactly the
+way an exact degeneracy differs from a precision-limited one. We state both.
+
+The comparable-weight case $\alpha\sim\beta$ does not weaken the result, for two
+reasons. First, it is not a marginal case for the theorem: with $\beta\sim\alpha$
+one has $k_{\rm cross}\sim1$, so the model is class (L) across essentially the
+entire observable range---it is \emph{growth-informative}, and the theorem
+classifies it correctly and unambiguously as such. There is no regime the
+partition fails to cover; the crossover simply tells us \emph{which} class a
+mixed cutoff occupies as a function of scale. Second, a comparable local
+admixture is disfavored on independent grounds: the $\beta/H$ Hubble-cutoff
+piece reintroduces exactly the early-dark-energy overproduction that combined
+expansion-plus-growth data disfavor for the pure Hubble and Ricci cutoffs
+(Ref.~\cite{Akhlaghi2018}), scaled by $\beta$. A model with $\beta\sim\alpha$
+inherits an $O(1)$ fraction of that disfavored behaviour and is constrained by
+the same data that already disfavor class (L) horizon cutoffs. So the mixed
+cutoff is either dominantly null (and effectively growth-empty, our case) or
+carries a substantial local piece (and is both growth-informative \emph{and}
+background-disfavored)---never a loophole that is simultaneously growth-hidden
+and observationally viable.
+
+%========================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+The classification converts a fragmented question---\emph{does this particular
+horizon dark energy cluster?}---into a single computable diagnostic: identify
+the kernel through which the density responds to the potential, read off its
+ultraviolet scaling, and place the model in Eq.~\eqref{eq:partition}. The answer
+requires no perturbation code and no fit; it follows from the form of the
+geometric construction. For an observer, the practical content is a
+prediction made in advance: a growth survey can constrain class (L) geometric
+dark energy and cannot constrain classes (N), (S), or (I) beyond what the
+background already fixes. For the holographic program specifically, it means the
+event-horizon models that dominate the literature are, as a class, invisible to
+$f\sigma_8$---and that the search for a growth signature should be redirected to
+the local-cutoff constructions, where a signal can in principle exist.
+
+Two limitations bound the scope. First, the framework is linear and
+sub-horizon; the near-horizon and mildly nonlinear regimes, where the clean
+$k$-scalings blur, are left for future work, though the observational weight of
+$f\sigma_8$ sits at sub-horizon scales where the classification is sharp. We
+note that nonlinear mode-coupling transfers power between scales and could in
+principle feed the suppressed dark-energy contrast; but the coupling is through
+the same potential $\Phi$, whose response is already classified, and the leaked
+amplitude is bounded by the linear suppression times the (small) nonlinear
+transfer efficiency---so a class-(N) model cannot acquire an $O(1)$ clustering
+signal from nonlinearity, only a higher-order correction to an already-tiny
+one. A quantitative nonlinear treatment is nonetheless the natural next check.
+Second, the classification is of \emph{geometric} dark energy---models whose
+density is inherited from the metric. It says nothing about scalar-field dark
+energy (quintessence, k-essence), which carries a genuine Lagrangian sound speed
+and an independent perturbation sector; such models are correctly outside the
+partition, and the boundary between ``geometric'' and ``field-theoretic'' dark
+energy is itself the natural next question.
+
+Two further caveats deserve explicit mention. The class-(I) inverse-d'Alembertian
+entry is placed by the leading Fourier scaling $\square^{-1}\sim1/k^2$ of the
+nonlocal operator on the background; genuine nonlocal-gravity theories carry
+their own causal boundary conditions and a richer operator structure, and we
+classify only the leading UV scaling of the density response, not the full
+dynamics of such theories---the $1/k^4$ entry should be read as ``at least as
+smooth as class (N),'' with the precise treatment of a specific nonlocal-gravity
+action left to a dedicated analysis. And the $c_{\rm eff}^2=1$ Jeans floor
+assumes adiabatic initial conditions; a large dark-energy isocurvature mode
+would alter the initial density scaling before the geometric kernel acts. For
+geometric dark energy this is not expected---the density is slaved to the metric
+and inherits the adiabatic mode---but a model with a genuinely independent
+isocurvature initial condition would sit outside the floor's assumptions, worth
+noting for completeness.
+
+\begin{thebibliography}{9}
+\bibitem{CompanionPaper} E. Schultz, ``Which generalized entropy? Discrimination
+among horizon-entropy dark-energy models with DESI DR2 and Planck, and the
+closure of the structure-growth channel,'' companion paper (2026).
+\bibitem{Hu1998} W. Hu, ``Structure formation with generalized dark matter,''
+Astrophys. J. \textbf{506}, 485 (1998), arXiv:astro-ph/9801234.
+\bibitem{WellerLewis2003} J. Weller and A. M. Lewis, ``Large-scale cosmic
+microwave background anisotropies and dark energy,'' Mon. Not. R. Astron.
+Soc. \textbf{346}, 987 (2003), arXiv:astro-ph/0307104.
+\bibitem{Akhlaghi2018} I. A. Akhlaghi, M. Malekjani, S. Basilakos, and H. Haghi,
+``Model selection and constraints from holographic dark energy scenarios,''
+Mon. Not. R. Astron. Soc. \textbf{477}, 3659 (2018), arXiv:1804.02989.
+\end{thebibliography}
+
+\end{document}

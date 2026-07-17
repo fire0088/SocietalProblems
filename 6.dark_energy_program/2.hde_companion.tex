@@ -1,0 +1,732 @@
+\documentclass[twocolumn,10pt]{article}
+
+\usepackage[margin=0.75in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{authblk}
+\usepackage{abstract}
+
+\renewcommand{\Affilfont}{\small}
+\setlength{\affilsep}{0.3em}
+
+% provisional-number flag
+\newcommand{\prov}[1]{\textcolor{red}{#1}}
+
+\title{\vspace{-2em}\textbf{Which generalized entropy? Discrimination among horizon-entropy
+dark-energy models with DESI DR2 and Planck, and the closure of the
+structure-growth channel}}
+
+\author[]{Eric Schultz}
+\affil[]{Independent researcher \quad ORCID: 0009-0006-6283-1696}
+\date{\today}
+
+\begin{document}
+
+\twocolumn[
+  \begin{@twocolumnfalse}
+  \maketitle
+  \begin{abstract}
+  \noindent
+  Horizon-entropy (holographic) dark energy is a large and active post-DESI
+  program, but the literature is fragmented: each study fits a single entropy
+  prescription and reports that it can reproduce the data, leaving open whether
+  the data \emph{discriminate} between prescriptions. Using a uniform pipeline
+  applied to real DESI DR2 baryon-acoustic-oscillation data and Planck cosmic
+  microwave background distance priors, we show that they do. Casting Barrow and
+  Tsallis holographic dark energy as a single power-law family
+  $\rho_{\rm DE}\propto L^{n}$ and treating R\'enyi holographic dark energy as its
+  genuinely distinct coupled generalization, we find that the \emph{direction} of
+  entropy deformation is decisive: steeper $\rho(L)$ (Tsallis $\delta_T<1$)
+  relieves the tension of standard holographic dark energy with the data, while
+  flatter $\rho(L)$ (Barrow $\Delta>0$) worsens it; no variant is preferred over
+  $\Lambda$CDM. We further show, analytically, that the linear structure-growth
+  rate carries no information about these models beyond the background expansion:
+  for any event-horizon holographic dark energy, sub-horizon dark-energy
+  perturbations are suppressed relative to matter as $1/k^{3}$ by phase-averaging
+  of the gravitational potential along the future light cone, so $f\sigma_8$
+  cannot separate the models from one another or from $\Lambda$CDM beyond what
+  background geometry already achieves. The proposed structure-growth
+  confrontation of these models is therefore, for this class, structurally empty.
+  \vspace{1em}
+  \end{abstract}
+  \end{@twocolumnfalse}
+]
+
+\section{Introduction}
+\label{sec:intro}
+
+The thermodynamic route to cosmology---in which the Friedmann equation is
+recovered as the first law of thermodynamics applied to the apparent
+horizon---has generated a broad family of dark-energy models built from
+generalized (non-additive) entropies. Replacing the Bekenstein--Hawking
+area law $S\propto A$ with a deformed law (Barrow, Tsallis, R\'enyi,
+Kaniadakis, Sharma--Mittal, \dots) and identifying an infrared cutoff $L$
+yields a holographic dark-energy (HDE) density $\rho_{\rm DE}\sim L^{n}$ or a
+generalization thereof~\cite{Li2004,Wang2017,Barrow2020,Saridakis2020}. Post-DESI,
+this has become a crowded program.
+
+The crowding, however, hides a gap. Individual studies typically fix one
+entropy prescription, fit it, and report that it can accommodate the data.
+What is missing is a \emph{uniform} treatment that asks the comparative
+question: given the same data and the same pipeline, do the data prefer one
+entropy deformation over another, or are they all equivalent phenomenological
+fits? We answer this here.
+
+A second, sharper motivation comes from the fitting literature itself.
+Confronting Kaniadakis holographic dark energy with DESI DR2, cosmic
+chronometers, and supernovae, Luciano et al.~\cite{Luciano2025,Luciano2026}
+find a structural degeneracy between the holographic parameters and the matter
+density at the background level, and conclude explicitly that expansion data
+alone are insufficient to discriminate the entropy deformation, so that
+\emph{perturbation observables are essential}. This is precisely the call our
+second result addresses. We show that, for event-horizon holographic dark
+energy, the structure-growth channel carries no information beyond the
+background---so the perturbation observables the field is turning to are, for
+this class, empty of discriminating power.
+
+This paper is a companion to Ref.~\cite{StepPaper}, which developed a
+detectability and exclusion framework for localized features in the dark-energy
+expansion history and, as a worked example on a physical theory, constrained
+the Barrow deformation of standard HDE. We inherit that paper's validated
+CMB distance-prior likelihood and its framing of what expansion-history
+geometry can and cannot resolve, and we extend the analysis from a single
+model to the model \emph{family}, adding two results. First, a background-level
+discrimination: the data pick a side (Sec.~\ref{sec:discrim}). Second, and
+independently, a negative result at the perturbation level: the structure-growth
+channel is closed for the whole family (Sec.~\ref{sec:pert}). Together these
+complete the picture---the models are fully testable with present data at the
+background level, and growth data add nothing.
+
+Throughout we adopt a spatially flat universe with
+$\Omega_{m0}=0.31$ unless stated otherwise, and we use natural units in which
+$3/(8\pi G)=H_0=1$ where convenient.
+
+%========================================================================
+\section{A unified framework for horizon-entropy dark energy}
+\label{sec:framework}
+
+\subsection{Barrow and Tsallis as one power law}
+
+Barrow entropy, $S\propto A^{1+\Delta/2}$ with $\Delta\in[0,1]$ a
+quantum-gravitational deformation parameter, and Tsallis entropy,
+$S\propto A^{\delta_T}$, both lead---through the holographic
+construction with a future-event-horizon cutoff---to a power-law dark-energy
+density
+\begin{equation}
+\rho_{\rm DE}\;\propto\; L^{\,n}, \qquad L = R_h = a\!\int_t^\infty\!\frac{dt'}{a(t')},
+\label{eq:powerlaw}
+\end{equation}
+with exponent mappings
+\begin{equation}
+n_{\rm Barrow}=\Delta-2, \qquad n_{\rm Tsallis}=2\delta_T-4 .
+\label{eq:mappings}
+\end{equation}
+Both reduce to standard HDE~\cite{Li2004} at $n=-2$ (Barrow $\Delta=0$,
+Tsallis $\delta_T=1$). The two ``different'' entropies are therefore the same
+one-parameter family, seen from opposite sides of the standard-HDE point:
+Barrow explores $n>-2$ (flatter $\rho(L)$), Tsallis $\delta_T<1$ explores
+$n<-2$ (steeper $\rho(L)$).
+
+We stress that this equivalence is asserted at the level of the resulting
+dark-energy \emph{density scaling} $\rho_{\rm DE}\propto L^n$, which is what the
+background expansion and all our observables depend on---not necessarily at the
+level of the horizon first law. Barrow and Tsallis entropies are distinct
+functionals, and a full thermodynamic derivation from each (through the
+apparent-horizon first law $dE=TdS$) need not yield identical modified
+Friedmann equations term by term. What we use, and all that the fits require,
+is that with a future-event-horizon cutoff both produce a power-law density
+with the exponent mappings above; two models with the same $n$ share the same
+background dynamics and are observationally identical here regardless of the
+entropy functional they descend from. The unification is thus phenomenological
+and exact at the level of the observable, and we make no claim of equivalence
+at the level of the underlying field theory.
+
+A single background equation covers both. Writing $x=\ln a$ and
+$\Omega\equiv\Omega_{\rm DE}$,
+\begin{equation}
+\frac{d\Omega}{dx}=\Omega(1-\Omega)\left[1-\frac{n}{c}\,\Omega^{-1/n}\right],
+\label{eq:unified-ode}
+\end{equation}
+with $c$ the standard HDE constant. Equation~\eqref{eq:unified-ode} reproduces
+the original Barrow equation of motion to machine precision, and at $n=-2$,
+$c=1$, $\Omega_{\rm DE0}=0.69$ yields the exact standard-HDE value
+$w_0=-0.891$. The corresponding equation of state follows analytically from
+Eq.~\eqref{eq:unified-ode} and continuity,
+\begin{equation}
+w(\Omega)=\frac{-1+(n/c)\,\Omega^{-1/n}}{3},
+\label{eq:eos}
+\end{equation}
+with the correct limits $w\to-1/3$ as $\Omega\to0$ (matter era) and $w\to-1$
+as $\Omega\to1$ (de Sitter future).
+
+A numerical remark, relevant to reproducibility: the future event horizon
+makes de Sitter a \emph{forward} attractor, so integrating
+Eq.~\eqref{eq:unified-ode} forward from today is unstable (errors grow toward
+$\Omega\to1$). We integrate instead by shooting from a modest future point
+$x\simeq3$ and solving both directions, tuning $\Omega(x_{\rm start})$ to hit
+$\Omega_{\rm DE0}$; and we obtain $w$ from the analytic form
+Eq.~\eqref{eq:eos} rather than by numerical differentiation.
+
+\subsection{R\'enyi as a genuine generalization}
+
+R\'enyi holographic dark energy does not reduce to a power law. With
+\begin{equation}
+\rho_{\rm DE}=\frac{3C^2}{8\pi L^2\,(1+\delta\pi L^2)},
+\label{eq:renyi}
+\end{equation}
+the cutoff $L$ does not drop out of the background dynamics, and one is left
+with a genuinely coupled two-dimensional system in $(\Omega_{\rm DE},L)$. We
+solve it by backward integration from the de Sitter future attractor,
+shooting on the normalization to hit $\Omega_{\rm DE0}$; in the
+$\delta\to0$ limit this converges to standard HDE ($w_0=-0.889$ at
+$\delta=0.01$). Here $C^2$ plays the role of the squared HDE constant,
+$C^2=c^2$, so that $C^2=1$ recovers $c=1$ and $w_0\simeq-0.891$; we adopt this
+normalization to match the power-law family.
+
+Although R\'enyi is not a power law, its perturbations reduce to an
+\emph{effective local exponent}, a fact we exploit in
+Sec.~\ref{sec:pert}: writing $\rho_{\rm DE}=f(L)$,
+\begin{equation}
+n_{\rm eff}(L)\equiv\frac{L f'(L)}{f(L)}=-2-\frac{2\delta\pi L^2}{1+\delta\pi L^2},
+\label{eq:neff}
+\end{equation}
+which runs monotonically from $-2$ (small $L$, standard HDE) to $-4$
+(large $L$, R\'enyi-dominated) and is bounded in $[-4,-2]$.
+
+\subsection{Kaniadakis as a fourth member}
+\label{sec:kaniadakis}
+
+Kaniadakis holographic dark energy, built from the relativistic
+$\kappa$-deformed entropy~\cite{Luciano2025}, is a further one-parameter
+extension. Like R\'enyi it is not a power law: the $\kappa$-deformation of the
+area law modifies the Friedmann equation and yields a coupled background whose
+equation of state can be quintessence-like, phantom-like, or cross the phantom
+divide, with the acceleration transition at $z\simeq0.6$. It has been shown to
+be a competitive but not preferred alternative to $\Lambda$CDM against DESI
+DR2, cosmic chronometers, and supernovae~\cite{Luciano2025,Luciano2026}. We
+include it as a fourth member of the family; being a distinct coupled
+background it is treated like R\'enyi rather than through the power-law ODE
+Eq.~\eqref{eq:unified-ode}. Crucially for Sec.~\ref{sec:pert}, Kaniadakis
+holographic dark energy uses the future event horizon as its infrared cutoff,
+so---whatever its background behavior---its perturbations fall under the same
+closed-channel theorem: the entropy deformation changes the density law, not
+the null-geodesic definition of the horizon.
+
+%========================================================================
+\section{The data discriminate at the background level}
+\label{sec:discrim}
+
+\subsection{Data and likelihood}
+
+We fit each model to real DESI DR2 anisotropic BAO
+(six tracers over $z=0.51$--$2.33$, $D_M/r_d$ and $D_H/r_d$ with their
+correlations)~\cite{DESIDR2} and Planck 2018 CMB distance
+priors~\cite{Chen2019,Planck2018}, the compressed likelihood in
+$\{R,\ell_A,\omega_b\}$ with the Chen et al.\ inverse covariance. The shift
+parameter, acoustic scale, and sound horizon are
+\begin{align}
+R &= \sqrt{\Omega_{m}}\,\textstyle\int_0^{z_*}\!\frac{dz}{E(z)}, \qquad
+\ell_A = \pi\,\frac{D_M(z_*)}{r_s(z_*)},\\
+r_s(z_*) &= \textstyle\int_{z_*}^{\infty}\!\frac{c_s(z)}{E(z)}\,dz, \quad
+c_s=\frac{1}{\sqrt{3(1+R_b)}},
+\end{align}
+with $R_b=3\omega_b/(4\omega_\gamma)/(1+z)$ and $z_*$ from the
+Hu--Sugiyama fitting formula. We compute $r_s$ using the analytic
+matter-plus-radiation $E(z)$ above $z_*$, where dark energy is dynamically
+negligible; this is essential, as retaining the residual dark-energy term
+makes the high-redshift $r_s$ integral converge incorrectly. The likelihood
+is validated in Ref.~\cite{StepPaper}: pure-$\Lambda$CDM Planck parameters
+reproduce $R=1.750$ and $\ell_A=300.4$ (to $0.3\%$).
+
+We profile over $(\Omega_m,H_0,c)$ and, for the final results, over
+$\omega_b$ as well (Sec.~\ref{sec:disc-caveat}).
+
+\subsection{R\'enyi at the CMB}
+
+Extending R\'enyi HDE to $z_*\simeq1090$ requires care. The future-event-horizon
+variable $L\to0$ at high redshift, so the R\'enyi density
+Eq.~\eqref{eq:renyi} grows in absolute terms ($\rho_{\rm DE}\sim C^2/L^2\sim
+(1+z)^2$). This is not a pathology: since matter scales as $(1+z)^3$ and
+radiation as $(1+z)^4$, the fractional contribution $\Omega_{\rm DE}(z)\to0$
+monotonically ($\Omega_{\rm DE}\sim2\times10^{-4}$ at $z_*$), so the model has a
+small, integrable early dark-energy tail rather than a divergence in any
+observable. What the growing $\rho_{\rm DE}$ does cause is amplified numerical
+noise if the horizon system is integrated naively through the near-singular
+regime. We handle it with a matching redshift $z_{\rm match}$: below it we
+evolve the full coupled R\'enyi system; above it we use the analytic
+matter-plus-radiation $E(z)$ \emph{retaining} the $(1+z)^2$ dark-energy tail
+rather than setting it to zero, so no physical early-DE contribution to
+$r_s(z_*)$ is neglected. The split is therefore a numerical device, not a
+physical transition. The result is insensitive to $z_{\rm match}$ once the tail
+is carried; dropping it instead (an earlier, cruder choice) leaves a
+$z_{\rm match}$-dependent residual of $\sim0.2$ in $\ell_A$ that converges away
+for $z_{\rm match}\gtrsim50$. The procedure reproduces $z_*=1091.8$ and, in the
+$\delta\to0$ limit with $C^2=1$, recovers standard HDE ($w_0=-0.887$,
+$R=1.70$, $\ell_A=300.1$). The full numerical mechanics are given in the
+Appendix.
+
+\subsection{Discrimination result}
+\label{sec:discrim-result}
+
+Table~\ref{tab:chi2} collects the best-fit total $\chi^2$ (DESI BAO $+$ CMB
+distance priors, $H_0$ free) across the family. Three statements stand out,
+none of which is available from single-model studies.
+
+\emph{(i) Standard HDE is already disfavored, before any deformation.} With a
+future-event-horizon cutoff, standard HDE ($n=-2$) sits in strong tension with
+DESI DR2 BAO geometry: $\chi^2_{\rm BAO}\simeq\prov{47}$ versus
+$\simeq\prov{10}$ for $\Lambda$CDM, a $\Delta\chi^2\simeq\prov{37}$ penalty
+independent of the CMB. This is consistent with the post-DESI finding that
+standard HDE is strained.
+
+\emph{(ii) The direction of deformation is decisive.} Steepening $\rho(L)$
+(Tsallis $\delta_T<1$, $n<-2$) \emph{relieves} the tension, primarily by
+repairing the CMB fit; flattening it (Barrow $\Delta>0$, $n>-2$) makes matters
+worse. The best HDE variant is Tsallis $\delta_T\simeq\prov{0.64}$, with total
+$\chi^2\simeq\prov{24.5}$ (from $\prov{29}\to\prov{2.6}$ in the CMB), while
+Barrow $\Delta=0.1$ rises to $\simeq\prov{43.8}$.
+
+\emph{(iii) None beats $\Lambda$CDM.} The best HDE fit remains
+$\Delta\chi^2\simeq\prov{14}$ above $\Lambda$CDM. Generalized entropy is thus
+not monolithic: the data select \emph{steeper} $\rho(L)$ but do not favor any
+member of the family over the cosmological constant.
+
+\begin{table}[t]
+\caption{Best-fit total $\chi^2$ (DESI DR2 BAO $+$ Planck CMB distance priors,
+$H_0$ free) across the horizon-entropy family. \textbf{Numbers in
+\prov{red} are provisional}, carried over from an earlier fixed-$\omega_b$ run,
+and are to be regenerated with the $\omega_b$-marginalized pipeline
+(Sec.~\ref{sec:disc-caveat}) before submission. Qualitative ordering
+is expected to be robust; absolute values are not yet final.}
+\label{tab:chi2}
+\begin{center}\small
+\begin{tabular}{lcc}\hline\hline
+Model & deformation & total $\chi^2$ \\
+\hline
+\hline
+$\Lambda$CDM & --- & \prov{$\sim$10} \\
+Tsallis & $\delta_T=0.64$ & \prov{24.5} \\
+Tsallis & $\delta_T=0.70$ & \prov{27.3} \\
+Standard HDE & $n=-2$ & \prov{38.1} \\
+Barrow & $\Delta=0.1$ & \prov{43.8} \\
+R\'enyi & $\delta=0.1$ & \prov{BAO $\sim$11; CMB via split} \\
+Kaniadakis & $K$ small & \prov{competitive; $\Lambda$CDM favored} \\
+\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+\subsection{The $H_0$ preference}
+
+Freeing $H_0$ improves every HDE fit substantially, toward the local
+distance-ladder value $H_0\simeq74$: standard HDE moves from
+$\chi^2\simeq\prov{75.5}$ at $H_0=67.4$ to $\simeq\prov{38.1}$ at
+$H_0\simeq\prov{74}$. This is a known property of future-event-horizon HDE and
+is Hubble-tension-adjacent. We flag one honest caveat: our CMB enters only as
+distance priors, which are more permissive in $H_0$ than the full Planck
+likelihood, so the strength of the $H_0\simeq74$ preference is partly a
+property of the compressed likelihood. The \emph{relative} model ordering is
+robust to this.
+
+\subsection{Status of the numbers}
+\label{sec:disc-caveat}
+
+The $\chi^2$ values in Table~\ref{tab:chi2} are provisional. They derive from a
+run in which $\omega_b$ was fixed at $0.02237$. Because $\sigma(\ell_A)$ is
+small, the CMB likelihood is strongly sensitive to $\omega_b$ through $r_s$: a
+model preferring $\omega_b$ shifted by as little as $\sim4\times10^{-4}$---well
+within the Planck uncertainty---incurs a spurious penalty of tens in $\chi^2$
+when $\omega_b$ is held fixed. This penalty is \emph{not} uniform across models,
+since different deformations reshape the low-redshift distance and therefore
+pull $\omega_b$ in different directions. The final table must therefore profile
+(marginalize) over $\omega_b$ per model. We expect the qualitative ordering
+(steeper helps, flatter hurts, none beats $\Lambda$CDM) to survive, but the
+absolute values, and in principle the ordering, must be confirmed with the
+$\omega_b$-marginalized pipeline. The $\omega_b$ profiling itself is a
+one-dimensional minimization inside each model's $\chi^2$, validated on
+self-consistent mocks; what remains is to run it on the fully calibrated
+distance-prior pipeline of Ref.~\cite{StepPaper}.
+
+%========================================================================
+\section{The structure-growth channel is closed}
+\label{sec:pert}
+
+Recent analyses call for confronting horizon-entropy dark energy at the
+perturbative, structure-growth level, on the expectation that $f\sigma_8$
+adds information beyond the background. We show analytically that for
+event-horizon HDE it does not: the models are, to the precision that matters,
+smooth, and the growth rate is degenerate with $H(z)$.
+
+\subsection{Growth depends on the cosmology only through $H(a)$}
+
+For smooth (non-clustering) dark energy the linear growth factor obeys, in
+$e$-folds $N=\ln a$,
+\begin{equation}
+D''+\left(2+\frac{H'}{H}\right)D'-\frac{3}{2}\,\Omega_m(a)\,D=0 .
+\label{eq:growth}
+\end{equation}
+Every cosmology-dependent term is a function of $H(a)$ alone: both the
+friction $2+H'/H$ and the source $\tfrac32\Omega_m(a)=\tfrac32
+\Omega_{m0}a^{-3}/(H/H_0)^2$. There is no independent dark-energy degree of
+freedom. Two models with identical $H(a)$ produce identical $D(a)$, hence
+identical $f\sigma_8(z)$. Numerically, a CPL model tuned to mimic $\Lambda$CDM
+to within $0.5\%$ in $H(z)$ over $0<z<2$ differs by at most $0.5\%$ in
+$f\sigma_8$---the same order as the background difference, far below current
+$\sim5$--$10\%$ growth-rate errors. The growth observable inherits the
+background (non-)difference and adds nothing.
+
+\subsection{The sound speed cannot be adiabatic}
+
+Independent information would require dark energy to cluster, i.e.\ a rest-frame
+sound speed $c_s^2<1$. But the adiabatic value
+$c_a^2=w-\dot w/[3H(1+w)]$ is negative or singular for $w<-1/3$---generic for
+dark energy, and singular near the phantom line several variants approach---so
+it must be discarded on stability grounds (imposing it drives sub-horizon
+$\delta_{\rm DE}$ to blow up). HDE has no Lagrangian kinetic term from which to
+read a rest-frame $c_s^2$; the density is defined non-locally by a horizon.
+The effective sound speed is thus whatever the horizon prescription implies,
+which we now compute.
+
+\subsection{Horizon perturbations phase-average away}
+
+Physically, because the future event horizon is defined by an integral along
+the future light cone, its value at the observer sums the gravitational
+potential over a long null path that threads many alternating crests and
+troughs of a small-scale perturbation; these contributions largely cancel, so
+the horizon---and the dark-energy density tied to it---barely responds to
+sub-horizon structure. We now make this quantitative.
+
+With $\rho_{\rm DE}\propto R_h^{\,n}$, exactly
+$\delta_{\rm DE}=n\,(\delta R_h/R_h)$. The future event horizon is a null
+construct; perturbing the radial null geodesic in Newtonian gauge, the comoving
+horizon acquires
+\begin{equation}
+\delta\chi_k(t)=2\,e^{ikx}\!\int_0^{\chi_h}\!\Phi_k(u)\,e^{iku}\,du,
+\qquad u=\chi(t,t') ,
+\label{eq:dchi}
+\end{equation}
+the comoving distance along the future ray. Here $\Phi_k$ is the
+Newtonian-gauge potential, which coincides with the Bardeen invariant
+$\Phi_A$; since the null ray is itself a geometric (gauge-independent) object,
+$\delta R_h/R_h$ is built entirely from gauge-invariant ingredients and is not
+an artifact of the conformal Newtonian slicing. A residual gauge shift in the
+dark-energy density contrast is $\mathcal{O}(aH/k)\,(1+w)\,v_{\rm DE}$; with
+$v_{\rm DE}$ sourced at $\mathcal{O}(\Phi)$ this is of order $\delta_m/k^3$,
+the same order as the result itself, so no slicing can promote $\delta_{\rm DE}$
+to a non-decaying mode---there is none to transform into. For a sub-horizon
+mode
+($k\gg aH$) the kernel $e^{iku}$ oscillates across the integration range;
+integration by parts with any smooth envelope gives
+$\int_0^{\chi_h}\Phi_k\,e^{iku}\,du=\mathcal{O}(1/k)$. Hence
+$|\delta_{\rm DE}|\sim(aH/k)|\Phi|$: the potential is rapidly
+\emph{phase-averaged} along the future light cone, and a small-scale
+fluctuation contributes essentially nothing to the non-local horizon integral.
+
+Relative to the matter that actually clusters, the suppression is stronger
+still. Sub-horizon, $\Phi$ is sourced by matter through Poisson,
+$k^2\Phi=-4\pi G a^2\rho_m\delta_m$, so $\Phi\sim\delta_m/k^2$ and
+\begin{equation}
+\frac{\delta_{\rm DE}}{\delta_m}\;\sim\;\frac{1}{k^{3}}\qquad(k\gg aH).
+\label{eq:k3}
+\end{equation}
+Dark energy is smooth to third order in $aH/k$ relative to matter. We record
+this as the central result of this section:
+\begin{quote}
+\emph{No-clustering theorem for event-horizon dark energy.} For any
+horizon-entropy dark-energy model with a future-event-horizon cutoff, the
+sub-horizon dark-energy density contrast is suppressed as
+$\delta_{\rm DE}/\delta_m\sim(aH/k)^3$; the linear growth of structure is
+governed by $H(a)$ alone, and $f\sigma_8$ carries no information about the
+model beyond its background expansion.
+\end{quote}
+(We state
+the $1/k$ scaling of $\delta_{\rm DE}$ directly rather than dressing it as an
+effective $c_s^2=1$; a genuine $c_s^2=1$ fluid gives a $1/k^2$ forced
+amplitude, so the horizon suppression relative to $\Phi$ is in fact weaker than
+$c_s^2=1$, while relative to matter it is $1/k^3$.)
+
+The integration by parts deserves its boundary term made explicit, since it is
+local and not phase-averaged. Writing
+$\int_0^{\chi_h}\Phi_k e^{iku}du = [\Phi_k e^{iku}/ik]_0^{\chi_h}
+- (1/ik)\int_0^{\chi_h}\Phi_k' e^{iku}du$, the surface piece at the observer,
+$-\Phi_k(0)/ik$, does not oscillate in $k$ and so is not averaged away. But it
+is itself $\mathcal{O}(1/k)$: $\Phi_k(0)$ is the finite local potential, not a
+quantity that grows with $k$. The far endpoint $\Phi_k(\chi_h)e^{ik\chi_h}/ik$
+oscillates in $k$ and averages down further. Both the surface and bulk
+contributions are therefore $\mathcal{O}(1/k)$, so
+$\delta R_h\sim\mathcal{O}(1/k)$ and the scaling of Eq.~\eqref{eq:k3} is
+unchanged. A degradation to $1/k^2$ would require $\delta R_h=\mathcal{O}(1)$,
+i.e. $\Phi_k(0)=\mathcal{O}(k)$, which is unphysical. A numerical evaluation of
+Eq.~\eqref{eq:dchi} with a nonzero local potential $\Phi_k(0)\neq0$ confirms
+$|\delta\chi_k|\propto k^{-1}$ exactly, the surface term supplying the leading
+$1/k$ rather than any $1/k^0$ piece.
+
+We keep the leading light-ray phase term; local metric corrections at the
+observation point are also $\mathcal{O}(aH/k)$ and subleading. A three-closure
+numerical integration across $k=1$--$1000$ confirms the picture: an imposed
+$c_s^2=1$ leaves sub-horizon $\delta_{\rm DE}$ at $\sim10^{-9}$ (smooth), the
+adiabatic $c_s^2<0$ blows up (unphysical), and the horizon closure tracks the
+smooth branch.
+
+\subsection{Extension to R\'enyi}
+
+R\'enyi modifies the density law $f(L)$, not the definition of $L$: the cutoff
+remains the future event horizon, a geometric null construct. Its perturbation
+is $\delta_{\rm DE}=n_{\rm eff}(L)\,(\delta L/L)$ with $n_{\rm eff}$ the bounded
+quantity of Eq.~\eqref{eq:neff}. The scale dependence lives entirely in
+$\delta L$---the same oscillatory horizon integral, which is kinematic (it
+arises from null propagation, $ds^2=0\Rightarrow dx=dt/a$) and untouched by the
+coupled background. The coupled system alters only bounded, smooth,
+non-oscillatory quantities (the horizon size, the potential envelope, and the
+$n_{\rm eff}$ prefactor). Integration by parts still gives $\mathcal{O}(1/k)$,
+so $|\delta_{\rm DE}|=|n_{\rm eff}|\,\mathcal{O}(aH/k)\to0$ sub-horizon.
+R\'enyi is smooth on the same footing as the power-law family.
+
+\subsection{Relation to recent sound-speed constraints}
+\label{sec:pert-clustering}
+
+It might appear that our conclusion is in tension with recent work that, for
+the first time, constrains the clustering of dynamical dark energy from
+current data. Combining DESI DR2 BAO with Planck 2018 and the Union3 supernovae,
+Yang et al.~\cite{Yang2025} report a bound on the effective sound speed,
+$\log_{10}c_s^2=-3.00^{+2.9}_{-0.99}$, in a $w_0w_a$CDM background within the
+parameterized-post-Friedmann and effective-field-theory descriptions. Taken at
+face value this says the data can now ``see'' dark-energy clustering; how can
+the growth channel be closed?
+
+There is no contradiction, and the distinction is the substance of our result.
+That analysis treats $c_s^2$ as a \emph{free} parameter, made estimable by the
+time-varying equation of state, which breaks the degeneracy between $(1+w)$ and
+$c_s^2$. Its constraint is a statement about what the data could reveal
+\emph{if} dark energy has an adjustable sound speed. Horizon-entropy dark
+energy is not of that kind. Its density is fixed non-locally by a horizon, with
+no independent stress sector to carry a free $c_s^2$; the effective sound speed
+is not a parameter to be fit but is \emph{determined} by the horizon
+prescription, and for an event-horizon cutoff that determination is the smooth
+branch, Eq.~\eqref{eq:k3}. In short: the sound-speed constraint says
+\emph{if it clusters, we can measure it}; our result says \emph{event-horizon
+holographic dark energy does not cluster, so there is nothing to measure}. The
+two are complementary halves of the same physical statement, and together they
+sharpen it---the growth data that can now probe a free sound speed have no
+purchase on a model whose sound speed the horizon has already fixed.
+
+\subsection{A consistency check: the growth index}
+\label{sec:pert-gamma}
+
+The smooth limit makes a concrete, falsifiable prediction for the growth index
+$\gamma$, defined by $f=\Omega_m^\gamma$. Mehrabi et al.~\cite{Mehrabi2015}
+derive the asymptotic index for holographic dark energy in two distinct
+regimes. For \emph{homogeneous} (non-clustering) holographic dark energy the
+general result $\gamma_\infty=3(w_\infty-1)/(6w_\infty-5)$, evaluated at the
+holographic asymptotic equation of state $w_\infty\to-1/3$, gives
+\begin{equation}
+\gamma_\infty^{\rm homog}\simeq\frac{4}{7},
+\end{equation}
+about $5\%$ above the $\Lambda$CDM value $6/11$. For \emph{fully clustered}
+holographic dark energy a different source term applies and the index becomes
+$\gamma_\infty^{\rm clust}\simeq3(1-c_{\rm eff}^2)/7$, which at $c_{\rm eff}^2=0$
+gives $3/7$. These are two separate branches, not endpoints of one
+interpolation.
+
+Our result places event-horizon holographic dark energy squarely in the
+homogeneous branch: the $1/k^3$ suppression means the dark-energy density
+contrast never sources the matter growth equation ($\delta_{\rm DE}\simeq0$),
+so growth is governed by $H(a)$ and $\Omega_m(a)$ alone. The asymptotic
+homogeneous value $\gamma_\infty^{\rm homog}\simeq4/7$ is set by the high-$z$
+holographic equation of state $w\to-1/3$; it is \emph{not} directly the
+observable index, because in these models the late-time attractor is de Sitter
+($w\to-1$), not $w=-1/3$. To obtain the observable prediction we integrate the
+growth equation numerically along the event-horizon background
+($w=-\tfrac13(1+2\sqrt{\Omega_{\rm DE}})$ for the $c=1$ cutoff), reading off
+$\gamma(z)=\ln f/\ln\Omega_m$:
+\begin{center}
+\begin{tabular}{lccccc}
+$z$ & $2.0$ & $1.0$ & $0.5$ & $0.3$ & $0.0$ \\ \hline
+$\gamma(z)$ & $0.562$ & $0.560$ & $0.560$ & $0.560$ & $0.561$ \\
+\end{tabular}
+\end{center}
+The observable index is remarkably flat at $\gamma\simeq0.56$ across the range
+where growth is measured---close to but distinct from the asymptotic $4/7\simeq
+0.571$, and sitting about $0.015$ above the $\Lambda$CDM value $6/11\simeq
+0.545$. The prediction is thus model-external and falsifiable: the entire
+event-horizon class predicts $\gamma\simeq0.56$, weakly $z$-dependent and
+insensitive to the entropy choice (which affects only $H(a)$, already
+constrained at the background level). A measurement pinning $\gamma$ to the
+$\Lambda$CDM value $0.545$ or below would disfavour the class; a value near the
+fully clustered $3/7\simeq0.43$ would indicate the perturbations do source
+growth, contradicting the closed channel. Separating $0.56$ from $0.545$
+requires the precision of a Euclid-era growth survey, but the boundary is
+clean.
+
+\subsection{The one condition}
+\label{sec:pert-condition}
+
+The derivation assumes the infrared cutoff is the \emph{future event horizon}.
+If instead a variant uses the Hubble horizon $L=1/H$ (or a mixed cutoff), then
+$\delta L=-\delta H/H^2$ is a \emph{local} quantity with no oscillatory kernel
+and no $1/k$ suppression, and dark energy could genuinely cluster. The precise
+statement is therefore: \emph{event-horizon horizon-entropy dark energy is
+smooth on sub-horizon scales, and $f\sigma_8$ carries no information beyond
+$H(z)$, if and only if the model uses a light-ray (event-horizon) cutoff.} Our
+models use the future event horizon; the result holds. (Hubble-cutoff HDE
+independently fails to produce late-time acceleration in the presence of dark
+matter, so the event horizon is the standard choice.) A Hubble- or mixed-cutoff
+construction is the one place in this analysis where the perturbation channel
+could reopen---a well-defined open problem.
+
+It is worth noting that the event-horizon cutoff on which our result depends is
+also the one the data prefer. Combining expansion and growth-rate data across
+the three most common cutoffs, Akhlaghi et al.~\cite{Akhlaghi2018} find the
+Ricci and Granda--Oliveros prescriptions disfavored---they predict a
+non-negligible early-time dark-energy density---while the future-event-horizon
+cutoff remains consistent with the combined data. Our scope is therefore not a
+convenience: the cutoff for which the growth channel is provably closed is the
+same cutoff the observations single out.
+
+%========================================================================
+\section{Discussion}
+\label{sec:discussion}
+
+We have shown two things about horizon-entropy dark energy that a single-model
+fit cannot reveal. At the background level, a uniform confrontation with real
+DESI DR2 BAO and Planck distance priors \emph{discriminates}: steeper
+$\rho(L)$ (Tsallis $\delta_T<1$) relieves the standard-HDE tension, flatter
+$\rho(L)$ (Barrow $\Delta>0$) worsens it, and none of the family is preferred
+over $\Lambda$CDM. At the perturbation level, the structure-growth channel is
+\emph{closed}: for any event-horizon member, sub-horizon dark-energy
+perturbations are suppressed as $1/k^3$ relative to matter by phase-averaging
+along the future light cone, so $f\sigma_8$ is degenerate with the background
+$H(z)$ and adds no discriminating power.
+
+The two results are complementary. The first says the models are testable now,
+at the background level, and shows what the test yields. The second says the
+verdict cannot be overturned by adding growth data: one cannot rescue a
+background-disfavored member by appealing to a distinctive clustering signature,
+because there is none. For this class the proposed structure-growth
+confrontation is structurally empty---a useful thing to know before investing
+in it.
+
+Two limitations bound these conclusions. The background numbers of
+Sec.~\ref{sec:discrim} are provisional pending the $\omega_b$-marginalized
+run (Sec.~\ref{sec:disc-caveat}); we expect the qualitative
+ordering to survive but state plainly that it must be confirmed. And the
+closed-channel result is conditional on an event-horizon cutoff
+(Sec.~\ref{sec:pert-condition}); the Hubble-cutoff case is left open and is the
+natural next target, being the one construction in which growth data could
+become informative.
+
+Two matters of scope should be stated explicitly. First, we treat these models
+as \emph{late-time} modifications of the dark-energy sector: the entropy
+deformation governs the infrared, horizon-scale dark energy, while
+early-universe thermodynamics---recombination, the sound horizon $r_s(z_*)$,
+and the thermal history---are taken to be standard. This is what licenses the
+use of the Planck distance priors $(R,l_A,\omega_b)$, which are extracted
+assuming standard pre-recombination physics. It is a genuine restriction: a
+construction in which the modified entropy also deforms the apparent-horizon
+thermodynamics of the radiation era would shift $r_s(z_*)$ and invalidate the
+compressed likelihood, and such a model would require a full Boltzmann
+treatment rather than distance priors. Our results apply to the
+phenomenologically standard case where the deformation is confined to the dark
+sector at low redshift; we do not claim them for early-modified variants.
+Second, the phantom members (Tsallis $\delta_T<1$, $n<-2$) can cross $w=-1$;
+where they approach a future Big Rip at finite $t_{\rm rip}$, the event-horizon
+integral $L=a\int_t^{t_{\rm rip}}dt'/a$ terminates at $t_{\rm rip}$ rather than
+at infinity, and the background shooting must impose the finite-time boundary
+there. This is well-defined but changes the future boundary condition; we have
+restricted the fitted range to members with a de Sitter future, and flag the
+phantom/Big-Rip branch as requiring separate boundary treatment.
+
+\section*{Acknowledgments}
+This work uses public DESI DR2 BAO and Planck data products and builds on the
+detectability framework and validated distance-prior likelihood of
+Ref.~\cite{StepPaper}.
+
+\appendix
+\section{Numerical mechanics of the horizon integration}
+\label{app:numerics}
+
+We collect the implementation details here to keep the main text focused on
+results. Two points matter for reproducibility.
+
+\emph{Background shooting.} The future event horizon makes de Sitter a forward
+attractor, so integrating Eq.~\eqref{eq:unified-ode} forward from today is
+numerically unstable: errors grow toward $\Omega\to1$. We instead shoot from a
+modest future point $x=\ln a\simeq3$, integrating in both directions and tuning
+$\Omega(x_{\rm start})$ to hit the measured $\Omega_{\rm DE0}$ at $x=0$. The
+equation of state is taken from the analytic form Eq.~\eqref{eq:eos} rather than
+by numerically differentiating $\Omega(x)$, which avoids amplifying integration
+noise.
+
+\emph{R\'enyi high-redshift matching.} For the R\'enyi (and Kaniadakis) coupled
+backgrounds the density $\rho_{\rm DE}\sim C^2/L^2\sim(1+z)^2$ grows toward high
+redshift while $\Omega_{\rm DE}\to0$. Rather than integrate the stiff coupled
+system through this regime, we match at $z_{\rm match}$: the full coupled system
+below, and the analytic matter-plus-radiation $E(z)$ above, \emph{retaining} the
+$(1+z)^2$ dark-energy tail so no physical early-DE contribution to $r_s(z_*)$ is
+dropped. The sound-horizon integral uses matter and radiation only for the
+acoustic sound speed, $c_s=[3(1+R_b)]^{-1/2}$ with
+$R_b=3\omega_b/4\omega_\gamma/(1+z)$, and $z_*$ from the Hu--Sugiyama fitting
+formula. With the tail retained the compressed observables are stable against
+$z_{\rm match}$; we use $z_{\rm match}\gtrsim50$ and verify convergence.
+
+
+
+
+
+\begin{thebibliography}{9}
+
+\bibitem{Li2004} M. Li, ``A Model of Holographic Dark Energy,''
+Phys. Lett. B \textbf{603}, 1 (2004), arXiv:hep-th/0403127.
+
+\bibitem{Wang2017} S. Wang, Y. Wang, and M. Li, ``Holographic Dark Energy,''
+Phys. Rept. \textbf{696}, 1 (2017), arXiv:1612.00345.
+
+\bibitem{Barrow2020} J. D. Barrow, ``The Area of a Rough Black Hole,''
+Phys. Lett. B \textbf{808}, 135643 (2020), arXiv:2004.09444.
+
+\bibitem{Saridakis2020} E. N. Saridakis, ``Barrow holographic dark energy,''
+Phys. Rev. D \textbf{102}, 123525 (2020), arXiv:2005.04115.
+
+\bibitem{Chen2019} L. Chen, Q.-G. Huang, and K. Wang,
+``Distance Priors from Planck Final Release,''
+JCAP \textbf{02}, 028 (2019), arXiv:1808.05724.
+
+\bibitem{Planck2018} Planck Collaboration (N. Aghanim et al.),
+``Planck 2018 results. VI. Cosmological parameters,''
+Astron. Astrophys. \textbf{641}, A6 (2020)
+[Erratum: Astron. Astrophys. \textbf{652}, C4 (2021)], arXiv:1807.06209.
+
+\bibitem{DESIDR2} DESI Collaboration (M. Abdul Karim et al.),
+``DESI DR2 Results II: Measurements of Baryon Acoustic Oscillations
+and Cosmological Constraints,'' Phys. Rev. D \textbf{112}, 083515 (2025),
+arXiv:2503.14738.
+
+\bibitem{Luciano2025} G. G. Luciano et al., ``Late-Time Cosmological
+Constraints on Kaniadakis Holographic Dark Energy,''
+Eur. Phys. J. C \textbf{85}, 1384 (2025), arXiv:2509.17527.
+
+\bibitem{Luciano2026} G. G. Luciano et al., ``Infrared Corrections and
+Horizon Phase Transitions in Kaniadakis-Based Holographic Dark Energy,''
+arXiv:2603.21218 (2026).
+
+\bibitem{Yang2025} Y. Yang et al., ``Probing the sound speed and clustering
+of dark energy: observational constraints from DESI, CMB, and supernovae,''
+arXiv:2511.22478 (2025).
+
+\bibitem{Mehrabi2015} A. Mehrabi, S. Basilakos, M. Malekjani, and Z. Davari,
+``Growth of matter perturbations in clustered holographic dark energy
+cosmologies,'' Phys. Rev. D \textbf{92}, 123513 (2015), arXiv:1510.03996.
+
+\bibitem{Akhlaghi2018} I. A. Akhlaghi, M. Malekjani, S. Basilakos, and H. Haghi,
+``Model selection and constraints from holographic dark energy scenarios,''
+Mon. Not. R. Astron. Soc. \textbf{477}, 3659 (2018), arXiv:1804.02989.
+
+\bibitem{StepPaper} E. Schultz, ``Detectability and exclusion of localized
+dark-energy features in the expansion history,'' companion paper,
+in preparation (2026).
+
+\end{thebibliography}
+
+\end{document}

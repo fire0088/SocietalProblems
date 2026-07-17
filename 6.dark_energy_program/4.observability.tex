@@ -1,0 +1,377 @@
+\documentclass[twocolumn,10pt]{article}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage{authblk}
+\usepackage{abstract}
+\renewcommand{\Affilfont}{\small}
+\setlength{\affilsep}{0.3em}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+\newcommand{\Pp}{\Pi_{\rm probe}}
+\newcommand{\R}{\mathcal{R}}
+\newcommand{\obs}{f_{\rm obs}}
+
+\title{\vspace{-2em}\textbf{Can cosmology confirm that dark energy is a cosmological constant?
+An observable-subspace bound}}
+\author[]{Eric Schultz}
+\affil[]{Independent researcher \quad ORCID: 0009-0006-6283-1696}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+The simplest hypothesis for dark energy is that it is vacuum energy---a
+cosmological constant with equation of state $w=-1$ and no perturbations. We ask
+a precise question: given a finite suite of cosmological probes, which
+deviations from a cosmological constant are observable even in principle? We
+formalise the observability of a dark-energy feature to a probe as the norm of
+the feature's linear response projected onto the probe's sensitivity subspace,
+$\|\Pi_{\rm probe}\,\mathcal{R}\|$, and show that the three questions answered
+separately in a companion programme---the detectability of a localised
+background feature, the discrimination of horizon-entropy models, and the
+closure of the structure-growth channel---are one construction under three
+projections. The finiteness of any real probe suite then implies a sharp
+epistemic bound: the observable part of the dark-energy response space is the
+span of the probe kernels, and its orthogonal complement is invisible in
+principle. Using physically-motivated kernels for six probes, we find that the
+cosmological-constant hypothesis \emph{is} falsifiable in the directions the
+data cover---low-redshift background evolution and any clustering are well
+observed---but that a structurally-defined family of near-constant
+alternatives, deviating only at high redshift, on super-horizon scales, or in a
+mid-redshift observational desert, is indistinguishable from vacuum energy. The
+strongest statement current cosmology can support is therefore ``dark energy is
+a cosmological constant within the observable subspace,'' never without
+qualification. We map the blind family explicitly.
+\end{abstract}
+
+%========================================================================
+\section{Introduction}
+\label{sec:intro}
+
+The most economical account of cosmic acceleration is that the dark energy
+driving it is the energy of the vacuum: a cosmological constant $\Lambda$ with
+equation of state $w=-1$ exactly and, being Lorentz invariant, no spatial
+perturbations at all. Every current observation is consistent with this
+account. It is also the account with the least explanatory content---it names
+the substance without addressing why its density takes the value it does---and
+so a large literature seeks dynamical alternatives whose deviations from
+$w=-1$ might be detected.
+
+This paper asks a question logically prior to that search: setting aside whether
+a given experiment has the sensitivity, \emph{which} deviations from a
+cosmological constant are observable \emph{even in principle} by a finite suite
+of probes? The question is not rhetorical. A cosmological constant is a single
+point in an infinite-dimensional space of possible dark-energy behaviours---a
+density that could in principle depend on scale and time in arbitrarily many
+ways---and a finite set of experiments can constrain only a finite-dimensional
+projection of that space. The complement is not merely poorly measured; it is
+inaccessible to those probes for any exposure.
+
+We make this precise and find that it has teeth. The observability of a
+dark-energy feature reduces to a single object, and the various detectability
+and discrimination results established elsewhere in this programme are its
+instances. The finiteness of the probe suite then yields an explicit
+observable subspace and an explicit blind complement. Applied to the
+cosmological-constant hypothesis, the result is neither the complacent ``$\Lambda$
+fits, so dark energy is vacuum energy'' nor the sceptical ``we can never know'':
+it is a sharp intermediate statement. Vacuum energy is falsifiable in the
+directions the data cover, and a specific, mapped family of alternatives is
+forever indistinguishable from it.
+
+%========================================================================
+\section{The observability functional}
+\label{sec:functional}
+
+Let $\mathcal{R}(k,a)$ denote the linear response of a dark-energy model---the
+perturbation it induces, as a function of comoving wavenumber $k$ and scale
+factor $a$, in the quantities cosmology can measure. A cosmological constant has
+$\mathcal{R}\equiv0$ in the perturbed sector and a fixed background; a dynamical
+model deviates from this in a pattern $\mathcal{R}(k,a)$ characteristic of its
+microphysics.
+
+A probe $P$ does not measure $\mathcal{R}$ pointwise. It measures a weighted
+projection: its sensitivity is concentrated on a subspace of the $(k,a)$
+response space, described by a kernel $W_P(k,a)$. We work on the response space
+$L^2$ of square-integrable functions on the $(\ln k,\ln a)$ domain with inner
+product
+\begin{equation}
+\langle \mathcal{R}_1,\mathcal{R}_2\rangle
+=\int \mathcal{R}_1(k,a)\,\mathcal{R}_2(k,a)\,\mu(k,a)\,d\ln k\,d\ln a,
+\label{eq:inner}
+\end{equation}
+and induced norm $\|\mathcal{R}\|^2=\langle\mathcal{R},\mathcal{R}\rangle$. The
+weight $\mu(k,a)$ is where survey geometry enters: in a full treatment it is the
+Fisher metric, $\mu\propto$ the inverse data covariance folded with the number
+of independent modes per cell (the cosmic-volume factor $\sim k^3$ within the
+survey footprint). In the schematic evaluation below we take $\mu$ flat on the
+logarithmic grid, which is the choice that makes the observable subspace depend
+only on the \emph{support} of each probe kernel rather than on assumed noise
+levels; we return to this choice as a limitation. We define the observability of
+a feature $\mathcal{R}$ to the probe as
+\begin{equation}
+\obs^{(P)}[\mathcal{R}]
+   \;=\; \frac{\|\Pi_P\,\mathcal{R}\|}{\|\mathcal{R}\|},
+\label{eq:obsfunc}
+\end{equation}
+where $\Pi_P$ is the orthogonal projection (in the inner product
+Eq.~\eqref{eq:inner}) onto the span of the probe kernel. For a suite of probes
+$\{P_i\}$ the relevant projector is onto the combined span,
+$\Pi_{\rm probe}=\Pi_{\,{\rm span}\{W_{P_i}\}}$, and $\obs\in[0,1]$ measures the
+fraction of the feature's response that lies within reach of the suite.
+
+This is deliberately the information-geometric criterion made concrete: $\obs$
+is the cosine between a feature and the observable subspace, and a Fisher
+analysis with the same kernels would assign a feature with $\obs\!\to\!0$ an
+unbounded confidence interval. The content of what follows is not the
+criterion---which is standard---but its \emph{consequences} when the response
+space is that of dark energy and the projections are the specific ones the
+literature uses.
+
+\paragraph{Three questions, one functional.}
+The programme this paper closes answered three questions with what appear to be
+three different methods. Each is Eq.~\eqref{eq:obsfunc} under a particular
+$\Pi_{\rm probe}$:
+\begin{itemize}\itemsep2pt
+\item A localised feature in the background expansion (a step or bump in the
+dark-energy density) is detectable iff its response is not projected out by the
+degeneracy directions of the distance--redshift data---$\Pi$ is the
+nuisance-orthogonal Fisher projection onto the space orthogonal to
+$\{\Omega_m,\text{distance calibration}\}$.
+\item Horizon-entropy models are discriminable at the background level iff their
+responses are separated after the same projection---the discrimination question
+is Eq.~\eqref{eq:obsfunc} applied to differences of models.
+\item The structure-growth channel is closed for event-horizon models because
+their perturbation response is annihilated by the sub-horizon projection: the
+growth probe's kernel is supported where a null-horizon response scales as
+$1/k^3$, so $\Pi_{\rm growth}\mathcal{R}\to0$.
+\end{itemize}
+The projections genuinely differ; the object projected, and the meaning of the
+norm, do not. This is the sense in which the three results are one.
+
+%========================================================================
+\section{The observable subspace is finite}
+\label{sec:finite}
+
+\begin{proposition}[Observable-subspace bound]
+\label{prop:finite}
+A suite of $N$ probes with kernels $\{W_{P_i}\}$ renders observable only the
+$N$-dimensional (at most) subspace $\mathcal{O}={\rm span}\{W_{P_i}\}$ of the
+response space. Any feature $\mathcal{R}\in\mathcal{O}^\perp$ has
+$\obs[\mathcal{R}]=0$: it is unobservable to the suite for any exposure.
+\end{proposition}
+
+The proposition is immediate---the span of $N$ vectors has dimension at most
+$N$---but its force comes from the response space being infinite-dimensional.
+No finite programme closes it. Increasing exposure shrinks error bars
+\emph{within} $\mathcal{O}$; it does not enlarge $\mathcal{O}$. Only a
+genuinely new probe, with a kernel outside the current span, adds a dimension.
+
+The practical version replaces exact orthogonality with smallness. A feature
+with $\obs[\mathcal{R}]$ near the value a random response direction would
+attain, $\sqrt{N/D}$ for a $D$-dimensional discretisation, is observationally
+indistinguishable from unobservable. It is this thresholded, quantitative form
+we now apply.
+
+%========================================================================
+\section{Can vacuum energy be confirmed?}
+\label{sec:lambda}
+
+We discretise the response space on a $(k,a)$ grid spanning
+$k\in[10^{-4},1]\,h\,{\rm Mpc}^{-1}$ and $a\in[0.02,1]$ ($D=2400$ cells) and
+build physically-motivated kernels for six probes: background distance
+(supernovae and baryon acoustic oscillations), the growth rate $f\sigma_8$, the
+integrated Sachs--Wolfe effect, weak lensing, primary cosmic microwave
+background, and CMB lensing. Each kernel encodes where in $(k,a)$ that probe has
+support---low redshift and sub-horizon for growth and lensing, very large scales
+for the ISW effect, high redshift for the CMB.
+
+Two cautions must be stated at the outset, because they bound what the numbers
+below can mean. First, these kernels are \emph{schematic}: analytic weight
+functions capturing the $(k,a)$ support of each probe, not Fisher forecasts from
+survey specifications and a Boltzmann code. Second, treating each probe as a
+single basis vector \emph{understates} the data: a real tomographic survey
+measures many redshift-binned spectra and spans a multi-dimensional subspace,
+not one direction. Both push the same way---a realistic suite has a larger
+observable subspace $\mathcal{O}$ than our six-vector caricature---so the
+specific overlap fractions we report are not to be read as forecasts. We
+therefore do not claim the decimal values; we claim the \emph{ordering} they
+exhibit, and we test that the ordering is what survives.
+
+It does. Expanding each probe into $n_{\rm bin}$ tomographic slices raises the
+subspace dimension (from $6$ to $\sim36$ at $n_{\rm bin}=10$) and lifts every
+overlap, but it lifts the low-redshift background direction to near unity while
+the blind directions rise far less and stay well below it:
+\begin{table}[t]
+\caption{Observability $\obs$ of a falsifiable direction (low-$z$ background)
+and two blind directions as the observable subspace is enlarged by tomographic
+binning. The absolute values rise with dimension $r$, but the ordering
+(low-$z$ overlap $\gg$ blind overlap) is preserved throughout. The random
+floor $\sqrt{r/D}$ is shown for reference.}
+\label{tab:tomography}
+\begin{center}\small
+\begin{tabular}{cccccc}
+\hline\hline
+$n_{\rm bin}$ & $r$ & low-$z$ bg & high-$z$ DE & mid-$z$ desert & floor \\ \hline
+1  & 6  & 0.85 & 0.21 & 0.22 & 0.05 \\
+3  & 14 & 0.93 & 0.31 & 0.35 & 0.08 \\
+5  & 20 & 0.95 & 0.49 & 0.34 & 0.09 \\
+10 & 36 & 0.96 & 0.52 & 0.37 & 0.12 \\
+\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+The gap narrows as the data improve---as it must, since a richer suite sees
+more---but it does not close: at every dimensionality the low-redshift
+background direction is the most observable and the high-redshift and mid-$z$
+directions remain the least, closest to the floor. The qualitative result, a
+falsifiable set of directions cleanly separated from a blind set, is a property
+of \emph{where the probes have support}, not of the caricature's dimension. What
+a full Fisher forecast would change is how far into the blind zones a given
+survey generation reaches; what it would not change is that those zones are the
+last to be reached.
+
+For definiteness we report the six-vector values below, with the explicit
+understanding that they are illustrative markers of the ordering, not forecasts;
+a random feature attains $\obs\approx\sqrt{6/2400}\approx0.05$ (the ``blind''
+reference), each probe's own kernel returns $\obs=1$, and a smooth physical
+response---being concentrated, not white---attains a higher baseline than a
+random one, which is why even the blind directions exceed $0.05$ while remaining
+far below the observable ones.
+
+A cosmological constant is not unfalsifiable: two ways of departing from it are
+well observed (Table~\ref{tab:falsifiable}). The low-redshift background
+direction is what current surveys target when they report a preference for
+evolving $w$; the clustering direction reflects that a cosmological constant has
+\emph{zero} perturbation response, so any dark-energy clustering is a large
+signal sitting squarely where growth and lensing probes look. If dark energy
+clusters at all, or if its background departs from $w=-1$ at low redshift, we
+can see that it is not $\Lambda$.
+
+\begin{table}[t]
+\caption{Directions in which the cosmological-constant hypothesis is
+falsifiable: deviations from $w=-1$ that a current-generation probe suite
+observes well. Values are the six-vector overlaps, illustrative of the ordering
+(see text); they rise toward unity under tomographic refinement
+(Table~\ref{tab:tomography}).}
+\label{tab:falsifiable}
+\begin{center}\small
+\begin{tabular}{lc}
+\hline\hline
+Deviation from $\Lambda$ & $\obs$ \\ \hline
+Low-$z$ background evolution $w(a)\neq-1$ & $0.92$ \\
+Presence of clustering ($c_s^2<1$, any) & $0.87$ \\
+\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+The opposite holds for an entire structured family of near-constant deviations
+(Table~\ref{tab:blind}).
+
+\begin{table}[t]
+\caption{Directions in which the cosmological-constant hypothesis is not
+confirmable: near-$\Lambda$ deviations that fall in the probe suite's blind
+subspace. Values sit near the random floor and, while they rise under
+tomographic refinement, remain the least observable directions at every
+dimension (Table~\ref{tab:tomography}).}
+\label{tab:blind}
+\begin{center}\small
+\begin{tabular}{lc}
+\hline\hline
+Deviation from $\Lambda$ & $\obs$ \\ \hline
+High-$z$ / early dark energy ($z\gtrsim4$) & $0.21$ \\
+Super-horizon ($k\lesssim10^{-3}$) & $0.45$ \\
+Mid-$z$ desert ($k\sim10^{-3}$, $z\sim2$--$4$) & $0.22$ \\
+\hline\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+These sit at or near the blind floor. A dynamical dark energy that hugs $w=-1$
+at low redshift and departs from vacuum energy only in these zones---early in
+time, on the largest scales, or in the redshift gap between the CMB and the
+low-redshift probes---produces a response almost entirely in
+$\mathcal{O}^\perp$. It is observationally indistinguishable from a cosmological
+constant, not because the effect is small but because the probes have no
+support where it lives.
+
+\paragraph{The bound.}
+The two tables are the result. The cosmological-constant hypothesis is
+confirmable only in the observable subspace $\mathcal{O}$, and against the blind
+family it is not confirmable at all. The strongest claim the data can support is
+\begin{quote}
+\emph{dark energy is a cosmological constant within the observable subspace,}
+\end{quote}
+with the qualification carrying real content: it excludes a specific,
+enumerable family of dynamical models that will register in no experiment built
+from these six probes. ``Dark energy is vacuum energy,'' stated without that
+qualification, is not a conclusion cosmology can reach---not for want of
+precision, but for want of directions.
+
+%========================================================================
+\section{Discussion}
+\label{sec:disc}
+
+The bound is epistemic, not dynamical: it says what is knowable about dark
+energy, not what dark energy is. It neither supports nor undermines the vacuum
+interpretation. It relocates the question. Confirming that dark energy is
+vacuum energy is not a matter of measuring $w$ to more decimal places; it
+requires a probe with support in the blind zones---an observable sensitive to
+high-redshift or super-horizon dark-energy behaviour---without which a family of
+alternatives remains permanently degenerate with $\Lambda$.
+
+Three limitations bound the claim. The probe kernels are schematic and each
+probe is treated as few basis vectors rather than a tomographic tower; a
+quantitative version requires survey Fisher kernels with redshift binning, which
+will raise every overlap and enlarge the observable subspace. As
+Table~\ref{tab:tomography} shows, this shifts the fractions substantially but
+preserves their ordering---the blind directions remain the least observable---so
+we claim the ordering and the existence of the blind family, not the decimal
+values. The response model for clustering is a Jeans form, not a Boltzmann
+output. And the framework addresses observability, not theoretical prior:
+Eq.~\eqref{eq:obsfunc} is the standard information criterion, and the
+contribution is its concrete consequence for the $\Lambda$ question, not the
+criterion itself.
+
+A word on scope is needed to avoid overstating the bound. The blind subspace is
+defined by \emph{where in $(k,a)$ the probes have support}, and that is a
+property of the data, not of any dark-energy model class. A deviation from
+$w=-1$ localised at high redshift, on super-horizon scales, or in the mid-$z$
+desert is hard to observe whatever its microphysical origin---geometric or
+scalar-field. So the blind family is not restricted to geometric dark energy;
+any dynamical model, including quintessence or k-essence, whose departure from
+$\Lambda$ lives in those zones is equally degenerate with a cosmological
+constant. What \emph{is} restricted to geometric dark energy is the clean
+\emph{response-space bookkeeping} of the earlier sections, where the density
+perturbation is inherited from the metric and the projections have the simple
+form used in Sec.~\ref{sec:functional}; scalar fields carry an independent
+kinetic term and a genuine Lagrangian sound speed, so their response space is
+larger and their placement in it requires the full perturbation treatment rather
+than the geometric shortcut. The epistemic bound---confirmation only within the
+observable subspace---holds for both; only the tidy geometric derivation is
+specific to the geometric class.
+
+What survives all three is the shape of the answer. A finite cosmology sees a
+finite slice of what dark energy could be. The cosmological constant lives on
+the observable side of that slice, which is why it fits; a mapped family of its
+imitators lives on the blind side, which is why fitting is not confirming.
+
+\begin{thebibliography}{9}
+\bibitem{StepPaper} E. Schultz, ``Detectability and exclusion of localized
+dark-energy features in the expansion history,'' companion paper (2026).
+\bibitem{CompanionPaper} E. Schultz, ``Which generalized entropy?
+Discrimination among horizon-entropy dark-energy models and the closure of the
+structure-growth channel,'' companion paper (2026).
+\bibitem{NullHorizon} E. Schultz, ``Which dark energy can structure growth see?
+A response-kernel classification of geometric dark energy,'' companion paper
+(2026).
+\end{thebibliography}
+
+\end{document}
