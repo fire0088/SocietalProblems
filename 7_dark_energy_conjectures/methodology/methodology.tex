@@ -1,0 +1,307 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{titlesec}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tcolorbox}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage[hidelinks]{hyperref}
+
+\newcommand{\LCDM}{$\Lambda$CDM}
+\newcommand{\Om}{\ensuremath{\Omega_m}}
+\newcommand{\wo}{\ensuremath{w_0}}
+\newcommand{\wa}{\ensuremath{w_a}}
+\newcommand{\Dmrd}{\ensuremath{D_M/r_d}}
+\newcommand{\Dhrd}{\ensuremath{D_H/r_d}}
+\newcommand{\Dvrd}{\ensuremath{D_V/r_d}}
+\newcommand{\FAP}{\ensuremath{F_{\mathrm{AP}}}}
+\newcommand{\chisq}{\ensuremath{\chi^2}}
+
+\titleformat{\section}{\large\bfseries\color{RoyalBlue}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titlespacing{\section}{0pt}{1.3em}{0.5em}
+
+\newtcolorbox{keybox}[1]{colback=RoyalBlue!4,colframe=RoyalBlue!40,boxrule=0.5pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt,title=#1,fonttitle=\bfseries\small,fontupper=\small}
+\newtcolorbox{caveatbox}{colback=black!3,colframe=black!30,boxrule=0.4pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt,fontupper=\small}
+
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small AI-Assisted Cosmological Methodology}
+\lhead{\small Methodology \& Meta-Analysis}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\title{\vspace{-2em}\textbf{Anatomy of an AI-Assisted Investigation}\\[0.35em]
+\large A Methodological Case Study: Deconstructing the DESI DR2\\
+Evolving-Dark-Energy Signal Through Iterative Human--AI Collaboration}
+\author{E.~Schultz\thanks{Independent Researcher. ORCID: \href{https://orcid.org/0009-0006-6283-1696}{0009-0006-6283-1696}.}\\[0.3em]
+\normalsize with an AI research assistant (Claude, Anthropic)}
+\date{July 2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{fancy}
+
+\begin{abstract}
+\noindent This document is a methodological case study, not a physics result. It records \emph{how} an independent researcher, working in sustained collaboration with a large language model (LLM), conducted a multi-stage investigation into whether the DESI DR2 preference for evolving dark energy reflects new physics or an accumulation of measurement effects. The underlying scientific conclusion --- that the signal is a stack of individually weak, largely mundane contributions --- is summarized only as context; the focus here is the \emph{process}. We document the chronological research trajectory and its pivot points (\S\ref{sec:history}); compare the AI-assisted workflow against conventional human research practice and extract transferable lessons (\S\ref{sec:comparison}); state limitations, ethical considerations, and a formal reproducibility protocol (\S\ref{sec:limits}); and, most substantially, red-team the methodology itself against AI-specific failure modes --- confirmation-bias feedback loops, hallucination, alignment-style sycophancy drift, and pipeline integrity (\S\ref{sec:redteam}). The central methodological finding is that the value of the AI collaboration lay less in generating answers than in \emph{industrializing self-refutation}: the workflow's defining feature was the repeated, cheap construction of controls, null simulations, and bug-checks that overturned the collaboration's own intermediate claims. We argue this is the property human researchers should selectively adopt, and the one most vulnerable to the failure modes we enumerate.
+\end{abstract}
+
+\tableofcontents
+\vspace{1em}
+
+% =====================================================================
+\section{Introduction and scope}
+
+The scientific object of the investigation was a live controversy: the Dark Energy Spectroscopic Instrument (DESI) Data Release 2 reported a $3$--$4\sigma$ preference for a time-evolving dark-energy equation of state (an apparent ``phantom crossing,'' $\wo>-1$, $\wa<0$) over a cosmological constant \citep{desidr2}. Whether this reflects new physics or systematics has divided the field \citep{huang,vincenzi,colgain}.
+
+This paper does not adjudicate that question. It documents the \emph{methodology} of one independent attempt to pressure-test the signal, conducted as an extended dialogue between a human researcher and an LLM-based assistant with code-execution, web-search, and persistent-memory tools. We adopt a five-perspective structure --- historical, comparative, ethical, adversarial, and architectural --- because the honest evaluation of an AI-assisted method requires precisely these distinct lenses. We write in a single voice throughout: the ``panel'' is an organizing device for scope, not a claim that five independent authorities contributed.
+
+\begin{keybox}{Scope disclaimer}
+The physics conclusions referenced here are provisional, method-conditional, and reproduced in a deliberately simplified analysis pipeline (compressed CMB priors, magnitude proxies) that inflates absolute significances. They are used only to illustrate the \emph{process}. No claim in this document should be read as a validated cosmological result; see \S\ref{sec:limits}.
+\end{keybox}
+
+% =====================================================================
+\section{The research trajectory: a chronological methodology}
+\label{sec:history}
+\emph{(Perspective 1: research methodologist \& historian.)}
+
+The investigation did not proceed linearly from hypothesis to test. It proceeded as a \emph{funnel with reversals} --- broad theoretical framing, progressive narrowing to a tractable empirical target, and several sharp reversals where a self-imposed check overturned a claim the collaboration had already adopted. The reversals, not the confirmations, were the load-bearing events.
+
+\subsection{Phase I --- Theoretical framing and elimination}
+The starting point was the broadest possible framing: the cosmological-constant problem and the space of dark-energy explanations. An early decision --- consequential in retrospect --- was to \emph{not} build a new dark-energy model, after a literature scan established that the holographic/quintom/interacting-sector model-building space is saturated \citep{quintom}. This redirected effort from theory generation toward measurement critique, where an independent researcher with a validated statistical toolkit could contribute without competing against large collaborations. Formal work in this phase (a growth-channel classification of geometric dark energy) established a reusable result: event-horizon holographic dark energy is provably smooth sub-horizon, closing its structure-growth observability.
+
+\subsection{Phase II --- Narrowing to the supernova anchor}
+The pivot to empiricism came from a specific foundational paper: the $a_B$ intercept diagnostic of \citet{huang}, which is \emph{independent of the fiducial matter density} \Om. This mattered because the entire difficulty of the field is an \Om-degeneracy --- a magnitude-only probe cannot separate a real feature from an \Om\ shift. The $a_B$ construction sidesteps it. The methodology here was \emph{replication-first}: rather than accept the paper's claim, the collaboration re-fetched the public DESY5 and Pantheon+ data and rebuilt the diagnostic from scratch.
+
+\begin{keybox}{Pivot 1 --- the survey-lineage split}
+A first, naive redshift cut ($z<0.1$) reproduced the discrepancy only weakly ($1.0\sigma$). Reframing the split by \emph{survey lineage} (external low-$z$ anchor vs.\ DES-native photometry, using the \texttt{IDSURVEY} field) raised it to $7.4\sigma$, with a Pantheon+ control at $0.1\sigma$. The lesson: the systematic lived in the \emph{seams between heterogeneously calibrated datasets}, not in redshift. Choosing the physically correct partition, not a convenient one, was the whole game.
+\end{keybox}
+
+\subsection{Phase III --- Loop closure and its first correction}
+The collaboration then ``closed the loop'': injected the measured offset into a $\wo\wa$ fit against BAO and CMB to test whether correcting it collapsed the phantom-crossing preference. It did, with a monotonic dose--response and correct sign dependence. But this produced the investigation's \textbf{first major reversal}: the simplified pipeline reported that correction removed 73--92\% of the signal, whereas the peer-reviewed DES-Dovekie recalibration \citep{dovekie,dovekiecal} showed the rigorous number is $\sim\!1\sigma$ of $\sim\!4\sigma$ ($4.2\sigma\to3.2\sigma$). The collaboration's own intermediate claim was an overstatement, caught only by cross-checking against the literature. The overclaim was retracted in the working record.
+
+\subsection{Phase IV --- The residual and a self-caught bug}
+Attention turned to the surviving $\sim\!3.2\sigma$. A residual-shape analysis initially suggested a redshift-dependent feature (a candidate progenitor-age-bias signature). This was the \textbf{second reversal}: on re-examination, the apparent $z$-shape was an artifact of \emph{unweighted} binning dominated by a handful of very-large-error supernovae. Error-weighting --- what the likelihood actually does --- flattened it. The age-bias template returned $0.1\sigma$; further, age-bias and evolving-$w$ templates were shown to be $87\%$ degenerate in shape, i.e.\ intrinsically indistinguishable from $\mu(z)$ alone.
+
+\subsection{Phase V --- Migrating to the BAO sector and the decisive coordinate change}
+Recognizing the supernova side was near its public-data ceiling, the investigation migrated to the BAO tracers. A leave-one-out test found that the presumed ``LRG1 anomaly'' was only $1.6\sigma$; the real driver was LRG2 ($3.0\sigma$ raw, $\sim\!2.4\sigma$ after look-elsewhere). The \textbf{third and most instructive reversal} came from an analogy proposed by the human collaborator --- whether a Smith-chart-like representation could help. The literal tool did not map, but the underlying instinct (``rotate into coordinates where physics becomes direction'') led to the Alcock--Paczynski decomposition ($\Dvrd$ isotropic vs.\ $\FAP=D_M/D_H$ anisotropic). In the $(\Dmrd,\Dhrd)$ basis the two tracers looked like one coherent line-of-sight pull; in the physically natural AP basis they \emph{dissolved} into two unrelated discrepancies (one isotropic, one anisotropic) --- a more deflationary, fluctuation-favoring reading. A BOSS DR12 cross-check added mild independent evidence for a DESI-specific effect.
+
+\subsection{Phase VI --- Pre-registration and consolidation}
+The terminal recognition was that the question is \emph{data-limited}: no further analysis of current public data can separate a residual systematic from real physics. The methodological response was to construct a \emph{pre-registered} decision test for DR3 --- a quantitative $\chisq$ boundary, with a systematic-error-floor correction, committed to before the data arrive. The full trajectory was consolidated into a persistent, tiered ledger (\textsc{supported} / \textsc{open} / \textsc{conjectural}).
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}p{1.6cm}p{5.2cm}p{6.4cm}@{}}
+\toprule
+\textbf{Phase} & \textbf{Action} & \textbf{Reversal / lesson} \\
+\midrule
+I & Theoretical framing; declined to build a new model & Model space saturated $\Rightarrow$ redirect to measurement critique \\
+II & Rebuild $a_B$ diagnostic on public data & Survey-lineage split ($7.4\sigma$) $\gg$ naive redshift cut ($1.0\sigma$) \\
+III & Loop-closure fit & \textbf{Reversal 1:} ``removes the bulk'' overstated; true effect $\sim\!1\sigma$ \\
+IV & Residual-shape / age-bias test & \textbf{Reversal 2:} $z$-shape was an unweighted-binning artifact \\
+V & BAO leave-one-out + AP rotation & \textbf{Reversal 3:} coordinate change dissolved apparent coherence \\
+VI & Pre-registered DR3 test; ledger & Question is data-limited; commit falsifiable prediction \\
+\bottomrule
+\end{tabular}
+\caption{The research trajectory as a funnel with reversals. Each reversal was produced by a self-imposed check overturning a claim the collaboration had already adopted.}
+\label{tab:trajectory}
+\end{table}
+
+% =====================================================================
+\section{Comparative analysis: AI-assisted vs.\ conventional practice}
+\label{sec:comparison}
+\emph{(Perspective 2: AI subject-matter expert \& cognitive scientist.)}
+
+The central comparative claim is narrow and defensible: the AI collaboration did not outperform a human expert at \emph{judgment}, but it radically lowered the cost of \emph{self-refutation}, and that cost structure changed the research dynamics.
+
+\subsection{Where the asymmetry lies}
+In conventional practice, constructing a control, a null simulation, or an independent cross-check is expensive --- each is hours of coding. That cost imposes a rational bias: researchers check the claims they most doubt, and let plausible-looking intermediate results stand. In the AI-assisted workflow, a control or a 200-realization null Monte Carlo was minutes of generated-and-executed code. This inverted the economics: it became cheaper to \emph{try to break} a result than to accept it. Every one of the three reversals in \S\ref{sec:history} was a direct consequence of this inversion --- checks that a cost-rational human might have skipped were run by default.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{@{}p{4.3cm}p{4.3cm}p{4.3cm}@{}}
+\toprule
+\textbf{Dimension} & \textbf{Conventional practice} & \textbf{AI-assisted workflow (observed)} \\
+\midrule
+Cost of a control/null test & High (hours) $\Rightarrow$ selective & Low (minutes) $\Rightarrow$ default \\
+Literature reconciliation & Periodic, batched & Continuous, per-claim \\
+Breadth of methods tried & Bounded by fixed effort & Wide (many quick probes) \\
+Depth / rigor per method & High & Variable; pipeline-simplified \\
+Failure mode & Under-checking & Over-confident fluency \\
+Dominant risk & Missed systematic & Plausible fabrication \\
+\bottomrule
+\end{tabular}
+\caption{Comparative cost structure. The AI workflow's advantage (cheap self-refutation) and its dominant risk (fluent overconfidence) are two faces of the same property.}
+\label{tab:compare}
+\end{table}
+
+\subsection{Transferable practices for human researchers}
+These are actionable independent of whether one uses an LLM:
+\begin{enumerate}[leftmargin=1.4em,itemsep=2pt]
+\item \textbf{Budget self-refutation as a first-class activity.} Pre-commit to a control and a null simulation for every headline claim, before believing it. The AI made this cheap; humans can make it \emph{mandatory}.
+\item \textbf{Treat coordinate/parametrization choice as a hypothesis.} The AP-basis reversal shows a conclusion can be an artifact of representation. Re-derive key results in a second, physically motivated basis before publishing.
+\item \textbf{Weight before you look.} The age-bias artifact was an unweighted-mean error. Inspect residuals in the metric the likelihood uses, not the eye's.
+\item \textbf{Maintain a tiered, persistent ledger.} Separating \textsc{supported} / \textsc{open} / \textsc{conjectural} claims, with explicit method-conditionality flags, prevents compression drift --- the slow hardening of a hedged result into an asserted one across a long project.
+\item \textbf{Pre-register the falsifier.} When a question is data-limited, the honest deliverable is a quantitative prediction committed to before the arbitrating data arrive.
+\end{enumerate}
+
+\begin{caveatbox}
+\textit{The counter-lesson.} Speed is not rigor. Every quantitative result the AI produced required an independent bug-check, and several absolute numbers remained pipeline-conditional throughout. The workflow's throughput is only an asset when paired with the adversarial discipline of \S\ref{sec:redteam}; without it, the same speed manufactures confident errors faster.
+\end{caveatbox}
+
+% =====================================================================
+\section{Limitations, broader impacts, and reproducibility}
+\label{sec:limits}
+\emph{(Perspective 3: ethics \& reproducibility auditor.)}
+
+\subsection{Methodological limitations}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item \textbf{Pipeline simplification.} Absolute significances rest on compressed CMB distance priors and magnitude proxies, which inflate values relative to a full likelihood. The robust content is in \emph{directions}, \emph{relative} shifts, and \emph{reproduced structure}; several absolute numbers (notably the LRG2 isotropic significance) are explicitly method-conditional and flagged as requiring a full uncompressed-likelihood recomputation.
+\item \textbf{Non-independence of cross-checks.} The BOSS/DESI comparison partially overlaps in sky and galaxies, weakening its status as an independent probe.
+\item \textbf{Single-operator, single-model.} All AI assistance came from one model family in one extended session context; results may carry model-specific idiosyncrasies not audited here.
+\end{itemize}
+
+\subsection{Broader impacts and ethical considerations}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+\item \textbf{Automation of premature certainty.} A workflow that produces fluent, well-formatted, citation-bearing analysis at high speed can lend unearned authority to weak results. The same tooling that industrializes self-refutation can, in less disciplined hands, industrialize the \emph{appearance} of rigor. This is the primary negative societal risk of the methodology.
+\item \textbf{Citation integrity.} AI-assembled bibliographies are prone to plausible-but-wrong references; in this project, a verification pass caught multiple incorrect titles and a misattributed result. Unverified AI citations pollute the scholarly record and must never be published unchecked.
+\item \textbf{Epistemic deskilling.} Habitual reliance on generated controls may atrophy the researcher's own ability to design them --- a long-horizon concern for training the next generation.
+\item \textbf{Equity of access.} Methodologies that presuppose frontier-model access risk widening the gap between resource-rich and resource-poor research groups.
+\item \textbf{Blind spot --- shared priors.} The human and the AI may share cultural/training priors (e.g., a background preference for parsimony/\LCDM), so their ``agreement'' is weaker evidence than two genuinely independent analysts. This is treated adversarially in \S\ref{sec:redteam}.
+\end{itemize}
+
+\subsection*{Reproducibility statement}
+\begin{keybox}{Reproducibility protocol (placeholders for release)}
+\textbf{Code repository:} \texttt{[URL PLACEHOLDER --- e.g.\ github.com/\dots]} \\
+\textbf{Analysis scripts:} \texttt{ab\_v3.py} ($a_B$ diagnostic + control), \texttt{close\_loop2.py} (loop-closure fit), \texttt{lrg1\_pull.py} (leave-one-out), \texttt{ap\_basis.py} (AP rotation), \texttt{boss\_crosscheck.py}, \texttt{dr3\_forecast.py} (pre-registered test), \texttt{bugcheck.py} (controls/nulls). \\
+\textbf{Datasets:} DESY5 Hubble diagram (\texttt{des-science/DES-SN5YR}, tag \texttt{v1.0}); DES-Dovekie HD (same repo, \texttt{main}); Pantheon+ (\texttt{PantheonPlusSH0ES/DataRelease}); DESI DR2 BAO (arXiv:2503.14738, Table); BOSS DR12 consensus BAO (Alam et al.\ 2017). \\
+\textbf{Environment:} \texttt{[PLACEHOLDER: python X.Y; numpy, scipy, pandas, matplotlib versions; OS; seed values]}. Null simulations used fixed seeds (\texttt{[PLACEHOLDER]}); MC realizations $N=$ \texttt{[PLACEHOLDER]}. \\
+\textbf{Compute:} CPU-only; no GPU or specialized hardware required. \\
+\textbf{AI assistance disclosure:} All AI-generated code was executed and independently bug-checked; all AI-suggested citations were verified against primary sources before inclusion. Model: \texttt{[PLACEHOLDER: model name / version / date]}. \\
+\textbf{Known non-reproducible elements:} the compressed-likelihood absolute significances are pipeline-specific; a full-Planck recomputation is required for publication-grade values.
+\end{keybox}
+
+% =====================================================================
+\section{Adversarial stress-testing and threat modeling}
+\label{sec:redteam}
+\emph{(Perspective 4: AI red-teaming \& vulnerability analyst.)}
+
+We evaluate the methodology as an attacker would --- asking not ``did it work?'' but ``how could this exact workflow have produced a confident, wrong, well-formatted conclusion, and what in the process would have caught it?'' We enumerate four AI-specific failure classes, their manifestation risk here, and the protocol (used or required) that mitigates each.
+
+\subsection{Threat 1 --- Confirmation-bias feedback loops}
+\textbf{Vector.} An LLM optimizes for coherence with the conversation. If the human steers toward a systematics/\LCDM\ reading, the model can preferentially generate analyses that confirm it, and the human reads confirmation as independent corroboration --- a closed loop with no external check.
+
+\textbf{Manifestation risk here: high.} The investigation \emph{did} trend toward a skeptical conclusion, and the human's framing was skeptical throughout. This is the single most serious vulnerability.
+
+\textbf{Mitigations (used).} (i)~Null simulations with a \emph{\LCDM-true} generating model, which can only fail the skeptical hypothesis --- e.g.\ the $6.5\sigma$-from-null result would have collapsed had the offset been a fitting artifact. (ii)~Sign and dose--response tests: the loop-closure was required to show monotonicity and correct sign, not merely a shift. (iii)~The reversals themselves (\S\ref{sec:history}) are evidence the loop was at least partially broken: the model repeatedly produced results that \emph{contradicted} the running narrative (the overclaim retraction, the binning artifact).
+
+\textbf{Mitigation (required, not fully met).} An adversarial second operator instructed to argue the \emph{pro-new-physics} case, or a second model with an opposing prompt, to break the shared-prior blind spot of \S\ref{sec:limits}. The real-physics branch was acknowledged as under-tested precisely because of this gap.
+
+\subsection{Threat 2 --- Hallucination and fabricated specificity}
+\textbf{Vector.} LLMs generate fluent false specifics: non-existent citations, invented parameter values, plausible-but-wrong equations, or numerical results not actually computed.
+
+\textbf{Manifestation risk here: confirmed and caught.} The AI-assembled bibliography contained multiple incorrect paper titles and one misattributed quantitative result; a dedicated verification pass corrected them against primary sources. Had this pass been skipped, fabricated citations would have entered the record.
+
+\textbf{Mitigations (used).} (i)~\textbf{Execute, don't trust:} every numerical claim came from executed code whose output was inspected, not from model assertion. (ii)~\textbf{Citation verification pass:} each reference checked against arXiv/journal primary sources. (iii)~\textbf{Re-derivation from scratch} after container resets, which functioned as an inadvertent replication --- foundational results (the $7.4\sigma$ offset, the $1.6\sigma$/$3.0\sigma$ leave-one-out) were reproduced independently.
+
+\begin{caveatbox}
+\textit{Residual exposure.} Execution guards numbers but not their \emph{interpretation}; a hallucinated but plausible physical rationale attached to a correct number is not caught by running the code. This class remains partially open and is the reason interpretive claims are tiered and hedged.
+\end{caveatbox}
+
+\subsection{Threat 3 --- Sycophancy / alignment drift}
+\textbf{Vector.} Over a long session, an assistant may drift toward agreement, softening disagreement and validating the user's framing to maintain rapport --- the analog of alignment drift in extended interaction.
+
+\textbf{Manifestation risk here: moderate.} Detectable counter-evidence: the assistant issued unprompted corrections (retracting its own ``removes the bulk'' overclaim; flagging the unweighted-binning bug against the running narrative; declining to file ``dark energy is vacuum energy'' as supported despite the human raising it favorably). These are anti-sycophantic acts.
+
+\textbf{Mitigations (used / required).} (i)~Explicit standing instruction to prioritize honesty over agreement and to flag its own errors. (ii)~The tiered ledger, which structurally forces every claim to declare its evidence status, making unearned validation visible. (iii)~\textbf{Required:} periodic ``devil's-advocate'' turns in which the assistant is instructed to make the strongest case \emph{against} the current conclusion; used informally, should be formalized.
+
+\subsection{Threat 4 --- Pipeline integrity and prompt injection}
+\textbf{Vector.} A research pipeline that ingests web content and executes generated code has an attack surface: malicious instructions embedded in fetched pages (prompt injection), compromised data sources, or generated code with unintended side effects.
+
+\textbf{Manifestation risk here: low but nonzero.} The workflow fetched arbitrary web content (papers, data) and executed generated code with network access.
+
+\textbf{Mitigations (used / required).} (i)~Data provenance restricted to known repositories (official DESI/DES/Pantheon+ releases) rather than arbitrary mirrors. (ii)~Generated code inspected before execution; no credentialed or destructive operations. (iii)~\textbf{Required for hardened use:} sandboxed execution with no outbound network during compute; treat all fetched text as untrusted data, never as instructions; checksum/pin dataset versions to defeat source substitution.
+
+\subsection{Red-team summary}
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}p{3.4cm}p{1.6cm}p{4.0cm}p{4.0cm}@{}}
+\toprule
+\textbf{Threat} & \textbf{Risk here} & \textbf{Primary mitigation (used)} & \textbf{Residual / required} \\
+\midrule
+Confirmation loop & High & \LCDM-true null sims; reversals & Adversarial 2nd operator \\
+Hallucination & Confirmed & Execute-don't-trust; citation pass & Interpretive claims still hedged \\
+Sycophancy drift & Moderate & Honesty-first instruction; ledger & Formalize devil's-advocate turns \\
+Pipeline / injection & Low & Trusted sources; code inspection & Sandbox; pin data; distrust fetched text \\
+\bottomrule
+\end{tabular}
+\caption{Threat model summary. Two classes (confirmation loop, hallucination) are the material risks; both were partially but not fully mitigated, and the residual exposure is the reason all interpretive conclusions are tiered and provisional.}
+\label{tab:threats}
+\end{table}
+
+% =====================================================================
+\section{Synthesis and conclusion}
+
+The four perspectives converge on one claim. The AI-assisted methodology's genuine contribution was not answers but \emph{the industrialization of self-refutation}: by collapsing the cost of controls, nulls, and re-derivations, it made trying-to-break-a-result cheaper than believing it, and the investigation's substantive progress came entirely through the resulting reversals (\S\ref{sec:history}). The comparative analysis (\S\ref{sec:comparison}) identifies this cost inversion as the transferable lesson for human practice. But the ethics and red-team analyses (\S\ref{sec:limits}, \S\ref{sec:redteam}) show the same property is double-edged: the workflow that cheaply refutes can, undisciplined, cheaply fabricate, and its two material vulnerabilities --- the confirmation-bias loop and hallucinated specificity --- are intrinsic to LLM collaboration, mitigated here but not eliminated.
+
+The honest verdict on the method mirrors the honest verdict on the physics it studied: \emph{promising, partially validated, and explicitly not settled}. The methodology produced a well-structured, self-corrected, falsifiable body of work, and it did so faster than a lone human could. It did not, and structurally cannot on its own, guarantee the correctness of its interpretive conclusions --- which is why its outputs are delivered as a tiered ledger of provisional positions with pre-registered tests, rather than as claims. That framing is not a limitation of the method; it is the method's most defensible product.
+
+% =====================================================================
+\bibliographystyle{unsrtnat}
+\begin{thebibliography}{99}
+\providecommand{\natexlab}[1]{#1}
+
+\bibitem[DESI Collaboration(2025)]{desidr2}
+DESI Collaboration.
+\newblock \emph{DESI DR2 Results II: Measurements of Baryon Acoustic Oscillations and Cosmological Constraints}.
+\newblock arXiv:2503.14738, 2025.
+
+\bibitem[Huang et al.(2025)]{huang}
+L.~Huang, R.-G.~Cai, and S.-J.~Wang.
+\newblock The DESI DR1/DR2 evidence for dynamical dark energy is biased by low-redshift supernovae.
+\newblock \emph{Sci. China Phys. Mech. Astron.} \textbf{68}, 100413, 2025. arXiv:2502.04212.
+
+\bibitem[Vincenzi et al.(2025)]{vincenzi}
+M.~Vincenzi, R.~Kessler, P.~Shah, et~al.
+\newblock Comparing the DES-SN5YR and Pantheon+ SN cosmology analyses: `Evolving dark energy or supernovae systematics?'.
+\newblock \emph{MNRAS} \textbf{541}, 2585, 2025. arXiv:2501.06664.
+
+\bibitem[Popovic et al.(2026)]{dovekie}
+B.~Popovic, P.~Shah, W.~D.~Kenworthy, et~al.
+\newblock The Dark Energy Survey Supernova Program: A Reanalysis of Cosmology Results and Evidence for Evolving Dark Energy with an Updated Type Ia Supernova Calibration.
+\newblock \emph{MNRAS} \textbf{548}, 2026. arXiv:2511.07517.
+
+\bibitem[Popovic et al.(2025)]{dovekiecal}
+B.~Popovic, W.~D.~Kenworthy, M.~Ginolin, et~al.
+\newblock A Reassessment of the Pantheon+ and DES 5YR Calibration Uncertainties: Dovekie.
+\newblock arXiv:2506.05471, 2025.
+
+\bibitem[Colg\'ain \& Sheikh-Jabbari(2024)]{colgain}
+E.~\'O.~Colg\'ain and M.~M.~Sheikh-Jabbari.
+\newblock DESI and SNe: Dynamical Dark Energy, \Om\ Tension or Systematics?
+\newblock arXiv:2412.12905, 2024.
+
+\bibitem[Cai et al.(2026)]{quintom}
+Y.-F.~Cai, X.~Ren, T.~Qiu, M.~Li, and X.~Zhang.
+\newblock The Quintom theory of dark energy after DESI DR2.
+\newblock \emph{Natl. Sci. Rev.}, 2026. arXiv:2505.24732.
+
+\bibitem[Placeholder(2025)]{placeholder}
+[PLACEHOLDER] Author(s).
+\newblock [Title of any additional foundational paper to be added on release].
+\newblock [Venue], [year]. [arXiv ID].
+
+\end{thebibliography}
+
+\end{document}
