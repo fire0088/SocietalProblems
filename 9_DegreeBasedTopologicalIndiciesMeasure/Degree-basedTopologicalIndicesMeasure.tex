@@ -1,0 +1,595 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[round,authoryear]{natbib}
+
+\theoremstyle{plain}
+\newtheorem{proposition}{Proposition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+
+\newcommand{\TI}{\mathrm{TI}}
+\newcommand{\CV}{\mathrm{CV}}
+\newcommand{\rms}{\mathrm{rms}}
+\newcommand{\sd}{\mathrm{sd}}
+
+\title{\bfseries Degree-based topological indices measure molecular size:\\
+a null-baseline protocol for QSPR}
+\author{Eric Schultz\\[2pt]
+\small Independent Researcher \quad ORCID 0009-0006-6283-1696}
+\date{Draft --- prepared for submission to \emph{Journal of Cheminformatics}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+In QSPR studies using degree-based topological indices, the reported coefficient of
+determination and the descriptor's actual contribution move in \emph{opposite}
+directions: as $R^2$ rises from $0.34$ to $0.94$, the improvement over simply counting
+heavy atoms collapses from $+0.148$ to $+0.005$. We explain this. Writing a degree-based
+index as $\TI_f(G)=m\langle p(G),f\rangle$, with $m$ the edge count and $p(G)$ the
+edge-degree-pair profile, we bound the correlation between any such index and $m$ in
+terms of three quantities: the variation of the weighting function along directions in
+which real molecular profiles differ, the mean edge weight, and the coefficient of
+variation of molecular size in the sample. A corollary quantified over \emph{all}
+properties follows: no degree-based index can differ from edge count in its correlation
+with \emph{any} property by more than $\sqrt{2(1-\rho)}$, where $\rho$ is its correlation
+with edge count. On $8{,}583$ drug-like molecules the bound is valid for all 14 indices
+tested and tight to within $0.013$ for ten; the corollary holds without exception across
+70 index--property pairs. Empirically the 14 indices span one dimension
+(PC1 $=97.5\%$ on 6{,}000 ZINC molecules). Against molecular weight no index improves on
+heavy-atom count on any dataset tested; against measured melting points the best single
+index reaches $R^2=0.157$, below a two-number baseline of atom count plus ring count
+($0.218$). At $N\approx15$ a permutation null places the 95th percentile at $R^2\approx0.35$
+for linear fits, $0.50$ for quadratic and $0.63$ for cubic --- so raising the fit order
+raises the bar a claim must clear rather than lowering it. We recommend a referee-facing
+checklist whose central element is a single diagnostic: report $\Delta R^2$, the
+improvement over a heavy-atom-count null.
+\end{abstract}
+
+\noindent\textbf{Keywords:} topological index; QSPR; molecular descriptor; degree-based
+index; null baseline; chemical graph theory
+
+\section{Introduction}
+
+A molecular graph $G$ represents a hydrogen-suppressed molecule with atoms as vertices and
+bonds as edges. A \emph{degree-based topological index} assigns a real number to $G$ by
+summing a symmetric function of the endpoint degrees over all edges,
+\[
+\TI_f(G)=\sum_{uv\in E(G)} f(d_u,d_v).
+\]
+Instances include the Zagreb indices \citep{gutman1972}, the Randi\'c connectivity index
+\citep{randic1975}, the atom--bond connectivity (ABC) and geometric--arithmetic (GA)
+indices, the forgotten index \citep{furtula2015}, and the Sombor index
+\citep{gutman2021}. Several thousand such invariants have been proposed.
+
+\subsection{The template under examination}
+
+A recognisable publication template has become common in pharmacy,
+pharmaceutical-chemistry and applied-mathematics journals: select a therapeutic class and
+10--25 drug molecules; compute 6--20 degree-based indices; obtain 5--13 physicochemical
+properties, typically from an online compilation; regress each index against each
+property; and report, per property, the index with the largest $R^2$, described as the
+best predictor. The properties most often used are molecular weight, molar refractivity,
+molar volume, polarizability, surface tension, boiling point and flash point.
+
+\subsection{The difficulty}
+
+Four of those properties --- molecular weight, molar refractivity, molar volume,
+polarizability --- are \emph{additive}: each is, to good approximation, a sum of atomic or
+group contributions, and hence a near-linear function of molecular size. Degree-based
+indices are also near-linear functions of size. A high $R^2$ between the two is therefore
+close to guaranteed and carries little information about the index.
+
+This is not a new suspicion. \citet{gutman2013} tested 20 vertex-degree-based indices
+against heats of formation and normal boiling points of \emph{octane isomers} and found
+the correlation ability of many to be weak or nil, with augmented Zagreb and ABC
+performing best. Their design fixes $n$ and $m$, removing size variation entirely --- and,
+we note, forcing the choice of non-additive properties, since molecular weight and molar
+refractivity are literally constant within a constitutional-isomer class. That paper is
+cited in a large fraction of the studies described above, often as introductory
+boilerplate, without its implication being drawn.
+
+\citet{randic1994} had earlier addressed descriptor intercorrelation directly, arguing
+that apparent parallelism need not be a concern unless descriptors are strictly collinear,
+and that orthogonalization reveals genuine structural differences even between nearly
+collinear descriptors. We accept this as stated. We observe only that it concerns
+\emph{orthogonalized combinations}. It provides no licence for the comparative claim
+--- ``index $X$ is the best predictor of property $Y$'' --- which the template produces.
+
+\section{Theory}
+
+\subsection{Profile decomposition}
+
+Let $P=\{(i,j):1\le i\le j\le \Delta\}$ be the set of unordered degree pairs available at
+maximum degree $\Delta$ (for hydrogen-suppressed organic molecules $\Delta=4$, so
+$|P|=10$). For a molecular graph $G$ with $m$ edges define the \emph{edge-degree-pair
+profile} $p(G)\in\Delta(P)$ by
+\[
+p_\pi(G)=\frac{\#\{uv\in E(G):\{d_u,d_v\}=\pi\}}{m},
+\]
+a point in the probability simplex over $P$. Regarding $f$ as a vector in $\mathbb{R}^P$,
+every degree-based index factorises exactly:
+\begin{equation}
+\TI_f(G)=m(G)\cdot\langle p(G),f\rangle .
+\label{eq:factor}
+\end{equation}
+The index is the product of an \emph{extensive} factor (edge count) and an
+\emph{intensive} factor (mean edge weight). All structural information beyond size is
+carried by $\langle p(G),f\rangle$.
+
+\subsection{The bound}
+
+Consider molecules $G_1,\dots,G_N$ with edge counts $m_i$ and profiles $p_i$. Let
+$\bar p=N^{-1}\sum_i p_i$, $u_i=p_i-\bar p$, $\bar g=\langle\bar p,f\rangle>0$ and
+$\CV=\sd(m)/\mathrm{mean}(m)$. Write $\tilde v$ for the mean-centred version of
+$v\in\mathbb{R}^N$.
+
+\begin{proposition}
+Let $E_i=m_i\langle u_i,f\rangle$ and $\tau_f=\|\tilde E\|/(\bar g\|\tilde m\|)$. If
+$\tau_f\le1$ then
+\begin{equation}
+r^2(\TI_f,m)\;\ge\;1-\tau_f^2 .
+\label{eq:bound}
+\end{equation}
+Moreover, with $\Sigma=\sum_i w_i u_iu_i^{\!\top}$, $w_i=m_i^2/\sum_j m_j^2$, and
+$f_c=f-c\mathbf{1}$ for any scalar $c$,
+\begin{equation}
+\tau_f\;\le\;\frac{\sqrt{f_c^{\!\top}\Sigma f_c}\;\rms(m)}{\bar g\,\sd(m)} .
+\label{eq:spectral}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+From \eqref{eq:factor}, $\TI_f(G_i)=\bar g m_i+E_i$. Set $S=\bar g m$, so
+$\TI_f=S+E$ and, centring being linear, $\widetilde{\TI_f}=\tilde S+\tilde E$ with
+$\tilde S=\bar g\tilde m$ parallel to $\tilde m$.
+
+For \eqref{eq:bound}, note $r(\TI_f,m)=\cos\angle(\widetilde{\TI_f},\tilde m)
+=\cos\angle(\widetilde{\TI_f},\tilde S)$. The set $\{\tilde S+e:\|e\|\le\rho\}$ is a
+Euclidean ball of radius $\rho$ centred at $\tilde S$. Every point of that ball lies within
+angle $\arcsin(\rho/\|\tilde S\|)$ of $\tilde S$ when $\rho<\|\tilde S\|$, the extreme
+being attained on the tangent line from the origin. Taking $\rho=\|\tilde E\|$ gives
+$\angle(\widetilde{\TI_f},\tilde S)\le\arcsin\tau_f$ and hence
+$r\ge\sqrt{1-\tau_f^2}$.
+
+For \eqref{eq:spectral}: each $u_i$ satisfies $\langle u_i,\mathbf{1}\rangle=0$, so
+$\langle u_i,f\rangle=\langle u_i,f_c\rangle$ for every $c$ --- the weighting function is
+determined only up to an additive constant. Centring is an orthogonal projection, so
+$\|\tilde E\|\le\|E\|$, and
+\[
+\|E\|^2=\sum_i m_i^2\langle u_i,f_c\rangle^2
+=\Big(\sum_j m_j^2\Big)\,f_c^{\!\top}\Sigma f_c ,
+\]
+whence $\|E\|=\sqrt{N}\,\rms(m)\sqrt{f_c^{\!\top}\Sigma f_c}$. Dividing by
+$\bar g\|\tilde m\|=\bar g\sqrt{N}\,\sd(m)$ gives \eqref{eq:spectral}.
+\end{proof}
+
+\subsection{A corollary over all properties}
+
+The Proposition constrains the relationship between $\TI_f$ and edge count; the claim of
+interest concerns properties. The gap closes in one step.
+
+\begin{lemma}
+For any random variables $X,Y,Z$,
+$\;|r(X,Z)-r(Y,Z)|\le\sqrt{2\bigl(1-r(X,Y)\bigr)}$.
+\end{lemma}
+
+\begin{proof}
+Let $x,y,z$ be the centred, unit-normalised data vectors. Then
+$r(X,Z)-r(Y,Z)=\langle x-y,z\rangle\le\|x-y\|\,\|z\|=\|x-y\|$, and
+$\|x-y\|^2=2-2\langle x,y\rangle=2(1-r(X,Y))$. Symmetry gives the absolute value.
+\end{proof}
+
+\begin{corollary}
+Let $\rho=r(\TI_f,m)\ge\sqrt{1-\tau_f^2}$ by \eqref{eq:bound}. Then for \emph{every}
+property $P$ whatsoever,
+\begin{equation}
+\bigl|r(\TI_f,P)-r(m,P)\bigr|\;\le\;\sqrt{2(1-\rho)}\;\le\;
+\sqrt{2\bigl(1-\sqrt{1-\tau_f^2}\bigr)} .
+\label{eq:corollary}
+\end{equation}
+\end{corollary}
+
+This is the operative statement. It is not a claim about the properties we happened to
+test: for any response variable at all --- measured, computed, physicochemical,
+biological --- a degree-based index and a bond count are interchangeable to within a
+margin fixed by $\tau_f$, a property of the index and the molecule set alone. For ABC on
+our melting-point set, $\rho=0.9983$ and the margin is $0.058$; across 14 indices and 5
+properties there are no violations and the largest observed deviation for ABC is $0.015$.
+
+\subsection{Interpretation}
+
+The bound factorises into three parts, each with a chemical reading.
+\begin{itemize}\itemsep2pt
+\item $\sqrt{f_c^{\!\top}\Sigma f_c}$ --- \textbf{index spread along realised variation}:
+not how much $f$ varies over all conceivable degree pairs, but how much it varies along
+the directions in which real molecular profiles actually differ. This is why the naive
+sandwich $f_{\min}m\le\TI_f\le f_{\max}m$, which uses the worst-case range of $f$, is far
+too weak: it ignores the covariance structure entirely.
+\item $1/\bar g$ --- \textbf{normalisation}. Only the relative spread of $f$ matters.
+\item $\rms(m)/\sd(m)\approx\sqrt{1+\CV^2}/\CV$ --- \textbf{size dispersion}, which
+diverges as $\CV\to0$.
+\end{itemize}
+These are the complete list of things one could break to construct a degree-based index
+that is not a size proxy. Two are properties of the index; the third is a property of the
+\emph{study design}, and is under the analyst's control.
+
+The $\CV$ term recovers \citet{gutman2013} immediately. On an isomer set $\CV=0$ exactly,
+the bound is vacuous, and the indices are free to differ arbitrarily from edge count and
+from one another --- precisely the regime in which comparing them is meaningful. Their
+study and the studies of \S1.1 were never in conflict; they sit at opposite ends of a
+continuum that \eqref{eq:bound}--\eqref{eq:spectral} parameterises.
+
+\section{Methods}
+
+\paragraph{Index battery.} Fourteen degree-based indices with weighting functions
+$f(a,b)$: first Zagreb $a+b$; second Zagreb $ab$; forgotten $a^2+b^2$; hyper-Zagreb
+$(a+b)^2$; Randi\'c $(ab)^{-1/2}$; sum-connectivity $(a+b)^{-1/2}$; ABC
+$\sqrt{(a+b-2)/(ab)}$; geometric--arithmetic $2\sqrt{ab}/(a+b)$; harmonic $2/(a+b)$;
+Sombor $\sqrt{a^2+b^2}$; augmented Zagreb $\bigl(ab/(a+b-2)\bigr)^3$; inverse sum indeg
+$ab/(a+b)$; symmetric division deg $a/b+b/a$; redefined third Zagreb $ab(a+b)$.
+
+\paragraph{Datasets.} A hand-curated drug set ($N=38$) from the therapeutic classes
+recurring in the target literature; a random subsample of a drug-like ZINC collection
+($N=6{,}000$); ESOL measured aqueous solubility ($N=1{,}105$, \citealp{delaney2004});
+Open Notebook Science melting points ($N=8{,}583$); and a boiling-point compilation
+($N=6{,}400$). Structures for the last two were joined by CAS lookup through PubChem.
+Filters: 10--60 heavy atoms, maximum degree $\le 4$, must contain carbon, salts and
+mixtures excluded.
+
+\paragraph{Null baseline.} The null descriptor is the \textbf{heavy-atom count} $n$. For
+each property we report $R^2(n)$, $R^2$ of the best of the 14 indices, and
+$\Delta R^2=R^2(\text{best})-R^2(n)$. Out-of-sample performance uses repeated 70/30
+splits. Small-sample behaviour uses repeated random draws of 15 molecules, matching the
+modal published study size.
+
+\section{Results}
+
+\subsection{The indices span one dimension}
+
+\begin{table}[h]\centering\small
+\caption{Dimensionality of the 14-index battery across two chemical spaces.}
+\begin{tabular}{lrr}
+\toprule
+& drug set ($N=38$) & ZINC ($N=6{,}000$)\\
+\midrule
+PC1 variance explained & 98.64\% & 97.49\%\\
+PC2 & 1.13\% & 1.76\%\\
+PC3 & 0.21\% & 0.69\%\\
+median pairwise $|r|$ & 0.989 & 0.979\\
+minimum pairwise $|r|$ & 0.934 & 0.908\\
+$\min r(\TI,m)$ & 0.961 & 0.947\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]\centering
+\includegraphics[width=\textwidth]{figure3_dimensionality.png}
+\caption{(a) Pairwise correlations among the 14 indices on 8{,}583 drug-like molecules.
+(b) Scree plot on a logarithmic axis: the battery has one effective dimension.}
+\end{figure}
+
+The result replicates across unrelated chemical spaces and is not an artefact of size
+range: the ZINC sample has roughly half the size dispersion of the drug set
+($\CV(m)=0.213$ vs $0.408$) yet shows the same collapse. A rank statement makes the point
+exactly. On ESOL, cross-validated $R^2$ for measured $\log S$: $n$ alone $0.3199$; best
+single index $0.3348$; all 14 indices $0.3803$; $n$ plus all 14 indices $0.3803$ ---
+identical to four decimal places. Heavy-atom count already lies in their span.
+
+The observed edge-degree-pair profile is highly concentrated: across the drug set four of
+the ten available pairs account for 91\% of all edges, namely $(2,3)$ 41.3\%, $(2,2)$
+17.7\%, $(3,3)$ 17.5\% and $(1,3)$ 14.2\%.
+
+\subsection{The bound is valid and tight}
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.62\textwidth]{figure4_bound.png}
+\caption{Spectral bound \eqref{eq:spectral} against observed $r^2(\TI_f,m)$ on the
+melting-point set. All 14 points lie above the diagonal (bound valid); ten lie within
+$0.013$ of it. Per-index values are given in the Appendix.}
+\end{figure}
+
+The spectral bound is valid in 14/14 cases and non-vacuous in 14/14. A H\"older bound
+using $\|u_i\|_1$ and the range of $f$ is valid but vacuous ($\tau>1$) for 6 of the 14
+indices: the covariance structure is essential.
+
+\subsection{Against additive properties, no index beats counting atoms}
+
+We anchor on \textbf{molecular weight}, which is exactly additive and is not the output of
+any fitted model. Molar refractivity (Crippen) and Labute ASA are themselves fitted
+additive schemes, so correlations with them are partly circular; we report them for
+comparability with the literature but they carry no independent weight.
+
+\begin{table}[h]\centering\small
+\caption{Null-baseline comparison on additive properties. Negative $\Delta R^2$ means the
+heavy-atom count beats every one of the 14 indices.}
+\begin{tabular}{llrrr}
+\toprule
+dataset & property & $R^2(n)$ & $R^2$(best) & $\Delta R^2$\\
+\midrule
+Drug set (38) & molecular weight & 0.9850 & 0.9826 & $-0.0025$\\
+              & Labute ASA & 0.9911 & 0.9930 & $+0.0019$\\
+              & molar refractivity & 0.9564 & 0.9696 & $+0.0131$\\
+ESOL (1{,}105) & molecular weight & 0.8510 & 0.8645 & $+0.0136$\\
+              & molar refractivity & 0.9414 & 0.9432 & $+0.0018$\\
+              & Labute ASA & 0.9618 & 0.9521 & $-0.0096$\\
+$T_m$ set (8{,}583) & molecular weight & 0.7977 & 0.7941 & $-0.0036$\\
+              & molar refractivity & 0.8856 & 0.9128 & $+0.0272$\\
+$T_b$ set (6{,}400) & molecular weight & 0.8430 & 0.8136 & $-0.0295$\\
+              & molar refractivity & 0.8233 & 0.8824 & $+0.0591$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+In four of ten cases the null beats every index outright; the largest gain anywhere is
+$+0.059$.
+
+\subsection{Against measured non-additive properties}
+
+No single index exceeds $R^2=0.212$ on a measured non-additive property. We state the
+countervailing result plainly: used \emph{jointly}, the 14 indices do better than any of
+them alone.
+
+\begin{table}[h]\centering\small
+\caption{Cross-validated $R^2$ for measured melting point ($N=8{,}583$).}
+\begin{tabular}{lr}
+\toprule
+model & CV $R^2$\\
+\midrule
+heavy-atom count $n$ & 0.0713\\
+molecular weight & 0.0626\\
+best single index (ReZG3) & 0.1545\\
+\textbf{$n$ + ring count} & \textbf{0.2179}\\
+all 14 indices & 0.3364\\
+all 14 indices $+\,n\,+$ ring count & 0.3359\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Two things follow. The best single index is beaten by a two-number baseline requiring no
+chemical graph theory at all. And the 14 indices jointly \emph{do} carry information
+beyond simple counts ($0.336$ vs $0.218$) --- a real effect we do not dispute --- but
+adding $n$ and ring count to the battery changes cross-validated performance by
+$-0.0005$, confirming that trivial size descriptors already lie within their span. The
+joint model is a legitimate descriptor set; the \emph{comparative single-index ranking}
+that the template produces is not a legitimate inference.
+
+\subsection{Reported $R^2$ is a readout of sample size dispersion}
+
+\begin{figure}[h]\centering
+\includegraphics[width=\textwidth]{size_dispersion.png}
+\caption{Reported $R^2$ as a function of the size dispersion of the sample, for two
+additive properties and one measured property. Subsamples of 15 molecules from ESOL. Red:
+best of 14 indices; black dashed: heavy-atom-count null. Shaded band: interquartile range.
+Orange region marks the dispersion typical of published drug sets.}
+\end{figure}
+
+\begin{figure}[h]\centering
+\includegraphics[width=\textwidth]{figure2.png}
+\caption{(a) The inversion: as the headline $R^2$ rises with size dispersion, the
+improvement over the atom-count null falls toward zero. (b) Sampling distribution of the
+reported statistic (filled) against its true permutation null (outline).}
+\end{figure}
+
+Nothing changes across a row of Figure~3 except how much size variation the sample
+contains. As the headline $R^2$ for molar refractivity climbs from $0.34$ to $0.94$, the
+index's contribution over atom count collapses from $+0.148$ to $+0.005$: \emph{the most
+impressive-looking results are those in which the descriptor is doing the least work.}
+
+At published sample sizes the winner is unstable --- all 14 indices win at some frequency,
+the modal winner taking 42--48\% for melting and boiling point and as little as 14\% at
+low size dispersion. Contrasting the sampling distribution with the permutation null
+(Figure~4b) gives two conclusions we are careful to separate. \textbf{(i)} Any best-of-14
+$R^2$ below roughly $0.35$ at $N=15$ falls inside the permutation null and is not
+evidence of a structure--property relationship; a substantial share of published values
+lies in this range. \textbf{(ii)} Values well above that are \emph{not} explicable as
+noise --- they are explicable by upward bias. At $N=15$ the expected best-of-14 $R^2$ is
+$0.306$ against a full-sample value of $0.212$, with a 5th--95th range of $0.026$--$0.730$.
+A single reported value from a 15-molecule study is compatible with almost any underlying
+effect size, and the publication filter selects the upper tail. We do not claim published
+results are noise; we claim they are uninformative as point estimates.
+
+\subsection{Functional form: the threshold is not fixed}
+
+Studies in the target literature frequently fit quadratic or cubic rather than linear
+models. We repeated the analysis at polynomial degrees 1--3, fitting the \emph{same} order
+to the index and to the null.
+
+At full sample size the verdict is unchanged, with one honest exception. For molecular
+weight $\Delta R^2$ is $-0.0036$, $-0.0036$ and $-0.0041$ at degrees 1, 2 and 3: the null
+beats every index at every order. For boiling point $\Delta R^2$ is likewise flat
+($+0.060$, $+0.057$, $+0.057$). For melting point, however, the indices benefit from
+curvature more than atom count does and $\Delta R^2$ \emph{rises} from $+0.084$ to
+$+0.112$; our linear-only analysis was mildly conservative there. In absolute terms both
+remain poor ($R^2=0.085$ for the null against $0.197$ for the best index at degree 3), and
+cross-validated values track in-sample values to within $0.001$ at $N=8{,}583$.
+
+At $N=15$ the effect is dramatic. Fitting a cubic means estimating four parameters from
+fifteen points, and the permutation null inflates accordingly.
+
+\begin{table}[h]\centering\small
+\caption{Permutation null and real-draw distributions of best-of-14 $R^2$ at $N=15$.}
+\begin{tabular}{llrrrr}
+\toprule
+property & fit & null mean & \textbf{null 95th} & real mean & real 95th\\
+\midrule
+melting point & linear & 0.104 & \textbf{0.323} & 0.248 & 0.582\\
+              & quadratic & 0.207 & \textbf{0.475} & 0.351 & 0.664\\
+              & cubic & 0.316 & \textbf{0.605} & 0.442 & 0.729\\
+boiling point & linear & 0.117 & \textbf{0.358} & 0.311 & 0.734\\
+              & quadratic & 0.237 & \textbf{0.533} & 0.435 & 0.782\\
+              & cubic & 0.349 & \textbf{0.654} & 0.543 & 0.848\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]\centering
+\includegraphics[width=0.68\textwidth]{figure5_fitorder.png}
+\caption{Raising the polynomial order of the fitted model raises the evidential bar. A
+claim must clear the red line to be distinguishable from a permutation null at the same
+sample size and fit order.}
+\end{figure}
+
+The evidential threshold is therefore \emph{not a fixed number but a function of the fit
+order the study used}. A paper reporting $R^2=0.60$ from a cubic fit to 15 molecules has
+produced a value lying inside its own permutation null; the same value from a linear fit
+would be well outside it. Higher-order fits do not strengthen a small-sample QSPR claim
+--- they raise the bar it must clear, and papers reporting improved $R^2$ after moving
+from linear to cubic at $N\approx15$ are reporting overfitting.
+
+\section{Discussion}
+
+\subsection{What is and is not claimed}
+
+We do \textbf{not} claim degree-based indices carry no information. A selection-bias null
+(shuffled response, maximum over 14 indices) gives mean $R^2=0.0011$ and 95th percentile
+$0.0040$ on ESOL, against an observed $\Delta R^2$ of $+0.0143$: a small but real margin.
+Out of sample the indices genuinely help on some additive properties.
+
+What we claim is narrower: \textbf{the comparative claims produced by this template are
+not interpretable}, because the objects being compared span one dimension, the properties
+most often used are size proxies, and the sample sizes used cannot distinguish among 14
+collinear predictors.
+
+\subsection{Reconciliation with prior work}
+
+\citet{gutman2013} are not contradicted; they are explained. Their fixed-$n$ design sets
+$\CV=0$, makes the bound vacuous, and creates the only conditions under which the indices
+can be told apart --- which is why they found real differences. The subsequent literature
+restored size variation, adopted additive properties, and reported the resulting size
+correlation as predictive success. \citet{randic1994}'s orthogonalization argument stands
+and licenses continued interest in intercorrelated descriptors \emph{used in combination};
+it does not license single-index comparative rankings. \citet{roy2014}'s warning about
+$R^2$ concerns external validation and applies here with additional force, but is
+orthogonal to the size-proxy mechanism.
+
+\subsection{A checklist for editors and referees}
+
+The following can be applied without specialist knowledge of chemical graph theory, and
+instantiates rather than extends existing QSAR validation practice.
+\begin{enumerate}\itemsep2pt
+\item \textbf{Report $\Delta R^2$ over a heavy-atom-count null} for every index--property
+pair. If $\Delta R^2\approx0$, the result concerns molecular size and should be described
+that way.
+\item \textbf{Report $\CV(n)$} for the molecule set. Without it, $R^2$ is uninterpretable.
+\item \textbf{State whether the property is additive.} Molecular weight, molar
+refractivity, molar volume and polarizability are; correlations with them are not evidence
+about an index.
+\item \textbf{Do not crown a best index at $N<30$} without a resampling analysis of winner
+stability.
+\item \textbf{Compare $R^2$ against a permutation null computed at the study's own sample
+size and fit order.} Indicative 95th percentiles at $N\approx15$: linear $\approx0.35$,
+quadratic $\approx0.50$, cubic $\approx0.63$. Raising the fit order raises this bar.
+\item \textbf{Report the provenance of property values} --- measured, or estimated by an
+additive group-contribution scheme. Regressing an additive estimate on an additive
+descriptor is circular.
+\end{enumerate}
+
+\subsection{Limitations}
+
+The boiling-point compilation is a handbook aggregation that may include estimated as well
+as measured values; the melting-point set is curated experimental data and should be
+treated as primary. The CAS-to-structure join through PubChem has an unmeasured mismatch
+rate. The maximum-degree $\le4$ filter, which we had expected to bias the sample, excludes
+exactly one molecule of $8{,}584$. Our battery covers degree-based indices only ---
+distance-based, eccentricity-based and neighbourhood-degree-based families are not tested,
+though \eqref{eq:factor} suggests analogous arguments. The drug set of 38 molecules was
+assembled by hand and is not a random sample of drug space; all headline claims are
+replicated on the larger unbiased sets.
+
+\section*{Declaration of generative AI use}
+
+Portions of this work were carried out with the assistance of Claude, a large language
+model developed by Anthropic. Its contribution was substantial and is described here in
+full so that readers and referees can weight it appropriately.
+
+The model was used to: survey the prior literature and identify the relevant precedents,
+including \citet{gutman2013} and \citet{randic1994}; propose and formalise the profile
+decomposition \eqref{eq:factor} and the bound \eqref{eq:bound}--\eqref{eq:spectral};
+identify and prove the corollary \eqref{eq:corollary}; write all analysis and figure-generation
+code; execute the computational experiments reported in Section~4; and draft substantial
+portions of the manuscript text.
+
+The research direction, the choice of which lines of enquiry to pursue and abandon, and
+all decisions about scope, framing and claim strength were made by the author. Two of the
+model's initial hypotheses --- a worst-case sandwich bound, and a claim that heavy-atom
+count would outperform every index out of sample --- were falsified during the work and
+retracted; the results reported here reflect the surviving claims. An adversarial review
+pass, also model-assisted, identified and corrected a mischaracterised null distribution
+and one factual error in an earlier draft.
+
+The author has verified the reported results, takes full responsibility for the content of
+this paper, and affirms that the generative AI tool is not and cannot be an author. All
+code and data required to reproduce every number and figure are provided as supplementary
+material, and independent reproduction is encouraged.
+
+\section*{Reproducibility}
+
+All datasets are public. Analysis code, molecule lists and figure scripts are provided as
+supplementary material; the full pipeline runs in a few minutes on a laptop using RDKit
+and NumPy.
+
+\appendix
+\section{Per-index bound values}
+
+\begin{table}[h]\centering\small
+\caption{Spectral bound against observed $r^2(\TI_f,m)$, melting-point set
+($N=8{,}583$, $\CV(m)=0.417$). Sorted by slack.}
+\begin{tabular}{lrrrr}
+\toprule
+index & $\tau$ (exact) & $\tau$ (bound) & $1-\tau^2_{\text{spec}}$ & observed $r^2$\\
+\midrule
+ABC & 0.0605 & 0.0608 & 0.9963 & 0.99663\\
+GA & 0.0613 & 0.0614 & 0.9962 & 0.99648\\
+sum-connectivity & 0.0924 & 0.0929 & 0.9914 & 0.99231\\
+SDD & 0.2680 & 0.2686 & 0.9279 & 0.92885\\
+harmonic & 0.1817 & 0.1828 & 0.9666 & 0.96868\\
+Randi\'c & 0.1567 & 0.1585 & 0.9749 & 0.97974\\
+$M_1$ & 0.1975 & 0.1986 & 0.9606 & 0.97271\\
+Sombor & 0.2235 & 0.2242 & 0.9497 & 0.96221\\
+ISI & 0.1739 & 0.1761 & 0.9690 & 0.98370\\
+AZI & 0.2289 & 0.2316 & 0.9464 & 0.97101\\
+$M_2$ & 0.3836 & 0.3867 & 0.8504 & 0.92675\\
+HM & 0.4183 & 0.4204 & 0.8232 & 0.90313\\
+F & 0.4669 & 0.4683 & 0.7807 & 0.87174\\
+ReZG3 & 0.6405 & 0.6447 & 0.5844 & 0.83514\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{thebibliography}{99}
+\bibitem[Delaney(2004)]{delaney2004} Delaney, J.S. (2004) ESOL: estimating aqueous
+solubility directly from molecular structure. \emph{J. Chem. Inf. Comput. Sci.}
+\textbf{44}(3), 1000--1005. \texttt{doi:10.1021/ci034243x}
+\bibitem[Furtula \& Gutman(2015)]{furtula2015} Furtula, B., Gutman, I. (2015) A forgotten
+topological index. \emph{J. Math. Chem.} \textbf{53}, 1184--1190.
+\bibitem[Gutman(2021)]{gutman2021} Gutman, I. (2021) Geometric approach to degree-based
+topological indices: Sombor indices. \emph{MATCH Commun. Math. Comput. Chem.}
+\textbf{86}(1), 11--16.
+\bibitem[Gutman \& Trinajsti\'c(1972)]{gutman1972} Gutman, I., Trinajsti\'c, N. (1972)
+Graph theory and molecular orbitals. Total $\pi$-electron energy of alternant
+hydrocarbons. \emph{Chem. Phys. Lett.} \textbf{17}(4), 535--538.
+\bibitem[Gutman \& To\v{s}ovi\'c(2013)]{gutman2013} Gutman, I., To\v{s}ovi\'c, J. (2013)
+Testing the quality of molecular structure descriptors. Vertex-degree-based topological
+indices. \emph{J. Serb. Chem. Soc.} \textbf{78}(6), 805--810.
+\texttt{doi:10.2298/JSC121002134G}
+\bibitem[Randi\'c(1975)]{randic1975} Randi\'c, M. (1975) On characterization of molecular
+branching. \emph{J. Am. Chem. Soc.} \textbf{97}(23), 6609--6615.
+\textbf{[VERIFY TITLE: cited in the literature both as ``On characterization of molecular
+branching'' and as ``Characterization of molecular branching''; check the ACS record.]}
+\bibitem[Randi\'c et al.(1994)]{randic1994} Randi\'c, M., et al. (1994) Graphical bond
+orders: novel structural descriptors. \emph{J. Chem. Inf. Comput. Sci.} \textbf{34}(2).
+\textbf{[VERIFY: full author list and page range unconfirmed; article confirmed to span
+p.~405. Check the ACS record.]}
+\bibitem[Roy \& Gramatica(2014)]{roy2014} Roy, K., Gramatica, P. (2014) Beware of $R^2$:
+simple, unambiguous assessment of the prediction accuracy of QSAR and QSPR models.
+\emph{J. Chem. Inf. Model.} \textbf{54}(7), 1696--1701.
+\end{thebibliography}
+
+\end{document}
